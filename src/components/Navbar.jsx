@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { FiMenu, FiX } from 'react-icons/fi'
+import { Link } from 'react-router-dom';
 
 
 const Navbar = () => {
@@ -20,11 +21,10 @@ const Navbar = () => {
         <div className='hidden lg:flex'>
           {navItems.map((item) => (
             <div className='border hover:bg-yellow-400 hidden lg:flex py-6 px-16 border-t-transparent'>
-              <a href=''>{item}</a>
+              <a href='/'>{item}</a>
             </div>
           ))}
-          <a className='bg-orange-500 hidden lg:flex py-6 px-18 text-white'>
-            Register
+          <a href="/Register" className='bg-orange-500 hidden lg:flex py-6 px-18 text-white'>Register
           </a>
         </div>
 
@@ -52,11 +52,11 @@ const Navbar = () => {
         }`}>
         <div className='p-6 flex flex-col gap-8'>
           {navItems.map((item, idx) => (
-            <a key={idx} href="#" className="hover:text-orange-500">
+            <a key={idx} href="/" className="hover:text-orange-500">
               {item}
             </a>
           ))}
-          <a href="#" className="bg-orange-500 text-white px-6 py-2 rounded-md hover:bg-orange-600">
+          <a href="/Register" className="bg-orange-500 text-white px-6 py-2 rounded-md hover:bg-orange-600">
             Register
           </a>
         </div>

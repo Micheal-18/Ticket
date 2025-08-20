@@ -88,6 +88,7 @@ const Home = () => {
                   <p className='md:text-lg text-md font-regular text-gray-500 flex gap-2 items-center'><FaLocationArrow />{Update.location}</p>
                   <span className='flex items-center '>
                     <p className='font-bold text-lg text-orange-500'>${Update.price}</p>
+                    
                   </span>
                 </span>
 
