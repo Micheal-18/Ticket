@@ -7,3 +7,11 @@ body{
   font-family: "Outfit", sans-serif;
   background-color: #eeeeee;
 }
+
+.custom-scrollbar {
+  overflow: scroll;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 0px;
+}

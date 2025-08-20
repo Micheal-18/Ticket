@@ -9,12 +9,12 @@ const Navbar = () => {
     setOpen(!open)
   }
 
-  const navItems = ["Events", "Trending", "Concerts", "Blogs"]
+  const navItems = ["Events", "Trending", "Guide", "Blogs"]
 
   return (
-    <section className='fixed w-full flex top-0 z-50'>
+    <section className='fixed w-full bg-[#eeeeee] flex top-0 z-50'>
       <div className='flex w-full items-center lg:justify-center flex-1 border border-b-4 lg:border-b-transparent border-b-gray-700 justify-between px-6 font-bold text-gray-900'>
-        <div className='border py-10 lg:py-6  lg:px-20 border-x-transparent lg:border-x-black lg:border-t-transparent border-y-transparent lg:border-y-black'>
+        <div className='border py-10 lg:py-5.5  lg:px-20 border-x-transparent lg:border-x-black lg:border-t-transparent border-y-transparent lg:border-y-black'>
           <a className='text-black text-lg'>Airways<span className='text-orange-500'>Events</span></a>
         </div>
         <div className='hidden lg:flex'>
