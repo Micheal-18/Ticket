@@ -1,28 +1,53 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import pictureBg from "../assets/download2.jpeg"
 import { RiBriefcaseLine, RiCheckboxCircleLine, RiCircleLine, RiUserLine } from 'react-icons/ri'
 import { Link, useNavigate } from 'react-router-dom'
 import countries from "../data/countries";
+import { createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, signOut }
+  from "firebase/auth";
+import { auth, db } from '../firebase/firebase'; // make sure firebase.js is set up
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
 const Register = () => {
   const [step, setStep] = useState("select");
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [passwordError, setPasswordError] = useState('')
   const [confirmPasswordError, setConfirmPasswordError] = useState('')
   const [selected, setSelected] = useState(null)
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [registerLoading, setRegisterLoading] = useState(false);
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [resendMessage, setResendMessage] = useState("");
   const navigate = useNavigate()
+
+  const account = [
+    {
+      id: "personal",
+      icon: <RiUserLine className="text-5xl text-orange-500" />,
+      header: "Personal",
+      writeup: "Selling tickets as an individual? This is the account type for you",
+
+    },
+    {
+      id: "organization",
+      icon: <RiBriefcaseLine className="text-5xl text-orange-500" />,
+      header: "Organization",
+      writeup: "Selling tickets as a registered business? This is the account type for you",
+    },
+  ]
 
   const handlePasswordChange = (e) => {
     const value = e.target.value
     setPassword(value)
 
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])(?=.{8,16}$)[A-Za-z\d!@#$%^&*]+$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*.,?_-])[A-Za-z\d!@#$%^&*.,?_-]{8,16}$/;
 
     if (!passwordRegex.test(value)) {
       setPasswordError("Password must be 8-16 characters and include a number, lowercase, uppercase, and a special character.")
-    } else if (confirmPassword && value !== setPassword) {
-      setPasswordError("Passwords don't match. Please check.")
     } else {
       setPasswordError('')
     }
@@ -39,21 +64,7 @@ const Register = () => {
     }
   }
 
-  const account = [
-    {
-      id: "personal",
-      icon: <RiUserLine color='gray' className='text-5xl' />,
-      header: "Personal",
-      writeup: "Selling tickets as an individual? This is the account type for you",
 
-    },
-    {
-      id: "organization",
-      icon: <RiBriefcaseLine color='gray' className='text-5xl' />,
-      header: "Organization",
-      writeup: "Selling tickets as a registered business? This is the account type for you",
-    },
-  ]
 
   const handleContinue = () => {
     if (selected) {
@@ -61,10 +72,170 @@ const Register = () => {
     }
   };
 
+  // Auto-redirect to login after success
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => {
+        setStep("login");
+        setSuccess(false);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [success]);
+
+  // Firebase-friendly error messages
+  const getErrorMessage = (code) => {
+    switch (code) {
+      case "auth/invalid-email":
+        return "⚠️ That email doesn’t look right. Please enter a valid one.";
+      case "auth/email-already-in-use":
+        return "⚠️ This email is already registered. Try logging in instead.";
+      case "auth/weak-password":
+        return "⚠️ Password should be at least 6 characters.";
+      case "auth/wrong-password":
+        return "⚠️ Incorrect password.";
+      case "auth/user-not-found":
+        return "⚠️ No account found with this email.";
+      default:
+        return "⚠️ Something went wrong. Please try again.";
+    }
+  };
+
+
+  const handleSubmitForm = async (e) => {
+    e.preventDefault();
+    setError("");
+    setRegisterLoading(true);
+
+
+    // ✅ Check password match
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      setRegisterLoading(false);
+      return;
+    }
+
+    const formData = new FormData(e.target);
+    const fullName = formData.get("fullName");
+    const emailValue = formData.get("email"); // use different name
+    setEmail(emailValue); // update state
+    const passwordValue = formData.get("password");
+    const address = formData.get("address")
+    const country = formData.get('country');
+    const phone = formData.get("phone");
+    const orgName = formData.get('organization');
+
+    try {
+      // Create user
+      const userCredential = await createUserWithEmailAndPassword(auth, emailValue, passwordValue);
+      const user = userCredential.user;
+
+
+      setEmail(emailValue); // ✅ update state so success screen shows email
+      setSuccessMessage("✅ Almost done! Please check your inbox for a verification link.");
+      setSuccess(true);
+      setPassword("");
+      setConfirmPassword("");
+
+      // Save to Firestore
+      await setDoc(doc(db, "users", user.uid), {
+        accountType: selected,
+        fullName,
+        email: emailValue,
+        address,
+        country,
+        phone,
+        orgName: selected === "organization" ? orgName : null,
+        verified: false,
+      });
+      await sendEmailVerification(user);
+      console.log("✅ Verification email sent to", user.email);
+
+      await signOut(auth); // force verification
+    } catch (error) {
+      setError(getErrorMessage(error.code));
+    } finally {
+      setRegisterLoading(false);
+    }
+
+  };
+
+  const resendVerificationEmail = async () => {
+    try {
+      const user = auth.currentUser;
+      if (user) {
+        await sendEmailVerification(user);
+        setResendMessage("📩 Verification email sent again!");
+      } else {
+        setResendMessage("⚠️ Please log in again to resend.");
+      }
+    } catch (error) {
+      console.error("Resend error:", error);
+      setResendMessage("❌ Failed to resend email. Try again later.");
+    }
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const email = formData.get("email");
+    const password = formData.get("password");
+    setLoginLoading(true);
+
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      if (!user.emailVerified) {
+        setError("⚠️ Please verify your email before logging in.");
+        return;
+      }
+
+      // Get user data from Firestore
+      const userRef = doc(db, "users", user.uid);
+      const userSnap = await getDoc(userRef);
+
+      if (userSnap.exists()) {
+        const userData = userSnap.data();
+        if (userData.accountType === "personal") {
+          navigate("/personal");
+        } else if (userData.accountType === "organization") {
+          navigate("/organization");
+        } else {
+          navigate("/"); // fallback
+        }
+      } else {
+        setError("User profile not found.");
+      }
+
+    } catch (error) {
+      setError(getErrorMessage(error.code));
+    } finally {
+      setLoginLoading(false);
+    }
+  };
+
+  // Progress bar
+  const steps = ["select", "form", "login"];
+  const currentStep = steps.indexOf(step);
+
+
   return (
-    <section className='relative w-full flex  justify-between h-screen '>
-      <div className='flex flex-col flex-1  custom-scrollbar space-y-6 px-10 py-6 bg-[#eeeeee]'>
-        <a className='text-black text-lg font-semibold '>Airways<span className='text-orange-500'>Events</span></a>
+    <section className='relative w-full grid grid-cols-1 md:grid-cols-2 h-screen '>
+      <div className='flex flex-col flex-1  custom-scrollbar space-y-10 px-10 py-6 bg-[#eeeeee]'>
+        <a className='text-black  text-lg font-semibold '>Airways<span className='text-orange-500'>Events</span></a>
+        {/* Progress Indicator */}
+        <div className="flex justify-between mb-6">
+          {steps.map((s, idx) => (
+            <div
+              key={s}
+              className={`flex-1 h-2 mx-1 rounded ${idx <= currentStep ? "bg-orange-500" : "bg-gray-300"}`}
+            />
+          ))}
+        </div>
+
+
+
         {step === "select" &&
           (
             <>
@@ -75,13 +246,13 @@ const Register = () => {
 
               <div className='flex flex-col space-y-4 '>
                 <h1 className='font-bold md:text-xl text-md'>Choose an account type</h1>
-                <div className='flex lg:flex-row flex-col gap-10'>
+                <div className='flex items-center lg:flex-row flex-col gap-10'>
                   {account.map((acc) => (
                     <div
                       key={acc.id}
                       onClick={() => setSelected(acc.id)}
-                      className={`flex flex-col items-center space-y-6 py-6   w-[300px] h-[320px] rounded-lg border shadow-md cursor-pointer transition 
-                  ${selected === acc.id ? "border-orange-500 bg-white" : "border-gray-200 "}`}
+                      className={`flex flex-1 flex-col items-center space-y-6 py-6   md:w-[300px] h-[320px] rounded-lg border shadow-md cursor-pointer transition 
+                  ${selected === acc.id ? "text-orange-500 border-orange-500 bg-white" : "border-gray-200 "}`}
                     >
                       <div className='flex flex-col items-center justify-center space-y-6 px-2'>
                         {acc.icon}
@@ -110,90 +281,155 @@ const Register = () => {
             </>
           )}
 
-        {step === "form" && (<>
-          <form className='flex flex-col space-y-4 mt-10'>
-            <h1 className='font-bold text-3xl mb-4'>Tell us about yourself</h1>
+        {success ? (
+          <div className="max-w-md mx-auto mt-20 bg-white rounded-2xl shadow-lg p-8 text-center">
+            <h2 className="text-2xl font-bold text-green-600 mb-4">Almost done 🎉</h2>
+            <p className="text-gray-600 mb-6">
+              We sent a verification link to <span className="font-semibold">{email}</span>.
+              <br /> Please check your inbox to verify your account.
+            </p>
 
-            {/* Full Name */}
-            <input
-              type="text"
-              placeholder="Full Name"
-              className='p-3 border rounded-lg'
-              required
-            />
+            {/* Resend button */}
+            <button
+              onClick={resendVerificationEmail}
+              className="w-full bg-orange-500 text-white rounded-xl py-2 hover:scale-105 transition mb-4"
+            >
+              📩 Resend verification email
+            </button>
 
-            {/* Email */}
-            <input
-              type="email"
-              placeholder="Email Address"
-              className='p-3 border rounded-lg'
-              required
-            />
+            {resendMessage && (
+              <p className="text-sm text-green-500">{resendMessage}</p>
+            )}
 
-            {/* Password */}
-            <input onChange={handlePasswordChange}
-              type="password"
-              placeholder="Password"
-              className='p-3 border rounded-lg'
-              required
-            />
-            {passwordError && (<div className='h-5 md:h-10 text-white text-lg border border-2 bg-red-600 rounded-md border-red-500'>{passwordError}</div>)}
+            <p className="text-sm text-gray-400 mt-6">
+              Redirecting to login in 5 seconds...
+            </p>
+          </div>
+        ) : (
+          step === "form" && (<>
+            <form onSubmit={handleSubmitForm} className='flex flex-col space-y-4 mt-10'>
+              <h1 className='font-bold text-3xl mb-4'>Tell us about yourself</h1>
 
-            {/* Confirm Password */}
-            <input onChange={handlePasswordConfrimChange}
-              type="password"
-              placeholder="Confrim Password"
-              className='p-3 border rounded-lg'
-              required
-            />
-            {confirmPasswordError && (<div className='h-5 md:h-10 text-white text-lg border border-2 bg-red-600 rounded-md border-red-500'>{confirmPasswordError}</div>)}
+              {error && <div className="bg-red-100 text-red-600 p-2 rounded mb-4">{error}</div>}
 
-            {/* Phone Number */}
-            <input
-              type="tel"
-              placeholder="Phone Number"
-              className='p-3 border rounded-lg'
-            />
-
-            {/* Country dropdown */}
-            <select className='p-3 border rounded-lg' required>
-              <option value="">Select Country</option>
-              {countries.map((c) => (
-                <option key={c.code} value={c.code}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-
-            {/* Address */}
-            <textarea
-              placeholder="Address"
-              className='p-3 border rounded-lg resize-none h-24'
-            />
-
-            {/* Organization-specific field */}
-            {selected === "organization" && (
+              {/* Full Name */}
               <input
+                name='fullName'
                 type="text"
-                placeholder="Organization Name"
+                placeholder="Full Name"
                 className='p-3 border rounded-lg'
                 required
               />
-            )}
 
-            <button
-              type="submit"
-              className='bg-orange-500 text-white rounded-xl py-3 hover:scale-105'
+              {/* Email */}
+              <input
+                name="email"
+                type="email"
+                placeholder="Email Address"
+                className='p-3 border rounded-lg'
+                required
+              />
+
+              {/* Password */}
+              <input onChange={handlePasswordChange}
+                name='password'
+                type="password"
+                placeholder="Password"
+                className='p-3 border rounded-lg'
+                required
+              />
+              {passwordError && (<div className='h-auto text-white text-lg border border-2 bg-orange-600 rounded-md border-orange-500'>{passwordError}</div>)}
+
+              {/* Confirm Password */}
+              <input onChange={handlePasswordConfrimChange}
+                name='confirmPassword'
+                type="password"
+                placeholder="Confirm Password"
+                className='p-3 border rounded-lg'
+                required
+              />
+              {confirmPasswordError && (<div className='h-auto text-white text-lg border border-2 bg-orange-600 rounded-md border-orange-500'>{confirmPasswordError}</div>)}
+
+              {/* Phone Number */}
+              <input
+                name='phone'
+                type="tel"
+                placeholder="Phone Number"
+                className='p-3 border rounded-lg'
+              />
+
+              {/* Country dropdown */}
+              <select name='country' className='p-3 border rounded-lg' required>
+                <option value="">Select Country</option>
+                {countries.map((c) => (
+                  <option key={c.code} value={c.name}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+
+              {/* Address */}
+              <textarea
+                name='address'
+                placeholder="Address"
+                className='p-3 border rounded-lg resize-none h-24'
+              />
+
+              {/* Organization-specific field */}
+              {selected === "organization" && (
+                <input
+                  name='organization'
+                  type="text"
+                  placeholder="Organization Name"
+                  className='p-3 border rounded-lg'
+                  required
+                />
+              )}
+
+              <button
+                type="submit"
+                className='flex items-center bg-orange-500 text-white rounded-xl py-3 hover:scale-105'
+              >
+                {registerLoading ? <><div className='loading'></div> CreatingAccount... </> : "Register"}
+              </button>
+            </form>
+            <button onClick={() => setStep("select")}
+              className='w-full bg-orange-500 text-white rounded-xl py-3 hover:scale-105'
             >
-              Submit & Verify Email
+              Go back 👈🏾
             </button>
+          </>
+          )
+        )}
+
+
+
+
+        {/* Step 3 - Login Form */}
+        {step === "login" && !success && (
+          <form onSubmit={handleLogin} className="flex flex-col space-y-4 w-full max-w-lg">
+            <h1 className="font-bold text-2xl">Login</h1>
+
+            {error && <div className="bg-orange-100 text-red-600 p-2 rounded mb-4">{error}</div>}
+
+            <input name="email" type="email" placeholder="Email Address" required className="border p-3 rounded-lg" />
+            <input name="password" type="password" placeholder="Password" required className="border p-3 rounded-lg" />
+
+            <button type="submit" className="w-full flex items-center bg-orange-500 text-white rounded-xl py-3 hover:scale-105">
+              {loginLoading ? <><div className='loading'></div> Logining In...</> : "Login"}
+            </button>
+
+            <p className="text-sm">
+              Don’t have an account?{" "}
+              <button
+                type="button"
+                onClick={() => setStep("select")}
+                className="text-orange-500 underline"
+              >
+                Register
+              </button>
+            </p>
           </form>
-          <button onClick={() => setStep("select")}
-            className='w-full bg-orange-500 text-white rounded-xl py-3 hover:scale-105'
-          >
-            Go back 👈🏾
-          </button>
-        </>
         )}
 
       </div>
