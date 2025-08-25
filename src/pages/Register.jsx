@@ -7,9 +7,11 @@ import { createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailA
   from "firebase/auth";
 import { auth, db } from '../firebase/firebase'; // make sure firebase.js is set up
 import { doc, getDoc, setDoc } from "firebase/firestore";
+import { FaEye, FaEyeSlash } from 'react-icons/fa6';
+import Verify from './Verify';
 
-const Register = () => {
-  const [step, setStep] = useState("select");
+const Register = ({ step, setStep }) => {
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -20,9 +22,14 @@ const Register = () => {
   const [success, setSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [registerLoading, setRegisterLoading] = useState(false);
-  const [loginLoading, setLoginLoading] = useState(false);
   const [resendMessage, setResendMessage] = useState("");
   const navigate = useNavigate()
+
+  const [click, setClick] = useState(false);
+
+  const handleClick = () => {
+    setClick(!click)
+  }
 
   const account = [
     {
@@ -73,15 +80,15 @@ const Register = () => {
   };
 
   // Auto-redirect to login after success
-  useEffect(() => {
-    if (success) {
-      const timer = setTimeout(() => {
-        setStep("login");
-        setSuccess(false);
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [success]);
+  // useEffect(() => {
+  //   if (success) {
+  //     const timer = setTimeout(() => {
+  //       setStep("verify");
+  //       setSuccess(false);
+  //     }, 100000);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [success]);
 
   // Firebase-friendly error messages
   const getErrorMessage = (code) => {
@@ -105,6 +112,7 @@ const Register = () => {
   const handleSubmitForm = async (e) => {
     e.preventDefault();
     setError("");
+    setStep("verify")
     setRegisterLoading(true);
 
 
@@ -137,6 +145,17 @@ const Register = () => {
       setPassword("");
       setConfirmPassword("");
 
+      // 2) Fire off verification email (don’t block UI if Firestore later fails)
+      // Optional: customize redirect URL
+      const actionCodeSettings = {
+        url: `${window.location.origin}/`, // change if you want a specific page
+        handleCodeInApp: false,
+      };
+      await sendEmailVerification(user, actionCodeSettings);
+
+      // 3) Move UI to "verify" screen immediately
+      setStep("verify");
+
       // Save to Firestore
       await setDoc(doc(db, "users", user.uid), {
         accountType: selected,
@@ -147,12 +166,14 @@ const Register = () => {
         phone,
         orgName: selected === "organization" ? orgName : null,
         verified: false,
+        createdAt: new Date().toISOString(),
+      }).catch((error) => {
+        console.error("profile write failed:", error);
       });
-      await sendEmailVerification(user);
-      console.log("✅ Verification email sent to", user.email);
 
-      await signOut(auth); // force verification
     } catch (error) {
+      console.log(error);
+
       setError(getErrorMessage(error.code));
     } finally {
       setRegisterLoading(false);
@@ -160,63 +181,8 @@ const Register = () => {
 
   };
 
-  const resendVerificationEmail = async () => {
-    try {
-      const user = auth.currentUser;
-      if (user) {
-        await sendEmailVerification(user);
-        setResendMessage("📩 Verification email sent again!");
-      } else {
-        setResendMessage("⚠️ Please log in again to resend.");
-      }
-    } catch (error) {
-      console.error("Resend error:", error);
-      setResendMessage("❌ Failed to resend email. Try again later.");
-    }
-  };
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const email = formData.get("email");
-    const password = formData.get("password");
-    setLoginLoading(true);
-
-    try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-
-      if (!user.emailVerified) {
-        setError("⚠️ Please verify your email before logging in.");
-        return;
-      }
-
-      // Get user data from Firestore
-      const userRef = doc(db, "users", user.uid);
-      const userSnap = await getDoc(userRef);
-
-      if (userSnap.exists()) {
-        const userData = userSnap.data();
-        if (userData.accountType === "personal") {
-          navigate("/personal");
-        } else if (userData.accountType === "organization") {
-          navigate("/organization");
-        } else {
-          navigate("/"); // fallback
-        }
-      } else {
-        setError("User profile not found.");
-      }
-
-    } catch (error) {
-      setError(getErrorMessage(error.code));
-    } finally {
-      setLoginLoading(false);
-    }
-  };
-
   // Progress bar
-  const steps = ["select", "form", "login"];
+  const steps = ["select", "form", "verify"];
   const currentStep = steps.indexOf(step);
 
 
@@ -251,7 +217,7 @@ const Register = () => {
                     <div
                       key={acc.id}
                       onClick={() => setSelected(acc.id)}
-                      className={`flex flex-1 flex-col items-center space-y-6 py-6   md:w-[300px] h-[320px] rounded-lg border shadow-md cursor-pointer transition 
+                      className={`flex flex-1 flex-col items-center space-y-6 py-6 lg:px-0 px-5   md:w-[300px] h-[320px] rounded-lg border shadow-md cursor-pointer transition 
                   ${selected === acc.id ? "text-orange-500 border-orange-500 bg-white" : "border-gray-200 "}`}
                     >
                       <div className='flex flex-col items-center justify-center space-y-6 px-2'>
@@ -272,164 +238,159 @@ const Register = () => {
                   ))}
                 </div>
                 <div className='flex gap-4 mt-6'>
-                  <button onClick={() => setSelected()} className='bg-orange-500/50  rounded-xl hover:scale-105 py-4 w-full text-white'>Cancel</button>
+                  <button onClick={() => navigate("/")} className='bg-orange-500/50  rounded-xl hover:scale-105 py-4 w-full text-white'>Cancel</button>
                   <button onClick={handleContinue} className={`rounded-xl hover:scale-105 py-4 w-full ${selected ? "bg-orange-500 text-white" : "bg-gray-300 text-gray-600 cursor-not-allowed"
                     }`}
                     disabled={!selected}>Continue</button>
+                </div>
+
+                <div className='mt-2'>
+                  <p> Already created an account?
+                    <button className="text-orange-500 underline cursor-pointer" onClick={() => navigate("/Login")}> Login </button>
+                  </p>
                 </div>
               </div>
             </>
           )}
 
-        {success ? (
-          <div className="max-w-md mx-auto mt-20 bg-white rounded-2xl shadow-lg p-8 text-center">
-            <h2 className="text-2xl font-bold text-green-600 mb-4">Almost done 🎉</h2>
-            <p className="text-gray-600 mb-6">
-              We sent a verification link to <span className="font-semibold">{email}</span>.
-              <br /> Please check your inbox to verify your account.
-            </p>
+        {step === "form" && (<>
+          <form onSubmit={handleSubmitForm} className='flex flex-col space-y-4 mt-10'>
+            <h1 className='font-bold text-3xl mb-4'>Tell us about yourself</h1>
 
-            {/* Resend button */}
-            <button
-              onClick={resendVerificationEmail}
-              className="w-full bg-orange-500 text-white rounded-xl py-2 hover:scale-105 transition mb-4"
-            >
-              📩 Resend verification email
-            </button>
+            {error && <div className="bg-red-100 text-red-600 p-2 rounded mb-4">{error}</div>}
 
-            {resendMessage && (
-              <p className="text-sm text-green-500">{resendMessage}</p>
-            )}
+            {/* Full Name */}
+            <input
+              name='fullName'
+              type="text"
+              placeholder="Full Name"
+              className='p-3 border rounded-lg'
+              required
+            />
 
-            <p className="text-sm text-gray-400 mt-6">
-              Redirecting to login in 5 seconds...
-            </p>
-          </div>
-        ) : (
-          step === "form" && (<>
-            <form onSubmit={handleSubmitForm} className='flex flex-col space-y-4 mt-10'>
-              <h1 className='font-bold text-3xl mb-4'>Tell us about yourself</h1>
+            {/* Email */}
+            <input
+              name="email"
+              type="email"
+              placeholder="Email Address"
+              className='p-3 border rounded-lg'
+              required
+            />
 
-              {error && <div className="bg-red-100 text-red-600 p-2 rounded mb-4">{error}</div>}
+            {/* Password */}
+            <div className="relative w-full">
+              <input onChange={handlePasswordChange} name="password" type={click ? "text" : "password"} placeholder="Password" required className="border w-full p-3 rounded-lg" />
 
-              {/* Full Name */}
-              <input
-                name='fullName'
-                type="text"
-                placeholder="Full Name"
-                className='p-3 border rounded-lg'
-                required
-              />
-
-              {/* Email */}
-              <input
-                name="email"
-                type="email"
-                placeholder="Email Address"
-                className='p-3 border rounded-lg'
-                required
-              />
-
-              {/* Password */}
-              <input onChange={handlePasswordChange}
-                name='password'
-                type="password"
-                placeholder="Password"
-                className='p-3 border rounded-lg'
-                required
-              />
-              {passwordError && (<div className='h-auto text-white text-lg border border-2 bg-orange-600 rounded-md border-orange-500'>{passwordError}</div>)}
-
-              {/* Confirm Password */}
-              <input onChange={handlePasswordConfrimChange}
-                name='confirmPassword'
-                type="password"
-                placeholder="Confirm Password"
-                className='p-3 border rounded-lg'
-                required
-              />
-              {confirmPasswordError && (<div className='h-auto text-white text-lg border border-2 bg-orange-600 rounded-md border-orange-500'>{confirmPasswordError}</div>)}
-
-              {/* Phone Number */}
-              <input
-                name='phone'
-                type="tel"
-                placeholder="Phone Number"
-                className='p-3 border rounded-lg'
-              />
-
-              {/* Country dropdown */}
-              <select name='country' className='p-3 border rounded-lg' required>
-                <option value="">Select Country</option>
-                {countries.map((c) => (
-                  <option key={c.code} value={c.name}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
-
-              {/* Address */}
-              <textarea
-                name='address'
-                placeholder="Address"
-                className='p-3 border rounded-lg resize-none h-24'
-              />
-
-              {/* Organization-specific field */}
-              {selected === "organization" && (
-                <input
-                  name='organization'
-                  type="text"
-                  placeholder="Organization Name"
-                  className='p-3 border rounded-lg'
-                  required
+              {click ? (
+                <FaEye
+                  onClick={handleClick}
+                  color="gray"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
+                />
+              ) : (
+                <FaEyeSlash
+                  onClick={handleClick}
+                  color="gray"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
                 />
               )}
+            </div>
+            {passwordError && (<div className='h-auto text-white text-lg border border-2 bg-orange-600 rounded-md border-orange-500'>{passwordError}</div>)}
 
+            {/* Confirm Password */}
+
+            <div className="relative w-full">
+              <input onChange={handlePasswordConfrimChange}
+                name='confirmPassword'
+                type={click ? "text" : "password"}
+                placeholder="Confirm Password"
+                className='p-3 w-full border rounded-lg'
+                required
+              />
+
+              {click ? (
+                <FaEye
+                  onClick={handleClick}
+                  color="gray"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
+                />
+              ) : (
+                <FaEyeSlash
+                  onClick={handleClick}
+                  color="gray"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
+                />
+              )}
+            </div>
+
+            {confirmPasswordError && (<div className='h-auto text-white text-lg border border-2 bg-orange-600 rounded-md border-orange-500'>{confirmPasswordError}</div>)}
+
+            {/* Phone Number */}
+            <input
+              name='phone'
+              type="tel"
+              placeholder="Phone Number"
+              className='p-3 border rounded-lg'
+            />
+
+            {/* Country dropdown */}
+            <select name='country' className='p-3 border rounded-lg' required>
+              <option value="">Select Country</option>
+              {countries.map((c) => (
+                <option key={c.code} value={c.name}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+
+            {/* Address */}
+            <textarea
+              name='address'
+              placeholder="Address"
+              className='p-3 border rounded-lg resize-none h-24'
+            />
+
+            {/* Organization-specific field */}
+            {selected === "organization" && (
+              <input
+                name='organization'
+                type="text"
+                placeholder="Organization Name"
+                className='p-3 border rounded-lg'
+                required
+              />
+            )}
+
+            <div className='flex gap-3'>
+              <button onClick={() => setStep("select")}
+                className='w-full bg-orange-500/40 text-white rounded-xl py-3 hover:scale-105'
+              >
+                Go back 👈🏾
+              </button>
               <button
                 type="submit"
-                className='flex items-center bg-orange-500 text-white rounded-xl py-3 hover:scale-105'
+                className='w-full flex items-center justify-center bg-orange-500 text-white rounded-xl py-3 hover:scale-105'
               >
-                {registerLoading ? <><div className='loading'></div> CreatingAccount... </> : "Register"}
+                {registerLoading ? <><div className='loading'></div><p className='ml-2'> CreatingAccount...</p> </> : "Register"}
               </button>
-            </form>
-            <button onClick={() => setStep("select")}
-              className='w-full bg-orange-500 text-white rounded-xl py-3 hover:scale-105'
-            >
-              Go back 👈🏾
-            </button>
-          </>
-          )
+            </div>
+
+            <div className='mt-2'>
+              <p> Already created an account?
+                <buttton className="text-orange-500 underline cursor-pointer" onClick={() => navigate("/Login")}> Login </buttton>
+              </p>
+            </div>
+          </form>
+
+        </>
         )}
 
-
-
-
-        {/* Step 3 - Login Form */}
-        {step === "login" && !success && (
-          <form onSubmit={handleLogin} className="flex flex-col space-y-4 w-full max-w-lg">
-            <h1 className="font-bold text-2xl">Login</h1>
-
-            {error && <div className="bg-orange-100 text-red-600 p-2 rounded mb-4">{error}</div>}
-
-            <input name="email" type="email" placeholder="Email Address" required className="border p-3 rounded-lg" />
-            <input name="password" type="password" placeholder="Password" required className="border p-3 rounded-lg" />
-
-            <button type="submit" className="w-full flex items-center bg-orange-500 text-white rounded-xl py-3 hover:scale-105">
-              {loginLoading ? <><div className='loading'></div> Logining In...</> : "Login"}
-            </button>
-
-            <p className="text-sm">
-              Don’t have an account?{" "}
-              <button
-                type="button"
-                onClick={() => setStep("select")}
-                className="text-orange-500 underline"
-              >
-                Register
-              </button>
-            </p>
-          </form>
+        {step === "verify" && (
+          <Verify
+            email={email}
+            step={step}
+            setStep={setStep}
+          />
         )}
 
       </div>

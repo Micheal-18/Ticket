@@ -60,7 +60,7 @@ const Home = () => {
     <>
       <section className='relative min-h-screen w-full flex flex-col lg:mt-5 mt-4 flex-1 items-center justify-center z-10'>
         <header className='flex flex-1 flex-col items-center justify-center text-black  uppercase space-y-3'>
-          <h1 className='lg:text-9xl md:text-8xl text-5xl tracking-tighter font-bold'>airways event</h1>
+          <h1 className='lg:text-9xl md:text-8xl text-5xl tracking-tighter font-bold'>airticks event</h1>
           <div className='border-y-2 py-4 '>
             <p className='lg:text-6xl md:text-5xl text-2xl font-semibold'>magical meeting places</p>
           </div>
@@ -81,14 +81,14 @@ const Home = () => {
         <div className='flex justify-center items-center mx-auto w-full max-w-6xl px-4'>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-10'>
             {data.map((Update) => (
-              <div className='flex flex-1 gap-10 relative py-10 px-8  h-[300px] bg-[#eeeeee]   rounded-3xl'>
+              <div className='flex justify-between flex-1 gap-10 relative py-10 px-8  h-[300px] bg-[#eeeeee]   rounded-3xl'>
                 <span className='space-y-2 flex flex-col'>
                   <h1 className='font-bold uppercase text-2xl w-[150px] truncate lg:w-auto lg:whitespace-normal lg:overflow-visible'>{Update.title}</h1>
                   <p className='md:text-lg text-sm font-regular text-gray-500 flex gap-2 items-center'><FaCalendar />{Update.date}</p>
                   <p className='md:text-lg text-md font-regular text-gray-500 flex gap-2 items-center'><FaLocationArrow />{Update.location}</p>
-                  <span className='flex items-center '>
+                  <span className='flex  justify-between items-end gap-4'>
                     <p className='font-bold text-lg text-orange-500'>${Update.price}</p>
-                    
+                    <button className='bg-orange-500 p-2 rounded-lg hover:scale-105 '>Buy Ticket</button>
                   </span>
                 </span>
 
