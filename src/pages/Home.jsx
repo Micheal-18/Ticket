@@ -100,6 +100,11 @@ const Home = () => {
           </div>
         </div>
       </section>
+      <section className='flex flex-col justify-center items-center pt-10 w-full h-[50vh]'>
+        <div className='border-t-2 border-gray-400 '>
+          <h1 className='lg:text-9xl md:text-8xl mt-15 text-6xl font-bold'>airticks<span className='text-orange-500'>event</span></h1>
+        </div>
+      </section>
     </>
   )
 }

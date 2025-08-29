@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getAuth, setPersistence, browserLocalPersistence } from "firebase/auth";
+import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -20,5 +21,5 @@ setPersistence(auth, browserLocalPersistence).catch((err) => {
 });
 
 const db = getFirestore(app);
-
-export { db, auth };
+const storage = getStorage(app); 
+export { db, auth, storage };

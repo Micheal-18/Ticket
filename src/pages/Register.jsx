@@ -39,12 +39,12 @@ const Register = ({ step, setStep }) => {
       writeup: "Selling tickets as an individual? This is the account type for you",
 
     },
-    {
-      id: "organization",
-      icon: <RiBriefcaseLine className="text-5xl text-orange-500" />,
-      header: "Organization",
-      writeup: "Selling tickets as a registered business? This is the account type for you",
-    },
+    // {
+    //   id: "organization",
+    //   icon: <RiBriefcaseLine className="text-5xl text-orange-500" />,
+    //   header: "Organization",
+    //   writeup: "Selling tickets as a registered business? This is the account type for you",
+    // },
   ]
 
   const handlePasswordChange = (e) => {
@@ -165,7 +165,7 @@ const Register = ({ step, setStep }) => {
         country,
         phone,
         orgName: selected === "organization" ? orgName : null,
-        verified: false,
+        verified: step === "verify",
         createdAt: new Date().toISOString(),
       }).catch((error) => {
         console.error("profile write failed:", error);
@@ -377,7 +377,7 @@ const Register = ({ step, setStep }) => {
 
             <div className='mt-2'>
               <p> Already created an account?
-                <buttton className="text-orange-500 underline cursor-pointer" onClick={() => navigate("/Login")}> Login </buttton>
+                <button className="text-orange-500 underline cursor-pointer" onClick={() => navigate("/Login")}> Login </button>
               </p>
             </div>
           </form>

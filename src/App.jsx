@@ -1,28 +1,50 @@
 // src/App.jsx
 import React, { useEffect, useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
-import Footer from "./components/Footer";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Verify from "./pages/Verify";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "./firebase/firebase";
+import { auth, db } from "./firebase/firebase";
 import Event from "./pages/Event";
 import LoadingScreen from "./components/LoadingScreen";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import Layout from "./layout/Layout";
+import CreateEvent from "./pages/CreateEvent";
 
 const App = () => {
   const [step, setStep] = useState("select");
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        // reload to keep emailVerified fresh
+        //reload to keep emailVerified fresh
         await user.reload();
-        setCurrentUser(user);
+
+        // ref to Firestore doc
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
+
+        let userData = { ...user };
+
+        if (docSnap.exists()) {
+          userData = { ...user, ...docSnap.data() }; // merge Firestore data
+        }
+        
+        // sync Firestore verified field
+        if (currentUser) {
+          await setDoc(
+            doc(db, "users", user.uid),
+            { verified: true },
+            { merge: true }
+          );
+          userData.verified = true
+        }
+        setCurrentUser(userData);
       } else {
         setCurrentUser(null);
       }
@@ -33,7 +55,7 @@ const App = () => {
   }, []);
 
   if (loading) {
-    return <LoadingScreen />;
+    return <LoadingScreen onComplete={() => setIsLoaded(true)} />;
   }
 
   return (
@@ -45,11 +67,11 @@ const App = () => {
           currentUser && !currentUser.emailVerified ? (
             <Navigate to="/verify" replace />
           ) : (
-            <>
-              <Navbar currentUser={currentUser} />
+            
+              <Layout currentUser={currentUser}>
               <Home />
-              <Footer />
-            </>
+              </Layout>
+            
           )
         }
       />
@@ -83,11 +105,11 @@ const App = () => {
               <Verify
                 email={currentUser.email}
                 step="verify"
-                setStep={() => {}}
+                setStep={() => { }}
                 error={""}
-                setError={() => {}}
+                setError={() => { }}
                 resendMessage={""}
-                setResendMessage={() => {}}
+                setResendMessage={() => { }}
               />
             )
           ) : (
@@ -96,7 +118,16 @@ const App = () => {
         }
       />
 
-      <Route path="/event" element={<Event />}/>
+      <Route path="/event" element={
+        <Layout currentUser={currentUser}>
+         <Event />
+        </Layout>} />
+
+        <Route path="/create" element={
+          <Layout currentUser={currentUser}>
+            <CreateEvent />
+          </Layout>
+        } />
     </Routes>
   );
 };
