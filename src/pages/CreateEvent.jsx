@@ -9,7 +9,7 @@ import { db, auth } from "../firebase/firebase";
 import { useNavigate } from 'react-router-dom';
 
 const CreateEvent = () => {
-  const [openDate, setOpenDate] = useState();
+  const [openDate, setOpenDate] = useState(false);
   const [date, setDate] = useState(new Date());
   const [currency, setCurrency] = useState("₦");
   const [name, setName] = useState("");
@@ -27,7 +27,7 @@ const CreateEvent = () => {
   const currencies = ["₦", "$", "€"];
 
   const handleOpenDate = () => {
-    setOpenDate(true)
+    setOpenDate(!openDate)
   }
 
   const handlePhotoUpload = (e) => {
@@ -38,9 +38,9 @@ const CreateEvent = () => {
     setDate(selectedDate);
   };
 
-  const handleCloseDate = () => {
-    setOpenDate(false)
-  }
+  // const handleCloseDate = () => {
+  //   setOpenDate(false)
+  // }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -144,9 +144,9 @@ const CreateEvent = () => {
 
         <div className='flex items-center py-4 space-x-4  border-b '>
           <label htmlFor="photo">Photos:</label>
-          <div className='border p-2 w-60'>
-            <input ref={fileInputRef} onChange={handlePhotoUpload} type='file' name='photo' accept='image/*' />
-          </div>
+          
+            <input ref={fileInputRef} onChange={handlePhotoUpload} type='file' name='photo' accept='image/*' className='border w-[100%] p-2'/>
+          
         </div>
 
         <div className='flex items-center p-2 w-full space-x-2 border-b '>
@@ -165,7 +165,7 @@ const CreateEvent = () => {
             <h1 className='uppercase font-semibold text-xl'>Calendar</h1>
           </div>
         </div>
-        {openDate && (<div onClick={handleCloseDate} className='flex justify-center'>
+        {openDate && (<div className='flex justify-center'>
           <Calendar onChange={handleDate} value={date} /></div>
         )}
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { FiMenu, FiX } from 'react-icons/fi'
-import { RiDashboardLine, RiLogoutBoxLine, RiProfileLine, RiTicket2Line, RiUser3Line } from 'react-icons/ri';
+import { RiDashboardLine, RiLogoutBoxLine, RiProfileLine, RiQrScan2Line, RiQrScanLine, RiTicket2Line, RiUser3Line } from 'react-icons/ri';
 import { href, Link, useNavigate } from 'react-router-dom';
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase/firebase";
@@ -45,7 +45,7 @@ const Navbar = ({ currentUser }) => {
     <section className='sticky w-full bg-[#eeeeee] flex top-0 z-50'>
       <div className='flex w-full items-center lg:justify-center flex-1 border border-b-4 lg:border-b-transparent border-b-gray-700 justify-between px-6 font-bold text-gray-900'>
         <div className='border py-10 lg:py-5.5  lg:px-20 border-x-transparent lg:border-x-black lg:border-t-transparent border-y-transparent lg:border-y-black'>
-          <a className='text-black text-lg'>AirTicks<span className='text-orange-500'>Events</span></a>
+          <a href='/' className='cursor-pointer text-black text-lg'>AirTicks<span className='text-orange-500'>Events</span></a>
         </div>
         <div className='hidden lg:flex'>
           {navItems.map((item, idx) => (
@@ -63,7 +63,7 @@ const Navbar = ({ currentUser }) => {
             </a>
           ) : (
             <div onClick={() => setDropdown(!dropdown)} className="relative flex items-center bg-orange-500 py-3 px-16">
-              <h1 className='text-gray-700'>{currentUser?.fullName?.slice(0,2)}</h1>
+              <h1 className='text-gray-700'>{currentUser?.fullName?.slice(0, 2)}</h1>
               <RiUser3Line
                 className="text-3xl cursor-pointer hover:scale-105"
               />
@@ -73,6 +73,9 @@ const Navbar = ({ currentUser }) => {
                   <ul className="flex flex-col py-2">
                     {currentUser?.isAdmin && (
                       <li onClick={() => navigate("/create")} className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-gray-100 cursor-pointer"><RiTicket2Line />Create Event</li>
+                    )}
+                    {currentUser?.isAdmin && (
+                      <li onClick={() => navigate("/scanner")} className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-gray-100 cursor-pointer"><RiQrScanLine />Scanner</li>
                     )}
                     <li
                       onClick={handleLogout}
@@ -132,6 +135,14 @@ const Navbar = ({ currentUser }) => {
                   className="px-4 py-2 bg-gray-100 rounded-md hover:bg-gray-200"
                 >
                   CreateEvents
+                </button>
+              )}
+              {currentUser?.isAdmin && (
+                <button
+                  onClick={() => navigate("/scanner")}
+                  className="px-4 py-2 bg-gray-100 rounded-md hover:bg-gray-200"
+                >
+                  Scanner
                 </button>
               )}
 

@@ -12,12 +12,14 @@ import LoadingScreen from "./components/LoadingScreen";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import Layout from "./layout/Layout";
 import CreateEvent from "./pages/CreateEvent";
+import TicketScanner from "./pages/TicketScanner";
 
 const App = () => {
   const [step, setStep] = useState("select");
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isLoaded, setIsLoaded] = useState(false)
+  const [events, setEvents] = useState([]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -36,7 +38,7 @@ const App = () => {
         }
         
         // sync Firestore verified field
-        if (currentUser) {
+        if (!user.verified) {
           await setDoc(
             doc(db, "users", user.uid),
             { verified: true },
@@ -120,13 +122,18 @@ const App = () => {
 
       <Route path="/event" element={
         <Layout currentUser={currentUser}>
-         <Event />
+         <Event events={events} setEvents={setEvents} currentUser={currentUser}/>
         </Layout>} />
 
         <Route path="/create" element={
           <Layout currentUser={currentUser}>
             <CreateEvent />
           </Layout>
+        } />
+        <Route path="/scanner" element={
+          <Layout currentUser={currentUser}>
+            <TicketScanner />
+          </Layout>   
         } />
     </Routes>
   );

@@ -5,9 +5,22 @@ import rep from "../assets/rep.jpg"
 import { db } from "../firebase/firebase";
 import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
 import { FaCalendar, FaCaretDown, FaLocationArrow, FaLocationPin } from 'react-icons/fa6'
+import { useAdmin } from "../hooks/useAdmin";
+import { FiX } from 'react-icons/fi';
+import PaystackPayment from "../components/PaystackPayment";
 
-const Event = ({ currentUser }) => {
-  const [events, setEvents] = useState([]);
+const Event = ({ currentUser, events, setEvents }) => {
+  const isAdmin = useAdmin();
+  const [open, setOpen] = useState(false)
+  const [openTicket, setOpenTicket] = useState()
+
+  const handleOpenTicket = () => {
+    setOpenTicket(true)
+  }
+
+  const closeOpenTicket = () => {
+    setOpenTicket(false)
+  }
 
   // get details from firestore db
   useEffect(() => {
@@ -85,7 +98,47 @@ const Event = ({ currentUser }) => {
   // ]
 
   return (
-    <section className='relative min-h-screen w-full flex px-6 flex-col lg:mt-5 mt-4 flex-1  z-10'>
+    <section className='relative min-h-screen w-full flex flex-col lg:mt-5 mt-4 flex-1 custom-scrollbar  z-10'>
+      {openTicket && (
+        <div className='absolute left-0 w-full h-full backdrop-blur-md flex justify-center items-center z-50'>
+          {events.map((Tick) => (
+            <div key={Tick.id} className='w-full mt-50 top-1/2  flex justify-center items-center'>
+              <div className='flex flex-col  bg-white  space-y-6 custom-scrollbar p-6 rounded-lg shadow-lg relative w-[80%] h-[100%]'>
+                <div className='text-gray-500 text-2xl absolute top-4 right-4 cursor-pointer hover:scale-105' onClick={closeOpenTicket}>
+                  <FiX />
+                </div>
+                <div className='flex justify-center overflow-hidden rounded-xl'>
+                  <img src={Tick.photoURL} alt={Tick.name} className='object-cover w-[150px] h-[150px] hover:scale-105 duration-500 rounded-2xl' />
+                </div>
+                <h2 className='text-2xl uppercase font-bold mb-4'>{Tick.name}</h2>
+                <div className='border-b border-gray-300 w-full'>
+                  <h1 className='uppercase text-2xl'>Description</h1>
+                  <p className='mb-2'>{Tick.description}</p>
+                </div>
+                <div className='border-b border-gray-300 w-full'>
+                  <h1 className='uppercase text-2xl'>Category</h1>
+                  <p className='mb-2'>{Tick.category}</p>
+                </div>
+                <div className='border-b border-gray-300 w-full'>
+                  <h1 className='uppercase text-2xl'>Location</h1>
+                  <p className='mb-2'>{Tick.location}</p>
+                </div>
+                <div className='border-b border-gray-300 w-full'>
+                  <h1 className='uppercase text-2xl'>Date</h1>
+                  <p className='mb-2'>{formatDate(Tick.date)}</p>
+                </div>
+                <div className='border-b border-gray-300 w-full'>
+                  <h1 className='uppercase text-2xl'>Price</h1>
+                  <p className='mb-2'>{Tick.currency}{Tick.price}</p>
+                </div>
+                
+                <PaystackPayment events={Tick} currentUser={currentUser}/>
+              </div>
+            </div>
+          ))}
+        </div>
+
+      )}
       <div className='flex flex-col space-y-3 p-4'>
         <div className='space-y-6'>
           <p className='font-regular text-lg '>
@@ -105,17 +158,19 @@ const Event = ({ currentUser }) => {
           </div>
         </div>
 
-        <div className='flex justify-center items-center mt-8 mx-auto w-full max-w-6xl px-4'>
+        <div className='flex justify-center items-center mt-8 mx-auto w-full max-w-6xl '>
           <div className='grid grid-cols-1 md:grid-cols-2 md:gap-10 gap-6'>
             {events.map((event) => (
-              <div key={event.id} className='flex items-center  justify-between flex-1 gap-10 relative px-8 h-[200px] bg-[#eeeeee]  rounded-3xl'>
+              <div onClick={() => {
+                setOpen(!open)
+              }} key={event.id} className='flex items-center  justify-between flex-1 gap-10 relative px-8 w-full h-[200px] bg-[#eeeeee] rounded-3xl'>
                 <span className='space-y-2 flex flex-col'>
                   <h1 className='font-bold uppercase text-2xl w-[150px] truncate lg:w-auto lg:whitespace-normal lg:overflow-visible'>{event.name}</h1>
                   <p className='md:text-lg text-sm font-regular text-gray-500 flex gap-2 items-center'><FaCalendar />{formatDate(event.date)}</p>
                   <p className='md:text-lg text-md font-regular text-gray-500 flex gap-2 items-center'><FaLocationArrow />{event.location}</p>
                   <span className='flex  justify-between items-center gap-4'>
                     <p className='font-bold text-lg text-orange-500'>{event.currency}{event.price}</p>
-                    <button className='bg-orange-500 p-2 rounded-lg hover:scale-105 '>Buy Ticket</button>
+                    <button onClick={handleOpenTicket} className='bg-orange-500 p-2 rounded-lg hover:scale-105 '>View Ticket</button>
                   </span>
                 </span>
 
@@ -123,15 +178,17 @@ const Event = ({ currentUser }) => {
                   <img src={event.photoURL} alt={event.name} className='object-cover w-[150px] h-[150px] hover:scale-105 duration-500 rounded-2xl' />
                 </span>
 
-                {/* ✅ Show delete button only for admins */}
-               
-                  <button
-                    onClick={() => deleteEvent(event.id)}
-                    className="bg-red-500 text-white px-3 py-1 rounded-lg font-bold mt-2 hover:scale-105"
-                  >
-                    Delete
-                  </button>
-                
+                <div className='absolute flex left-4 -bottom-10 '>
+                  {/* ✅ Show delete button only for admins */}
+                  {isAdmin && open && (
+                    <button
+                      onClick={() => deleteEvent(event.id)}
+                      className='bg-red-500 text-white px-3 py-1  rounded-lg font-bold mt-2 hover:scale-105'
+                    >
+                      Delete
+                    </button>
+                  )}
+                </div>
               </div>
             ))}
 

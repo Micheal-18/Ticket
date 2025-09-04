@@ -11,10 +11,19 @@
   },
   "dependencies": {
     "@dataconnect/generated": "file:src/dataconnect-generated",
+    "@sendgrid/mail": "^8.1.5",
     "@tailwindcss/vite": "^4.1.12",
+    "@yudiel/react-qr-scanner": "^2.3.1",
     "axios": "^1.11.0",
+    "cors": "^2.8.5",
     "country-list": "^2.3.0",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
     "firebase": "^12.1.0",
+    "firebase-admin": "^13.5.0",
+    "node-fetch": "^3.3.2",
+    "nodemailer": "^7.0.6",
+    "qrcode": "^1.5.4",
     "react": "^19.1.1",
     "react-calendar": "^6.0.0",
     "react-dom": "^19.1.1",
@@ -32,5 +41,18 @@
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.3.0",
     "vite": "^7.1.2"
-  }
+  },
+  "description": "This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.",
+  "main": "eslint.config.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Micheal-18/Ticket.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Micheal-18/Ticket/issues"
+  },
+  "homepage": "https://github.com/Micheal-18/Ticket#readme"
 }

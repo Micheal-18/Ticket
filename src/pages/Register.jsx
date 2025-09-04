@@ -35,8 +35,8 @@ const Register = ({ step, setStep }) => {
     {
       id: "personal",
       icon: <RiUserLine className="text-5xl text-orange-500" />,
-      header: "Personal",
-      writeup: "Selling tickets as an individual? This is the account type for you",
+      header: "User",
+      writeup: "Creating an account for personal use? This is the account type for you",
 
     },
     // {
