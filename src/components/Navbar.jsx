@@ -43,13 +43,13 @@ const Navbar = ({ currentUser }) => {
 
   return (
     <section className='sticky w-full bg-[#eeeeee] flex top-0 z-50'>
-      <div className='flex w-full items-center lg:justify-center flex-1 border border-b-4 lg:border-b-transparent border-b-gray-700 justify-between px-6 font-bold text-gray-900'>
+      <div className='flex w-full items-center lg:justify-center flex-1 border border-x-transparent border-b-4 lg:border-b-transparent border-b-gray-700 justify-between px-6 font-bold text-gray-900'>
         <div className='border py-10 lg:py-5.5  lg:px-20 border-x-transparent lg:border-x-black lg:border-t-transparent border-y-transparent lg:border-y-black'>
           <a href='/' className='cursor-pointer text-black text-lg'>Airticks<span className='text-orange-500'>.event</span></a>
         </div>
         <div className='hidden lg:flex'>
           {navItems.map((item, idx) => (
-            <div key={idx} className='border hover:bg-yellow-400 hidden lg:flex border-t-transparent'>
+            <div key={idx} className='border  hover:bg-yellow-400 active:scale-90 hidden lg:flex border-t-transparent'>
               <a href={item.href} className='py-6 px-16'>{item.id}</a>
             </div>
           ))}
@@ -57,7 +57,7 @@ const Navbar = ({ currentUser }) => {
           {!currentUser ? (
             <a
               href="/Register"
-              className="bg-orange-500 flex items-center py-3 px-16 text-white hover:bg-orange-600"
+              className="bg-orange-500 flex items-center py-3 px-16 text-white active:scale-90 hover:bg-orange-600"
             >
               Register
             </a>
@@ -76,6 +76,9 @@ const Navbar = ({ currentUser }) => {
                     )}
                     {currentUser?.isAdmin && (
                       <li onClick={() => navigate("/scanner")} className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-gray-100 cursor-pointer"><RiQrScanLine />Scanner</li>
+                    )}
+                    {currentUser?.isAdmin && (
+                      <li onClick={() => navigate("/tracking")} className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-gray-100 cursor-pointer"><RiQrScanLine />Tracking</li>
                     )}
                     <li
                       onClick={handleLogout}
@@ -111,11 +114,11 @@ const Navbar = ({ currentUser }) => {
       </div>
 
 
-      <div onClick={handleOpen} className={`lg:hidden fixed top-40 px-6 left-0 z-40 h-full w-[60%] bg-[#eeeeee] shadow-md transform transition-all duration-1000 ease-in-out ${open ? "translate-x-0 opacity-100" : "-translate-x-full opacity-0"
+      <div onClick={handleOpen} className={`lg:hidden fixed top-30 px-6 left-0 z-40 h-full w-[60%] bg-[#eeeeee] custom-scrollbar shadow-md transform transition-all duration-1000 ease-in-out ${open ? "translate-x-0 opacity-100" : "-translate-x-full opacity-0"
         }`}>
         <div className='p-6 flex flex-col gap-8'>
           {navItems.map((item, idx) => (
-            <a key={idx} href={item.href} className="hover:text-orange-500">
+            <a key={idx} href={item.href} className="hover:text-orange-500 active:scale-90 ">
               {item.id}
             </a>
           ))}
@@ -123,16 +126,16 @@ const Navbar = ({ currentUser }) => {
           {!currentUser ? (
             <a
               href="/Register"
-              className="bg-orange-500 text-white px-6 py-2 rounded-md hover:bg-orange-600"
+              className="bg-orange-500 text-white px-6 py-2 rounded-md active:scale-90 hover:bg-orange-600"
             >
               Register
             </a>
           ) : (
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col  gap-2">
               {currentUser?.isAdmin && (
                 <button
                   onClick={() => navigate("/create")}
-                  className="px-4 py-2 bg-gray-100 rounded-md hover:bg-gray-200"
+                  className="px-4 py-2 bg-gray-100 rounded-md active:scale-90  hover:bg-gray-200"
                 >
                   CreateEvents
                 </button>
@@ -140,15 +143,24 @@ const Navbar = ({ currentUser }) => {
               {currentUser?.isAdmin && (
                 <button
                   onClick={() => navigate("/scanner")}
-                  className="px-4 py-2 bg-gray-100 rounded-md hover:bg-gray-200"
+                  className="px-4 py-2 bg-gray-100 rounded-md active:scale-90 hover:bg-gray-200"
                 >
                   Scanner
                 </button>
               )}
 
+              {currentUser?.isAdmin && (
+                <button
+                  onClick={() => navigate("/tracking")}
+                  className="px-4 py-2 bg-gray-100 rounded-md active:scale-90 hover:bg-gray-200"
+                >
+                  Tracking
+                </button>
+              )}
+
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 bg-red-100 text-red-600 rounded-md hover:bg-red-200"
+                className="px-4 py-2 bg-red-100 text-red-600 rounded-md active:scale-90 hover:bg-red-200"
               >
                 Logout
               </button>

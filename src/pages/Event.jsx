@@ -69,34 +69,6 @@ const Event = ({ currentUser, events, setEvents }) => {
   };
 
 
-
-  // const data = [
-  //   {
-
-  //     title: "Unboxed party, Akwa",
-  //     date: "Sat,Aug 23rd, 5pm",
-  //     location: "Ikpeazu Stadium, Akwa",
-  //     price: 300,
-  //     image: unbox,
-  //   },
-  //   {
-
-  //     title: "Astera",
-  //     date: "Sat,Aug 31st, 10pm",
-  //     location: "Grace Manor, Pusle Night Life",
-  //     price: 300,
-  //     image: astera,
-  //   },
-  //   {
-
-  //     title: "Unboxed party, UNN. ",
-  //     date: "Sat,Aug 23rd, 5pm",
-  //     location: "The Verde",
-  //     price: 300,
-  //     image: rep,
-  //   }
-  // ]
-
   return (
     <section data-aos="fade-out"  className='relative min-h-screen w-full flex flex-col lg:mt-5 mt-4 flex-1 custom-scrollbar  z-10'>
       {openTicket && (
@@ -173,7 +145,7 @@ const Event = ({ currentUser, events, setEvents }) => {
                   <p className='md:text-lg text-md font-regular text-gray-500 flex gap-2 items-center'><FaLocationArrow />{event.location}</p>
                   <span className='flex  justify-between items-center lg:gap-4 gap-2'>
                     <p className='font-bold text-lg text-orange-500'>{event.currency}{event.price}</p>
-                    <button onClick={handleOpenTicket} className='bg-orange-500 p-2 rounded-lg hover:scale-105 '>View Ticket</button>
+                    <button onClick={handleOpenTicket} className='bg-orange-500 p-2 rounded-lg hover:scale-105 active:scale-90'>View Ticket</button>
                   </span>
                 </span>
 

@@ -196,7 +196,7 @@ const CreateEvent = () => {
         </div>
 
 
-        <button type='submit' className='bg-orange-500 text-white py-3 rounded-lg font-bold'>
+        <button type='submit' className='bg-orange-500 text-white py-3 rounded-lg font-bold active:scale-90 hover:bg-orange-600'>
           Save Event
         </button>
       </form>

@@ -238,8 +238,8 @@ const Register = ({ step, setStep }) => {
                   ))}
                 </div>
                 <div className='flex gap-4 mt-6'>
-                  <button onClick={() => navigate("/")} className='bg-orange-500/50  rounded-xl hover:scale-105 py-4 w-full text-white'>Cancel</button>
-                  <button onClick={handleContinue} className={`rounded-xl hover:scale-105 py-4 w-full ${selected ? "bg-orange-500 text-white" : "bg-gray-300 text-gray-600 cursor-not-allowed"
+                  <button onClick={() => navigate("/")} className='bg-orange-500/50  rounded-xl active:scale-90 hover:bg-orange-600 py-4 w-full text-white'>Cancel</button>
+                  <button onClick={handleContinue} className={`rounded-xl active:scale-90 hover:bg-orange-600 py-4 w-full ${selected ? "bg-orange-500 text-white" : "bg-gray-300 text-gray-600 cursor-not-allowed"
                     }`}
                     disabled={!selected}>Continue</button>
                 </div>
@@ -363,13 +363,13 @@ const Register = ({ step, setStep }) => {
 
             <div className='flex gap-3'>
               <button onClick={() => setStep("select")}
-                className='w-full bg-orange-500/40 text-white rounded-xl py-3 hover:scale-105'
+                className='w-full bg-orange-500/40 active:scale-90 hover:bg-orange-600 text-white rounded-xl py-3 '
               >
                 Go back 👈🏾
               </button>
               <button
                 type="submit"
-                className='w-full flex items-center justify-center bg-orange-500 text-white rounded-xl py-3 hover:scale-105'
+                className='w-full flex items-center justify-center bg-orange-500 text-white rounded-xl py-3 active:scale-90 hover:bg-orange-600'
               >
                 {registerLoading ? <><div className='loading'></div><p className='ml-2'> CreatingAccount...</p> </> : "Register"}
               </button>

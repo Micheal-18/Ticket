@@ -39,7 +39,7 @@ const PaystackPayment = ({ events, currentUser }) => {
   return (
     <button
       onClick={payWithPaystack}
-      className="bg-orange-500 p-2 rounded-lg text-white hover:scale-105"
+      className="bg-orange-500 p-2 rounded-lg text-white active:scale-90 hover:bg-orange-600"
     >
       Buy Ticket
     </button>

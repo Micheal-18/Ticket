@@ -16,6 +16,7 @@ import TicketScanner from "./pages/TicketScanner";
 import Guide from "./pages/Guide";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import Tracking from "./components/Tracking";
 
 const App = () => {
   const [step, setStep] = useState("select");
@@ -150,9 +151,14 @@ const App = () => {
             <TicketScanner />
           </Layout>   
         } />
-        <Route path="guide" element={
+        <Route path="/guide" element={
           <Layout currentUser={currentUser}>
             <Guide />
+          </Layout>  
+        }/>
+        <Route path="/tracking" element={
+          <Layout currentUser={currentUser}>
+            <Tracking />
           </Layout>  
         }/>
     </Routes>

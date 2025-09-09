@@ -38,7 +38,7 @@ const Home = () => {
           <div className='border-y-2 py-4 '>
             <p className='lg:text-6xl md:text-5xl text-2xl font-semibold'>magical meeting places</p>
           </div>
-          <a href='/event'><button className='bg-orange-500 p-2 rounded-lg hover:scale-105 '>Discover Events</button></a>
+          <a href='/event'><button className='bg-orange-500 p-2 rounded-lg hover:bg-orange-600 active:scale-90'>Discover Events</button></a>
         </header>
       </section>
 

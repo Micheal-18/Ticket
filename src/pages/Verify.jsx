@@ -88,13 +88,13 @@ const Verify = ({
       <div className="flex flex-col gap-2">
         <button
           onClick={resendVerificationEmail}
-          className="w-full bg-orange-500 text-white rounded-xl py-2 hover:scale-105 transition"
+          className="w-full bg-orange-500 text-white rounded-xl py-2 active:scale-90 hover:bg-orange-600 hover:scale-105 transition"
         >
           📩 Resend verification email
         </button>
         <button
           onClick={iVerifiedAlready}
-          className="w-full bg-gray-100 rounded-xl py-2 hover:scale-105 transition"
+          className="w-full bg-gray-100 rounded-xl py-2 active:scale-90 hover:bg-orange-600 hover:scale-105 transition"
         >
           I verified already ✅
         </button>

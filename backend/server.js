@@ -22,63 +22,12 @@ app.get("/", (req, res) => {
   res.send("🚀 Backend is running!");
 });
 
-// // Optional test for purchase
-// app.get("/api/purchase", (req, res) => {
-//   res.send("⚠️ Use POST method for /api/purchase");
-// });
 
-// app.post("/api/purchase", async (req, res) => {
-//   try {
-//     const { reference, email, eventId } = req.body;
-// console.log(req.body, "===>>>> body");
-//     if (!reference || !email || !eventId) {
-//       return res.status(400).json({ error: "Missing required fields" });
-//     }
-//     // Verify with Paystack
-//     const verifyRes = await fetch(
-//       `https://api.paystack.co/transaction/verify/${reference}`,
-//       { headers: { Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}` } }
-//     );
-//     const verifyData = await verifyRes.json();
-// console.log(verifyData, "===>>>>> Verify data");
-//     if (!verifyData.status) {
-//       return res.status(400).json({ error: "Payment not verified" });
-//     }
-
-//     const ticketRef = db.collection("tickets").doc();
-//     await ticketRef.set({ email, eventId, reference, createdAt: new Date() });
-
-//     // Send email
-//     // const transporter = nodemailer.createTransport({
-//     //   service: "gmail",
-//     //   auth: {
-//     //     user: process.env.EMAIL_USER,
-//     //     pass: process.env.EMAIL_PASS,
-//     //   },
-//     // });
-
-//     // await transporter.sendMail({
-//     //   from: `"Airways Events" <${process.env.EMAIL_USER}>`,
-//     //   to: email,
-//     //   subject: "Your Ticket Confirmation",
-//     //   text: `Thank you for your purchase! Ticket: ${ticketType}. Ref: ${reference}`,
-//     // });
-
-//     res.json({ success: true, ticketId: ticketRef.id });
-//   } catch (err) {
-//     console.error("API error:", err);
-//     res.status(500).json({ error: "Server error" });
-//   }
-// });
 app.post("/api/purchase", async (req, res) => {
   try {
     const { reference, email, eventId } = req.body;
     console.log(req.body, "===>>>> body");
 
-    // // Validate request body
-    // if (!reference || !email || !eventId) {
-    //   return res.status(400).json({ error: "Missing required fields" });
-    // }
     console.log(reference)
     console.log(eventId)
     console.log(email)
@@ -102,6 +51,13 @@ app.post("/api/purchase", async (req, res) => {
       return res.status(400).json({ error: "Payment not verified" });
     }
 
+    const eventRef = db.collection("events").doc(eventId);
+    await eventRef.update({
+      ticketsSold: admin.firestore.FieldValue.increment(1),
+      revenue: admin.firestore.FieldValue.increment(verifyData.data.amount / 100),
+    });
+    console.log("Event updated");
+
     // Save ticket in Firestore
     const ticketRef = db.collection("tickets").doc();
     await ticketRef.set({
@@ -117,9 +73,9 @@ app.post("/api/purchase", async (req, res) => {
     const qrCodeData = await QRCode.toDataURL(ticketRef.id);
     const qrCodeBase64 = qrCodeData.replace(/^data:image\/png;base64,/, "");
 
-    
-// Email HTML template
-const htmlTemplate = `
+
+    // Email HTML template
+    const htmlTemplate = `
   <div style="font-family: Arial, sans-serif; line-height:1.6; max-width:600px; margin:auto; border:1px solid #ddd; border-radius:12px; padding:20px;">
     <h2 style="color:#2C3E50; text-align:center;">🎫 Your Ticket is Confirmed!</h2>
     <p>Hello,</p>
@@ -145,8 +101,6 @@ const htmlTemplate = `
 
     // (Optional) Send email here using nodemailer
     // Uncomment and configure correctly if needed
-
-
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
