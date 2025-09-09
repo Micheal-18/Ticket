@@ -98,41 +98,41 @@ const Event = ({ currentUser, events, setEvents }) => {
   // ]
 
   return (
-    <section className='relative min-h-screen w-full flex flex-col lg:mt-5 mt-4 flex-1 custom-scrollbar  z-10'>
+    <section data-aos="fade-out"  className='relative min-h-screen w-full flex flex-col lg:mt-5 mt-4 flex-1 custom-scrollbar  z-10'>
       {openTicket && (
-        <div className='absolute left-0 w-full h-full backdrop-blur-md flex justify-center items-center z-50'>
+        <div data-aos="fade-out"  className='absolute left-0 w-full h-full backdrop-blur-xs flex justify-center items-center z-50'>
           {events.map((Tick) => (
-            <div key={Tick.id} className='w-full mt-50 top-1/2  flex justify-center items-center'>
-              <div className='flex flex-col  bg-white  space-y-6 custom-scrollbar p-6 rounded-lg shadow-lg relative w-[80%] h-[100%]'>
+            <div key={Tick.id} className='relative w-full lg:top-1/4 top-1/2  flex justify-center items-center'>
+              <div className='flex flex-col bg-white space-y-6 custom-scrollbar p-6 rounded-lg shadow-lg relative w-[80%] h-[100%]'>
                 <div className='text-gray-500 text-2xl absolute top-4 right-4 cursor-pointer hover:scale-105' onClick={closeOpenTicket}>
                   <FiX />
                 </div>
                 <div className='flex justify-center overflow-hidden rounded-xl'>
                   <img src={Tick.photoURL} alt={Tick.name} className='object-cover w-[150px] h-[150px] hover:scale-105 duration-500 rounded-2xl' />
                 </div>
-                <h2 className='text-2xl uppercase font-bold mb-4'>{Tick.name}</h2>
-                <div className='border-b border-gray-300 w-full'>
-                  <h1 className='uppercase text-2xl'>Description</h1>
-                  <p className='mb-2'>{Tick.description}</p>
+                <h2 className='text-2xl text-center uppercase font-bold mb-4'>{Tick.name}</h2>
+                <div className='border-b space-y-2 border-gray-300 w-full'>
+                  <h1 className='uppercase font-semibold text-xl'>Description</h1>
+                  <p className='text-gray-700 mb-2'>{Tick.description}</p>
                 </div>
-                <div className='border-b border-gray-300 w-full'>
-                  <h1 className='uppercase text-2xl'>Category</h1>
-                  <p className='mb-2'>{Tick.category}</p>
+                <div className='border-b space-y-2 border-gray-300 w-full'>
+                  <h1 className=' uppercase font-semibold text-xl'>Category</h1>
+                  <p className='text-gray-700 mb-2'>{Tick.category}</p>
                 </div>
-                <div className='border-b border-gray-300 w-full'>
-                  <h1 className='uppercase text-2xl'>Location</h1>
-                  <p className='mb-2'>{Tick.location}</p>
+                <div className='border-b space-y-2 border-gray-300 w-full'>
+                  <h1 className='uppercase font-semibold text-xl'>Location</h1>
+                  <p className='text-gray-700 mb-2'>{Tick.location}</p>
                 </div>
-                <div className='border-b border-gray-300 w-full'>
-                  <h1 className='uppercase text-2xl'>Date</h1>
-                  <p className='mb-2'>{formatDate(Tick.date)}</p>
+                <div className='border-b  space-y-2 border-gray-300 w-full'>
+                  <h1 className='uppercase font-semibold text-xl'>Date</h1>
+                  <p className='text-gray-700 mb-2'>{formatDate(Tick.date)}</p>
                 </div>
-                <div className='border-b border-gray-300 w-full'>
-                  <h1 className='uppercase text-2xl'>Price</h1>
-                  <p className='mb-2'>{Tick.currency}{Tick.price}</p>
+                <div className='border-b space-y-2 border-gray-300 w-full'>
+                  <h1 className='uppercase font-semibold text-xl'>Price</h1>
+                  <p className='text-gray-700 mb-2'>{Tick.currency}{Tick.price}</p>
                 </div>
-                
-                <PaystackPayment events={Tick} currentUser={currentUser}/>
+
+                <PaystackPayment events={Tick} currentUser={currentUser} />
               </div>
             </div>
           ))}
@@ -141,15 +141,15 @@ const Event = ({ currentUser, events, setEvents }) => {
       )}
       <div className='flex flex-col space-y-3 p-4'>
         <div className='space-y-6'>
-          <p className='font-regular text-lg '>
-            All Events
+          <p className='font-regular  text-sm text-gray-500'>
+            All Events:
           </p>
-          <h1 className='font-bold text-2xl md:text-4xl text-gray-500'>
+          <h1 className='font-bold text-2xl md:text-4xl text-gray-080'>
             Find Events
           </h1>
         </div>
         <div className='flex flex-col space-y-2'>
-          <h1>All Events</h1>
+          <p className='text-gray-500'>Events</p>
           <span>({events.length || 0}) events</span>
           <div className='flex flex-row space-x-2'>
             <button className='w-full bg-black rounded-xl py-2 pl-2 text-left text-white'>Nigeria</button>
@@ -159,11 +159,14 @@ const Event = ({ currentUser, events, setEvents }) => {
         </div>
 
         <div className='flex justify-center items-center mt-8 mx-auto w-full max-w-6xl '>
-          <div className='grid grid-cols-1 md:grid-cols-2 md:gap-10 gap-6'>
+          <div data-aos="fade-up"  className='grid grid-cols-1 md:grid-cols-2 md:gap-10 gap-6'>
             {events.map((event) => (
-              <div onClick={() => {
-                setOpen(!open)
-              }} key={event.id} className='flex items-center  justify-between flex-1 gap-10 relative px-8 w-full h-[200px] bg-[#eeeeee] rounded-3xl'>
+              <div key={event.id} className='flex items-center  justify-between flex-1 gap-10 relative px-8 w-full h-[200px] bg-[#eeeeee] rounded-3xl'>
+                {isAdmin && (
+                  <div className='absolute top-4 right-4 cursor-pointer' onClick={() => setOpen(!open)}>
+                    {open ? <FiX size={24} /> : <FaCaretDown size={24} />}
+                  </div>
+                )}
                 <span className='space-y-2 flex flex-col'>
                   <h1 className='font-bold uppercase text-2xl w-[150px] truncate lg:w-auto lg:whitespace-normal lg:overflow-visible'>{event.name}</h1>
                   <p className='md:text-lg text-sm font-regular text-gray-500 flex gap-2 items-center'><FaCalendar />{formatDate(event.date)}</p>

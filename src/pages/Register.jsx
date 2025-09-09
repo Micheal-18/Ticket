@@ -51,10 +51,10 @@ const Register = ({ step, setStep }) => {
     const value = e.target.value
     setPassword(value)
 
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*.,?_-])[A-Za-z\d!@#$%^&*.,?_-]{8,16}$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*.,?_-])[A-Za-z\d!@#$%^&*.,?_-]{8,24}$/;
 
     if (!passwordRegex.test(value)) {
-      setPasswordError("Password must be 8-16 characters and include a number, lowercase, uppercase, and a special character.")
+      setPasswordError("Password must be 8-24 characters and include a number, lowercase, uppercase, and a special character.")
     } else {
       setPasswordError('')
     }
@@ -187,7 +187,7 @@ const Register = ({ step, setStep }) => {
 
 
   return (
-    <section className='relative w-full grid grid-cols-1 md:grid-cols-2 h-screen '>
+    <section data-aos="fade-out"  className='relative w-full grid grid-cols-1 md:grid-cols-2 h-screen '>
       <div className='flex flex-col flex-1  custom-scrollbar space-y-10 px-10 py-6 bg-[#eeeeee]'>
         <a className='text-black  text-lg font-semibold '>Airways<span className='text-orange-500'>Events</span></a>
         {/* Progress Indicator */}

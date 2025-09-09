@@ -59,14 +59,7 @@ const Login = () => {
             const userSnap = await getDoc(userRef);
 
             if (userSnap.exists()) {
-                const userData = userSnap.data();
-                if (userData.accountType === "personal") {
-                    navigate("/personal");
-                } else if (userData.accountType === "organization") {
-                    navigate("/organization");
-                } else {
                     navigate("/"); // fallback
-                }
             } else {
                 setError("User profile not found.");
             }
@@ -78,7 +71,7 @@ const Login = () => {
         }
     };
     return (
-        <section className='w-full min-h-screen flex justify-center items-center'>
+        <section data-aos="fade-out"  className='w-full min-h-screen flex justify-center items-center'>
             <form onSubmit={handleLogin} className="flex flex-col space-y-4 w-full max-w-lg">
             <h1 className="font-bold text-4xl">Login</h1>
 

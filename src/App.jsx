@@ -13,6 +13,9 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 import Layout from "./layout/Layout";
 import CreateEvent from "./pages/CreateEvent";
 import TicketScanner from "./pages/TicketScanner";
+import Guide from "./pages/Guide";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 const App = () => {
   const [step, setStep] = useState("select");
@@ -20,6 +23,18 @@ const App = () => {
   const [loading, setLoading] = useState(true);
   const [isLoaded, setIsLoaded] = useState(false)
   const [events, setEvents] = useState([]);
+
+  useEffect(() => {
+    AOS.init(
+      {
+        duration: 2000,
+        easing: "ease",
+        delay: 100,
+        offset: 100,       
+      }
+    );
+    AOS.refresh();
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -135,6 +150,11 @@ const App = () => {
             <TicketScanner />
           </Layout>   
         } />
+        <Route path="guide" element={
+          <Layout currentUser={currentUser}>
+            <Guide />
+          </Layout>  
+        }/>
     </Routes>
   );
 };

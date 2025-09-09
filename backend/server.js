@@ -17,7 +17,6 @@ if (!admin.apps.length) {
   admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
 }
 const db = admin.firestore();
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 // ✅ Test route
 app.get("/", (req, res) => {
   res.send("🚀 Backend is running!");
@@ -115,54 +114,38 @@ app.post("/api/purchase", async (req, res) => {
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 
-    // const qrCodeData = await QRCode.toDataURL(ticketRef.id);
+    const qrCodeData = await QRCode.toDataURL(ticketRef.id);
+    const qrCodeBase64 = qrCodeData.replace(/^data:image\/png;base64,/, "");
+
+    
+// Email HTML template
+const htmlTemplate = `
+  <div style="font-family: Arial, sans-serif; line-height:1.6; max-width:600px; margin:auto; border:1px solid #ddd; border-radius:12px; padding:20px;">
+    <h2 style="color:#2C3E50; text-align:center;">🎫 Your Ticket is Confirmed!</h2>
+    <p>Hello,</p>
+    <p>Thank you for purchasing a ticket with <b>Airways Events</b>. Below are your ticket details:</p>
+    
+    <table style="width:100%; border-collapse:collapse; margin:20px 0;">
+      <tr><td><b>Event ID:</b></td><td>${eventId}</td></tr>
+      <tr><td><b>Reference:</b></td><td>${reference}</td></tr>
+      <tr><td><b>Amount:</b></td><td>₦${verifyData.data.amount / 100}</td></tr>
+      <tr><td><b>Status:</b></td><td style="color:green;">${verifyData.data.status}</td></tr>
+    </table>
+
+    <p style="text-align:center; margin:20px 0;">
+      <img src="cid:ticketqr" alt="Ticket QR Code" style="width:200px; height:200px;" />
+    </p>
+
+    <p style="font-size:12px; color:#555; text-align:center; margin-top:30px;">
+      Scan the QR code at the event entrance to validate your ticket. <br>
+      If you did not make this purchase, please contact support immediately.
+    </p>
+  </div>
+`;
 
     // (Optional) Send email here using nodemailer
     // Uncomment and configure correctly if needed
 
-    
-    // Build HTML email with QR Code
-    // const htmlTemplate = `
-    //   <div style="font-family: Arial, sans-serif; line-height:1.6; max-width:600px; margin:auto; border:1px solid #ddd; border-radius:12px; padding:20px;">
-    //     <h2 style="color:#2C3E50; text-align:center;">🎫 Your Ticket is Confirmed!</h2>
-    //     <p>Hello,</p>
-    //     <p>Thank you for purchasing a ticket with <b>Airways Events</b>. Below are your ticket details:</p>
-        
-    //     <table style="width:100%; border-collapse:collapse; margin:20px 0;">
-    //       <tr><td><b>Event ID:</b></td><td>${eventId}</td></tr>
-    //       <tr><td><b>Reference:</b></td><td>${reference}</td></tr>
-    //       <tr><td><b>Amount:</b></td><td>₦${verifyData.data.amount / 100}</td></tr>
-    //       <tr><td><b>Status:</b></td><td style="color:green;">${verifyData.data.status}</td></tr>
-    //     </table>
-
-    //     <p style="text-align:center; margin:20px 0;">
-    //       <img src="${qrCodeData}" alt="Ticket QR Code" style="width:200px; height:200px;" />
-    //     </p>
-
-    //     <p style="text-align:center;">
-    //       <a href="https://yourdomain.com/tickets/${ticketRef.id}" 
-    //          style="background:#3498DB; color:white; padding:10px 20px; text-decoration:none; border-radius:6px;">
-    //          View Your Ticket
-    //       </a>
-    //     </p>
-
-    //     <p style="font-size:12px; color:#555; text-align:center; margin-top:30px;">
-    //       If you did not make this purchase, please contact support immediately.
-    //     </p>
-    //   </div>
-    // `;
-
-    // try {
-    //   await sgMail.send({
-    //     to: email,
-    //     from: process.env.SENDGRID_FROM, // must be a verified sender
-    //     subject: "🎉 Your Ticket Confirmation",
-    //     html: htmlTemplate,
-    //   });
-    //   console.log("✅ Email sent via SendGrid");
-    // } catch (mailErr) {
-    //   console.error("❌ SendGrid error:", mailErr.response?.body || mailErr);
-    // }
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -170,15 +153,25 @@ app.post("/api/purchase", async (req, res) => {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
       },
+      tls: {
+        rejectUnauthorized: false, // fixes some Gmail quirks
+      },
     });
 
-    const ticketType = "regular"
-    
+
     await transporter.sendMail({
       from: `"Airways Events" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: "Your Ticket Confirmation",
-      text: `Thank you for your purchase! Ticket: ${ticketType}. Ref: ${reference}`,
+      html: htmlTemplate,
+      attachments: [
+        {
+          filename: "ticket-qr.png",
+          content: qrCodeBase64,
+          encoding: "base64",
+          cid: "ticketqr", // 👈 this matches <img src="cid:ticketqr" />
+        },
+      ],
     });
 
     res.json({ success: true, ticketId: ticketRef.id });

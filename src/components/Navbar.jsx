@@ -32,7 +32,7 @@ const Navbar = ({ currentUser }) => {
     },
     {
       id: "Guide",
-      href: '/'
+      href: '/guide'
     },
     {
       id: "Blogs",
@@ -45,12 +45,12 @@ const Navbar = ({ currentUser }) => {
     <section className='sticky w-full bg-[#eeeeee] flex top-0 z-50'>
       <div className='flex w-full items-center lg:justify-center flex-1 border border-b-4 lg:border-b-transparent border-b-gray-700 justify-between px-6 font-bold text-gray-900'>
         <div className='border py-10 lg:py-5.5  lg:px-20 border-x-transparent lg:border-x-black lg:border-t-transparent border-y-transparent lg:border-y-black'>
-          <a href='/' className='cursor-pointer text-black text-lg'>AirTicks<span className='text-orange-500'>Events</span></a>
+          <a href='/' className='cursor-pointer text-black text-lg'>Airticks<span className='text-orange-500'>.event</span></a>
         </div>
         <div className='hidden lg:flex'>
           {navItems.map((item, idx) => (
-            <div key={idx} className='border hover:bg-yellow-400 hidden lg:flex py-6 px-16 border-t-transparent'>
-              <a href={item.href}>{item.id}</a>
+            <div key={idx} className='border hover:bg-yellow-400 hidden lg:flex border-t-transparent'>
+              <a href={item.href} className='py-6 px-16'>{item.id}</a>
             </div>
           ))}
 
