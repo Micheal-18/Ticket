@@ -158,12 +158,12 @@ const Event = ({ currentUser, events, setEvents }) => {
           </div>
         </div>
 
-        <div className='flex justify-center items-center mt-8 mx-auto w-full max-w-6xl '>
+        <div className='flex justify-center items-center mt-8  w-full max-w-6xl '>
           <div data-aos="fade-up"  className='grid grid-cols-1 md:grid-cols-2 md:gap-10 gap-6 w-full'>
             {events.map((event) => (
-              <div key={event.id} className='flex items-center  justify-between flex-1 lg:gap-10 gap-4 relative lg:px-8 px-4 w-full h-[200px] bg-[#eeeeee] rounded-3xl'>
+              <div key={event.id} className='flex items-center  justify-between flex-1 lg:gap-10 gap-4 relative lg:px-8 px-2 w-full h-[200px] bg-[#eeeeee] rounded-3xl'>
                 {isAdmin && (
-                  <div className='absolute top-2 right-2 text-gray-800 cursor-pointer' onClick={() => setOpen(!open)}>
+                  <div className='absolute top-1 right-1 text-gray-800 cursor-pointer' onClick={() => setOpen(!open)}>
                     {open ? <FiX size={24} /> : <FaCaretDown size={24} />}
                   </div>
                 )}
