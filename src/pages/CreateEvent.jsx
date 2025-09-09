@@ -115,9 +115,9 @@ const CreateEvent = () => {
 
   return (
     <section className='w-full h-screen px-4 flex flex-col space-y-6 custom-scrollbar'>
-      <div className='border-b p-4 border-gray-600 space-y-4'>
+      <div className=' border-b p-4 border-gray-600 space-y-4'>
         <RiArrowLeftFill onClick={() => navigate("/")} />
-        <h1 className='uppercase font-semibold md:text-5xl text-3xl'>What are you creating</h1>
+        <h1 className='uppercase font-semibold lg:text-5xl text-2xl'>What are you creating</h1>
       </div>
       <form onSubmit={handleSubmit} className='uppercase font-semibold space-y-4 flex flex-col mb-4'>
         <div className='flex items-center py-4 space-x-2 border-b '>
@@ -144,9 +144,9 @@ const CreateEvent = () => {
 
         <div className='flex items-center py-4 space-x-4  border-b '>
           <label htmlFor="photo">Photos:</label>
-          
-            <input ref={fileInputRef} onChange={handlePhotoUpload} type='file' name='photo' accept='image/*' className='border w-[100%] p-2'/>
-          
+
+          <input ref={fileInputRef} onChange={handlePhotoUpload} type='file' name='photo' accept='image/*' className='border w-[100%] p-2' />
+
         </div>
 
         <div className='flex items-center p-2 w-full space-x-2 border-b '>

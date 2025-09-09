@@ -159,11 +159,11 @@ const Event = ({ currentUser, events, setEvents }) => {
         </div>
 
         <div className='flex justify-center items-center mt-8 mx-auto w-full max-w-6xl '>
-          <div data-aos="fade-up"  className='grid grid-cols-1 md:grid-cols-2 md:gap-10 gap-6'>
+          <div data-aos="fade-up"  className='grid grid-cols-1 md:grid-cols-2 md:gap-10 gap-6 w-full'>
             {events.map((event) => (
-              <div key={event.id} className='flex items-center  justify-between flex-1 gap-10 relative px-8 w-full h-[200px] bg-[#eeeeee] rounded-3xl'>
+              <div key={event.id} className='flex items-center  justify-between flex-1 lg:gap-10 gap-4 relative lg:px-8 px-4 w-full h-[200px] bg-[#eeeeee] rounded-3xl'>
                 {isAdmin && (
-                  <div className='absolute top-4 right-4 cursor-pointer' onClick={() => setOpen(!open)}>
+                  <div className='absolute top-2 right-2 text-gray-800 cursor-pointer' onClick={() => setOpen(!open)}>
                     {open ? <FiX size={24} /> : <FaCaretDown size={24} />}
                   </div>
                 )}
@@ -171,7 +171,7 @@ const Event = ({ currentUser, events, setEvents }) => {
                   <h1 className='font-bold uppercase text-2xl w-[150px] truncate lg:w-auto lg:whitespace-normal lg:overflow-visible'>{event.name}</h1>
                   <p className='md:text-lg text-sm font-regular text-gray-500 flex gap-2 items-center'><FaCalendar />{formatDate(event.date)}</p>
                   <p className='md:text-lg text-md font-regular text-gray-500 flex gap-2 items-center'><FaLocationArrow />{event.location}</p>
-                  <span className='flex  justify-between items-center gap-4'>
+                  <span className='flex  justify-between items-center lg:gap-4 gap-2'>
                     <p className='font-bold text-lg text-orange-500'>{event.currency}{event.price}</p>
                     <button onClick={handleOpenTicket} className='bg-orange-500 p-2 rounded-lg hover:scale-105 '>View Ticket</button>
                   </span>
