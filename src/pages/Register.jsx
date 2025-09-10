@@ -273,7 +273,7 @@ const Register = ({ step, setStep }) => {
               name="email"
               type="email"
               placeholder="Email Address"
-              className='p-3 border rounded-lg lowercase'
+              className='p-3 border rounded-lg '
               required
             />
 
