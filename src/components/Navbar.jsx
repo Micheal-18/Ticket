@@ -43,7 +43,7 @@ const Navbar = ({ currentUser }) => {
 
   return (
     <section className='sticky w-full  flex top-0 z-50'>
-      <div className='flex w-full items-center lg:justify-center flex-1 border border-x-transparent border-b-4 lg:border-b-transparent border-b-gray-700 justify-between px-6 font-bold '>
+      <div className='flex w-full bg-gray-100 opacity-90 items-center lg:justify-center flex-1 border border-x-transparent border-b-4 lg:border-b-transparent border-b-gray-700 justify-between px-6 font-bold '>
         <div className='lg:border py-10 lg:py-5.5  lg:px-20 border-t-transparent '>
           <a href='/' className='cursor-pointer text-lg'>Airticks<span className='text-orange-500'>.event</span></a>
         </div>
@@ -114,9 +114,9 @@ const Navbar = ({ currentUser }) => {
       </div>
 
 
-      <div onClick={handleOpen} className={`lg:hidden fixed top-30 px-6 left-0 z-40 h-full w-[60%] bg-[#eeeeee] custom-scrollbar shadow-md transform transition-all duration-1000 ease-in-out ${open ? "translate-x-0 opacity-100" : "-translate-x-full opacity-0"
+      <div onClick={handleOpen} className={`lg:hidden fixed top-30 px-6 left-0 z-40 h-full w-[60%] bg-gray-100 opacity-90 custom-scrollbar shadow-md transform transition-all duration-1000 ease-in-out ${open ? "translate-x-0 opacity-100" : "-translate-x-full opacity-0"
         }`}>
-        <div className='p-6 flex flex-col gap-8'>
+        <div className='p-6 flex flex-col gap-8 text-[#333333]'>
           {navItems.map((item, idx) => (
             <a key={idx} href={item.href} className="hover:text-orange-500 active:scale-90 ">
               {item.id}

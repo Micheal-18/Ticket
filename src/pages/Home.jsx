@@ -45,7 +45,7 @@ const Home = () => {
         <div data-aos="fade-out"  className='flex flex-col space-y-2 '>
           <h1 className='uppercase md:text-6xl text-5xl font-bold mt-4'>Categories</h1>
           <div className='flex custom-scrollbar py-8 space-x-4'>
-            <a className='p-4 uppercase bg-black text-[#eeeeee] rounded-full'>All</a>
+            <a className='p-4 uppercase bg-[#333333] text-[#eeeeee] rounded-full'>All</a>
             {categories.map((cate) => (
               <a className='p-4  uppercase rounded-full text-[#333333] bg-[#eeeeee]' href={cate.link}>{cate.title}</a>
             ))}
