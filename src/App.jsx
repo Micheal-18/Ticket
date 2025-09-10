@@ -112,8 +112,16 @@ const App = () => {
         }
       />
 
+      <Route path="/verify" element={<Verify email={currentUser?.email} step="verify"
+                setStep={() => { }}
+                error={""}
+                setError={() => { }}
+                resendMessage={""}
+                setResendMessage={() => { }}/>} />
+
+
       {/* Verify route — force unverified users here */}
-      <Route
+      {/* <Route
         path="/verify"
         element={
           currentUser ? (
@@ -134,7 +142,7 @@ const App = () => {
             <Navigate to="/Login" replace />
           )
         }
-      />
+      /> */}
 
       <Route path="/event" element={
         <Layout currentUser={currentUser}>

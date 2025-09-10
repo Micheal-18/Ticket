@@ -72,6 +72,7 @@ const Login = () => {
     };
     return (
         <section data-aos="fade-out"  className='w-full min-h-screen flex justify-center items-center'>
+            <button onClick={() => navigate("/")} className='absolute top-5 left-5 bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 active:scale-90'>Go Back</button>
             <form onSubmit={handleLogin} className="flex flex-col space-y-4 w-full max-w-lg mx-6 lg:mx-0">
             <h1 className="font-bold text-5xl ">Login</h1>
 
