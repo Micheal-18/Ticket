@@ -5,12 +5,7 @@ import { sendEmailVerification, applyActionCode } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import { useNavigate } from "react-router-dom";
-
-const Spinner = () => (
-  <div className="flex justify-center items-center my-4">
-    <div className="w-6 h-6 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
-  </div>
-);
+import Spinner from "../components/Spinner";
 
 const Verify = ({ email }) => {
   const [status, setStatus] = useState({ type: "", message: "" });
