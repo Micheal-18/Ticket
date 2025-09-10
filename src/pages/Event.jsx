@@ -75,7 +75,7 @@ const Event = ({ currentUser, events, setEvents }) => {
   return (
     <section data-aos="fade-out" className='relative min-h-screen w-full flex flex-col lg:mt-5 mt-4 flex-1 custom-scrollbar  z-10'>
       {openTicket && selectedEvent && (
-        <div className='fixed inset-0 left-0 w-full h-full backdrop-blur-xs flex justify-center items-center z-50'>
+        <div className='fixed inset-0 left-0 w-full h-full backdrop-blur-xs flex justify-center items-center z-[9999]'>
           <div className='relative w-full lg:top-1/4 top-1/8 flex justify-center items-center'>
             <div className='flex flex-col bg-white space-y-6 p-6 rounded-lg shadow-lg relative w-[80%] h-[100%]'>
               <div
@@ -87,40 +87,40 @@ const Event = ({ currentUser, events, setEvents }) => {
 
               <div className='flex justify-center overflow-hidden rounded-xl'>
                 <img
-                  src={selectedEvent.photoURL}
-                  alt={selectedEvent.name}
+                  src={selectedEvent?.photoURL}
+                  alt={selectedEvent?.name}
                   className='object-cover w-[150px] h-[150px] hover:scale-105 duration-500 rounded-2xl'
                 />
               </div>
 
               <h2 className='text-2xl text-center uppercase font-bold mb-4'>
-                {selectedEvent.name}
+                {selectedEvent?.name}
               </h2>
 
               <div className='border-b space-y-2 border-gray-300 w-full'>
                 <h1 className='uppercase font-semibold text-xl'>Description</h1>
-                <p className='text-gray-700 mb-2'>{selectedEvent.description}</p>
+                <p className='text-gray-700 mb-2'>{selectedEvent?.description}</p>
               </div>
 
               <div className='border-b space-y-2 border-gray-300 w-full'>
                 <h1 className='uppercase font-semibold text-xl'>Category</h1>
-                <p className='text-gray-700 mb-2'>{selectedEvent.category}</p>
+                <p className='text-gray-700 mb-2'>{selectedEvent?.category}</p>
               </div>
 
               <div className='border-b space-y-2 border-gray-300 w-full'>
                 <h1 className='uppercase font-semibold text-xl'>Location</h1>
-                <p className='text-gray-700 mb-2'>{selectedEvent.location}</p>
+                <p className='text-gray-700 mb-2'>{selectedEvent?.location}</p>
               </div>
 
               <div className='border-b space-y-2 border-gray-300 w-full'>
                 <h1 className='uppercase font-semibold text-xl'>Date</h1>
-                <p className='text-gray-700 mb-2'>{formatDate(selectedEvent.date)}</p>
+                <p className='text-gray-700 mb-2'>{formatDate(selectedEvent?.date)}</p>
               </div>
 
               <div className='border-b space-y-2 border-gray-300 w-full'>
                 <h1 className='uppercase font-semibold text-xl'>Price</h1>
                 <p className='text-gray-700 mb-2'>
-                  {selectedEvent.currency}{selectedEvent.price}
+                  {selectedEvent?.currency}{selectedEvent?.price}
                 </p>
               </div>
 
