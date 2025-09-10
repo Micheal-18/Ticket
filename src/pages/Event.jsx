@@ -11,16 +11,19 @@ import PaystackPayment from "../components/PaystackPayment";
 
 const Event = ({ currentUser, events, setEvents }) => {
   const isAdmin = useAdmin();
-  const [open, setOpen] = useState(false)
-  const [openTicket, setOpenTicket] = useState()
+  const [open, setOpen] = useState(false);
+  const [openTicket, setOpenTicket] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
-  const handleOpenTicket = () => {
-    setOpenTicket(true)
-  }
+  const handleOpenTicket = (event) => {
+    setSelectedEvent(event);
+    setOpenTicket(true);
+  };
 
   const closeOpenTicket = () => {
-    setOpenTicket(false)
-  }
+    setSelectedEvent(null);
+    setOpenTicket(false);
+  };
 
   // get details from firestore db
   useEffect(() => {
@@ -70,47 +73,63 @@ const Event = ({ currentUser, events, setEvents }) => {
 
 
   return (
-    <section data-aos="fade-out"  className='relative min-h-screen w-full flex flex-col lg:mt-5 mt-4 flex-1 custom-scrollbar  z-10'>
-      {openTicket && (
-        <div data-aos="fade-out"  className='absolute left-0 w-full h-full backdrop-blur-xs flex justify-center items-center z-50'>
-          {events.map((Tick) => (
-            <div key={Tick.id} className='relative w-full lg:top-1/4 top-1/2  flex justify-center items-center'>
-              <div className='flex flex-col bg-white space-y-6 custom-scrollbar p-6 rounded-lg shadow-lg relative w-[80%] h-[100%]'>
-                <div className='text-gray-500 text-2xl absolute top-4 right-4 cursor-pointer hover:scale-105' onClick={closeOpenTicket}>
-                  <FiX />
-                </div>
-                <div className='flex justify-center overflow-hidden rounded-xl'>
-                  <img src={Tick.photoURL} alt={Tick.name} className='object-cover w-[150px] h-[150px] hover:scale-105 duration-500 rounded-2xl' />
-                </div>
-                <h2 className='text-2xl text-center uppercase font-bold mb-4'>{Tick.name}</h2>
-                <div className='border-b space-y-2 border-gray-300 w-full'>
-                  <h1 className='uppercase font-semibold text-xl'>Description</h1>
-                  <p className='text-gray-700 mb-2'>{Tick.description}</p>
-                </div>
-                <div className='border-b space-y-2 border-gray-300 w-full'>
-                  <h1 className=' uppercase font-semibold text-xl'>Category</h1>
-                  <p className='text-gray-700 mb-2'>{Tick.category}</p>
-                </div>
-                <div className='border-b space-y-2 border-gray-300 w-full'>
-                  <h1 className='uppercase font-semibold text-xl'>Location</h1>
-                  <p className='text-gray-700 mb-2'>{Tick.location}</p>
-                </div>
-                <div className='border-b  space-y-2 border-gray-300 w-full'>
-                  <h1 className='uppercase font-semibold text-xl'>Date</h1>
-                  <p className='text-gray-700 mb-2'>{formatDate(Tick.date)}</p>
-                </div>
-                <div className='border-b space-y-2 border-gray-300 w-full'>
-                  <h1 className='uppercase font-semibold text-xl'>Price</h1>
-                  <p className='text-gray-700 mb-2'>{Tick.currency}{Tick.price}</p>
-                </div>
-
-                <PaystackPayment events={Tick} currentUser={currentUser} />
+    <section data-aos="fade-out" className='relative min-h-screen w-full flex flex-col lg:mt-5 mt-4 flex-1 custom-scrollbar  z-10'>
+      {openTicket && selectedEvent && (
+        <div className='fixed inset-0 left-0 w-full h-full backdrop-blur-xs flex justify-center items-center z-50'>
+          <div className='relative w-full lg:top-1/4 top-1/8 flex justify-center items-center'>
+            <div className='flex flex-col bg-white space-y-6 p-6 rounded-lg shadow-lg relative w-[80%] h-[100%]'>
+              <div
+                className='text-gray-500 text-2xl absolute top-4 right-4 cursor-pointer hover:scale-105'
+                onClick={closeOpenTicket}
+              >
+                <FiX />
               </div>
-            </div>
-          ))}
-        </div>
 
+              <div className='flex justify-center overflow-hidden rounded-xl'>
+                <img
+                  src={selectedEvent.photoURL}
+                  alt={selectedEvent.name}
+                  className='object-cover w-[150px] h-[150px] hover:scale-105 duration-500 rounded-2xl'
+                />
+              </div>
+
+              <h2 className='text-2xl text-center uppercase font-bold mb-4'>
+                {selectedEvent.name}
+              </h2>
+
+              <div className='border-b space-y-2 border-gray-300 w-full'>
+                <h1 className='uppercase font-semibold text-xl'>Description</h1>
+                <p className='text-gray-700 mb-2'>{selectedEvent.description}</p>
+              </div>
+
+              <div className='border-b space-y-2 border-gray-300 w-full'>
+                <h1 className='uppercase font-semibold text-xl'>Category</h1>
+                <p className='text-gray-700 mb-2'>{selectedEvent.category}</p>
+              </div>
+
+              <div className='border-b space-y-2 border-gray-300 w-full'>
+                <h1 className='uppercase font-semibold text-xl'>Location</h1>
+                <p className='text-gray-700 mb-2'>{selectedEvent.location}</p>
+              </div>
+
+              <div className='border-b space-y-2 border-gray-300 w-full'>
+                <h1 className='uppercase font-semibold text-xl'>Date</h1>
+                <p className='text-gray-700 mb-2'>{formatDate(selectedEvent.date)}</p>
+              </div>
+
+              <div className='border-b space-y-2 border-gray-300 w-full'>
+                <h1 className='uppercase font-semibold text-xl'>Price</h1>
+                <p className='text-gray-700 mb-2'>
+                  {selectedEvent.currency}{selectedEvent.price}
+                </p>
+              </div>
+
+              <PaystackPayment events={selectedEvent} currentUser={currentUser} />
+            </div>
+          </div>
+        </div>
       )}
+
       <div className='flex flex-col space-y-3 p-4'>
         <div className='space-y-6'>
           <p className='font-regular  text-sm text-gray-500'>
@@ -131,7 +150,7 @@ const Event = ({ currentUser, events, setEvents }) => {
         </div>
 
         <div className='flex justify-center items-center mt-8  w-full max-w-6xl '>
-          <div data-aos="fade-up"  className='grid grid-cols-1 md:grid-cols-2 md:gap-10 gap-6 w-full'>
+          <div data-aos="fade-up" className='grid grid-cols-1 md:grid-cols-2 md:gap-10 gap-6 w-full'>
             {events.map((event) => (
               <div key={event.id} className='flex items-center  justify-between flex-1 lg:gap-10 gap-4 relative lg:px-8 px-2 w-full h-[200px] bg-[#eeeeee] rounded-3xl'>
                 {isAdmin && (
@@ -145,7 +164,13 @@ const Event = ({ currentUser, events, setEvents }) => {
                   <p className='md:text-lg text-md font-regular text-gray-500 flex gap-2 items-center'><FaLocationArrow />{event.location}</p>
                   <span className='flex  justify-between items-center lg:gap-4 gap-2'>
                     <p className='font-bold text-lg text-orange-500'>{event.currency}{event.price}</p>
-                    <button onClick={handleOpenTicket} className='bg-orange-500 p-2 rounded-lg hover:scale-105 active:scale-90'>View Ticket</button>
+                    <button
+                      onClick={() => handleOpenTicket(event)}
+                      className='bg-orange-500 p-2 rounded-lg hover:scale-105 active:scale-90'
+                    >
+                      View Ticket
+                    </button>
+
                   </span>
                 </span>
 

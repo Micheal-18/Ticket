@@ -1,104 +1,162 @@
 // src/pages/Verify.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { auth } from "../firebase/firebase";
 import { sendEmailVerification } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import { useNavigate } from "react-router-dom";
 
-const Verify = ({
-  email,
-  setStep: controlledSetStep,
-  error: controlledError,
-  setError: controlledSetError,
-  resendMessage: controlledResendMessage,
-  setResendMessage: controlledSetResendMessage,
-}) => {
-  // fallback local states if parent didn't pass them
-  const [localError, setLocalError] = useState("");
-  const [localResendMessage, setLocalResendMessage] = useState("");
-  const navigate = useNavigate()
+const Verify = ({ email }) => {
+  const [status, setStatus] = useState({ type: "", message: "" });
+  const [cooldown, setCooldown] = useState(0);
+  const navigate = useNavigate();
 
-  const setStep = controlledSetStep ?? (() => {});
-  const error = controlledError ?? localError;
-  const setError = controlledSetError ?? setLocalError;
-  const resendMessage = controlledResendMessage ?? localResendMessage;
-  const setResendMessage = controlledSetResendMessage ?? setLocalResendMessage;
+  // ✅ Prevent spamming resend
+  useEffect(() => {
+    if (cooldown > 0) {
+      const timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [cooldown]);
+
+  // ✅ Auto-redirect if already verified
+  useEffect(() => {
+    const checkVerified = async () => {
+      const user = auth.currentUser;
+      if (user) {
+        await user.reload();
+        if (user.emailVerified) {
+          navigate("/");
+        }
+      }
+    };
+    checkVerified();
+  }, [navigate]);
 
   const resendVerificationEmail = async () => {
-    setResendMessage("");
-    setError("");
+    if (cooldown > 0) return;
+    setStatus({ type: "", message: "" });
+
     try {
       const user = auth.currentUser;
       if (!user) {
-        setResendMessage("Please log in first to resend the email.");
-        setStep("login");
+        setStatus({
+          type: "error",
+          message: "Please log in first to resend the email.",
+        });
+        navigate("/Login");
         return;
       }
+
       await sendEmailVerification(user, {
         url: `${window.location.origin}/`,
         handleCodeInApp: false,
       });
-      setResendMessage("📩 Verification email sent again!");
+
+      setStatus({ type: "success", message: "📩 Verification email sent again!" });
+      setCooldown(30); // start cooldown
     } catch (error) {
       console.error("Resend error:", error);
-      setResendMessage("❌ Failed to resend email. Try again later.");
+      setStatus({
+        type: "error",
+        message: "❌ Failed to resend email. Try again later.",
+      });
     }
   };
 
   const iVerifiedAlready = async () => {
-    setError("");
+    setStatus({ type: "", message: "" });
+
     try {
       const user = auth.currentUser;
       if (!user) {
-        setError("Session expired. Please log in.");
-       navigate("/Login");
+        setStatus({ type: "error", message: "Session expired. Please log in." });
+        navigate("/Login");
         return;
       }
+
       await user.reload();
+
       if (user.emailVerified) {
-        // mark Firestore
-        try {
-          await setDoc(doc(db, "users", user.uid), { verified: true }, { merge: true });
-        } catch (e) {
-          /* ignore */
-        }
+        // mark Firestore with timestamp
+        await setDoc(
+          doc(db, "users", user.uid),
+          { verified: true, verifiedAt: new Date().toISOString() },
+          { merge: true }
+        );
         navigate("/");
       } else {
-        setError("Still not verified. Please click the link in your email.");
+        setStatus({
+          type: "error",
+          message: "⚠️ Still not verified. Please click the link in your email.",
+        });
       }
     } catch (e) {
       console.error(e);
-      setError("Could not check verification status. Try again.");
+      setStatus({
+        type: "error",
+        message: "❌ Could not check verification status. Try again.",
+      });
     }
   };
 
   return (
     <div className="max-w-md mx-auto mt-10 bg-white rounded-2xl shadow-lg p-8 text-center">
+      {/* Step Progress */}
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex-1 h-2 bg-green-500 rounded-l-full"></div>
+        <div className="flex-1 h-2 bg-green-500"></div>
+        <div className="flex-1 h-2 bg-gray-300 rounded-r-full"></div>
+      </div>
+
       <h2 className="text-2xl font-bold text-green-600 mb-4">Almost done 🎉</h2>
       <p className="text-gray-600 mb-6">
-        We sent a verification link to <span className="font-semibold">{email}</span>.
+        We sent a verification link to{" "}
+        <span className="font-semibold">{email}</span>.
         <br /> Please check your inbox to verify your account.
-        <br /> “⚠️ If you don’t see the verification email, please check your Spam or Promotions folder.”
+        <br /> <span className="text-sm">
+          ⚠️ If you don’t see it, check your Spam or Promotions folder.
+        </span>
       </p>
 
-      {error && <div className="bg-red-100 text-red-600 p-2 rounded mb-4">{error}</div>}
-      {resendMessage && <p className="text-sm text-green-600 mb-2">{resendMessage}</p>}
+      {/* Status message */}
+      {status.message && (
+        <div
+          className={`p-2 rounded mb-4 ${
+            status.type === "error"
+              ? "bg-red-100 text-red-600"
+              : "bg-green-100 text-green-600"
+          }`}
+        >
+          {status.message}
+        </div>
+      )}
 
+      {/* Buttons */}
       <div className="flex flex-col gap-2">
         <button
           onClick={resendVerificationEmail}
-          className="w-full bg-orange-500 text-white rounded-xl py-2 active:scale-90 hover:bg-orange-600 hover:scale-105 transition"
+          disabled={cooldown > 0}
+          className={`w-full rounded-xl py-2 active:scale-90 transition ${
+            cooldown > 0
+              ? "bg-gray-400 text-white cursor-not-allowed"
+              : "bg-orange-500 text-white hover:bg-orange-600 hover:scale-105"
+          }`}
         >
-          📩 Resend verification email
+          {cooldown > 0 ? `Wait ${cooldown}s ⏳` : "📩 Resend verification email"}
         </button>
+
         <button
           onClick={iVerifiedAlready}
-          className="w-full bg-gray-100 rounded-xl py-2 active:scale-90 hover:bg-orange-600 hover:scale-105 transition"
+          className="w-full bg-gray-100 rounded-xl py-2 active:scale-90 hover:bg-green-600 hover:text-white hover:scale-105 transition"
         >
           I verified already ✅
         </button>
-        <button onClick={() => navigate("/Login")} className="w-full cursor-pointer underline font-bold text-sm mt-2">
+
+        <button
+          onClick={() => navigate("/Login")}
+          className="w-full cursor-pointer underline font-bold text-sm mt-2"
+        >
           Go to login
         </button>
       </div>
