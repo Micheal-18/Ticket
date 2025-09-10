@@ -11,7 +11,7 @@ const Guide = () => {
 
         {/* Section 1 */}
         <section>
-          <h2 className="text-xl font-semibold mb-2">1. Buying a Ticket</h2>
+          <h2 className="text-xl text-[#333333] font-semibold mb-2">1. Buying a Ticket</h2>
           <ol className="list-decimal list-inside space-y-1 text-gray-700">
             <li>Go to the <strong>Airways Events website</strong>.</li>
             <li>Select the <strong>event</strong> you want to attend.</li>
@@ -31,7 +31,7 @@ const Guide = () => {
 
         {/* Section 2 */}
         <section>
-          <h2 className="text-xl font-semibold mb-2">2. Receiving Your Ticket</h2>
+          <h2 className="text-xl text-[#333333] font-semibold mb-2">2. Receiving Your Ticket</h2>
           <p className="text-gray-700">The email will contain:</p>
           <ul className="list-disc list-inside ml-5 text-gray-700">
             <li>✅ Ticket details (type, price, and reference number)</li>
@@ -44,7 +44,7 @@ const Guide = () => {
 
         {/* Section 3 */}
         <section>
-          <h2 className="text-xl font-semibold mb-2">3. At the Event</h2>
+          <h2 className="text-xl text-[#333333] font-semibold mb-2">3. At the Event</h2>
           <ol className="list-decimal list-inside space-y-1 text-gray-700">
             <li>Go to the entry gate with your QR code (on your phone or printed).</li>
             <li>An event staff member will scan your QR code.</li>
@@ -61,7 +61,7 @@ const Guide = () => {
 
         {/* Section 4 */}
         <section>
-          <h2 className="text-xl font-semibold mb-2">4. Important Notes</h2>
+          <h2 className="text-xl text-[#333333] font-semibold mb-2">4. Important Notes</h2>
           <ul className="list-disc list-inside ml-5 text-gray-700">
             <li>Each ticket can only be used <strong>once</strong>.</li>
             <li>
