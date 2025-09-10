@@ -42,10 +42,10 @@ const Navbar = ({ currentUser }) => {
   ]
 
   return (
-    <section className='sticky w-full bg-[#eeeeee] flex top-0 z-50'>
-      <div className='flex w-full items-center lg:justify-center flex-1 border border-x-transparent border-b-4 lg:border-b-transparent border-b-gray-700 justify-between px-6 font-bold text-gray-900'>
-        <div className='border py-10 lg:py-5.5  lg:px-20 border-x-transparent lg:border-x-black lg:border-t-transparent border-y-transparent lg:border-y-black'>
-          <a href='/' className='cursor-pointer text-black text-lg'>Airticks<span className='text-orange-500'>.event</span></a>
+    <section className='sticky w-full  flex top-0 z-50'>
+      <div className='flex w-full items-center lg:justify-center flex-1 border border-x-transparent border-b-4 lg:border-b-transparent border-b-gray-700 justify-between px-6 font-bold '>
+        <div className='lg:border py-10 lg:py-5.5  lg:px-20 border-t-transparent '>
+          <a href='/' className='cursor-pointer text-lg'>Airticks<span className='text-orange-500'>.event</span></a>
         </div>
         <div className='hidden lg:flex'>
           {navItems.map((item, idx) => (

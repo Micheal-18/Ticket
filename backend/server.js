@@ -79,7 +79,7 @@ app.post("/api/purchase", async (req, res) => {
   <div style="font-family: Arial, sans-serif; line-height:1.6; max-width:600px; margin:auto; border:1px solid #ddd; border-radius:12px; padding:20px;">
     <h2 style="color:#2C3E50; text-align:center;">🎫 Your Ticket is Confirmed!</h2>
     <p>Hello,</p>
-    <p>Thank you for purchasing a ticket with <b>Airways Events</b>. Below are your ticket details:</p>
+    <p>Thank you for purchasing a ticket with <b>Airticks Event</b>. Below are your ticket details:</p>
     
     <table style="width:100%; border-collapse:collapse; margin:20px 0;">
       <tr><td><b>Event ID:</b></td><td>${eventId}</td></tr>
@@ -114,7 +114,7 @@ app.post("/api/purchase", async (req, res) => {
 
 
     await transporter.sendMail({
-      from: `"Airways Events" <${process.env.EMAIL_USER}>`,
+      from: `"Airticks Event" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: "Your Ticket Confirmation",
       html: htmlTemplate,

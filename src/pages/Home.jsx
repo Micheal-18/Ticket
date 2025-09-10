@@ -32,7 +32,7 @@ const Home = () => {
   return (
     <>
       <section className='relative min-h-screen w-full flex flex-col lg:mt-5 mt-4 flex-1 items-center justify-center z-10'>
-        <header data-aos="zoom-out"  className='flex flex-1 flex-col items-center justify-center text-black  uppercase space-y-3'>
+        <header data-aos="zoom-out"  className='flex flex-1 flex-col items-center justify-center  uppercase space-y-3'>
           <h1 className='lg:text-9xl md:text-8xl text-5xl tracking-tighter font-bold'>airticks<span className='text-orange-500'>.event</span></h1>
           <div className='border-y-2 py-4 '>
             <p className='lg:text-6xl md:text-5xl text-2xl font-semibold'>magical meeting places</p>
@@ -47,7 +47,7 @@ const Home = () => {
           <div className='flex custom-scrollbar py-8 space-x-4'>
             <a className='p-4 uppercase bg-black text-[#eeeeee] rounded-full'>All</a>
             {categories.map((cate) => (
-              <a className='p-4  uppercase rounded-full bg-[#eeeeee]' href={cate.link}>{cate.title}</a>
+              <a className='p-4  uppercase rounded-full text-[#333333] bg-[#eeeeee]' href={cate.link}>{cate.title}</a>
             ))}
           </div>
         </div>

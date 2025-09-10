@@ -3,7 +3,7 @@ import React from "react";
 
 const Guide = () => {
   return (
-    <div data-aos="fade-out"  className="min-h-screen bg-gray-50 flex justify-center items-center py-10 px-4">
+    <div data-aos="fade-out"  className="min-h-screen  flex justify-center items-center py-10 px-4">
       <div className="max-w-3xl w-full bg-white shadow-xl rounded-2xl p-8 space-y-8">
         <h1 className="text-3xl font-bold text-center text-gray-900">
           🎟 AirTicks<span className="text-orange-500">Events</span> – User Guide

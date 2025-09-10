@@ -188,8 +188,8 @@ const Register = ({ step, setStep }) => {
 
   return (
     <section data-aos="fade-out"  className='relative w-full grid grid-cols-1 md:grid-cols-2 h-screen '>
-      <div className='flex flex-col flex-1  custom-scrollbar space-y-10 px-10 py-6 bg-[#eeeeee]'>
-        <a className='text-black  text-lg font-semibold '>Airticks<span className='text-orange-500'>.events</span></a>
+      <div className='flex flex-col flex-1  custom-scrollbar space-y-10 px-10 py-6 '>
+        <a className='text-lg font-semibold '>Airticks<span className='text-orange-500'>.events</span></a>
         {/* Progress Indicator */}
         <div className="flex justify-between mb-6">
           {steps.map((s, idx) => (
@@ -217,7 +217,7 @@ const Register = ({ step, setStep }) => {
                     <div
                       key={acc.id}
                       onClick={() => setSelected(acc.id)}
-                      className={`flex flex-1 flex-col items-center space-y-6 py-6 lg:px-0 px-5   md:w-[300px] h-[320px] rounded-lg border shadow-md cursor-pointer transition 
+                      className={`flex flex-1 flex-col items-center space-y-6 py-6 lg:px-0 px-5 shadow-lg   md:w-[300px] h-[320px] rounded-lg border cursor-pointer transition 
                   ${selected === acc.id ? "text-orange-500 border-orange-500 bg-white" : "border-gray-200 "}`}
                     >
                       <div className='flex flex-col items-center justify-center space-y-6 px-2'>
