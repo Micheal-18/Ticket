@@ -75,7 +75,7 @@ const Event = ({ currentUser, events, setEvents }) => {
   return (
     <section data-aos="fade-out" className='relative min-h-screen w-full flex flex-col lg:mt-5 mt-4 flex-1 custom-scrollbar  z-10'>
       {openTicket && selectedEvent && (
-        <div className='fixed inset-0 left-0 w-full h-full backdrop-blur-xs flex justify-center items-center z-[9999]'>
+        <div className='absolute left-0 w-full h-full backdrop-blur-xs flex justify-center items-center z-[9999]'>
           <div className='relative w-full lg:top-1/4 top-1/8 flex justify-center items-center'>
             <div className='flex flex-col bg-white space-y-6 p-6 rounded-lg shadow-lg relative w-[80%] h-[100%]'>
               <div
