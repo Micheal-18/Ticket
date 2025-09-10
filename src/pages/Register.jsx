@@ -189,7 +189,7 @@ const Register = ({ step, setStep }) => {
   return (
     <section data-aos="fade-out"  className='relative w-full grid grid-cols-1 md:grid-cols-2 h-screen '>
       <div className='flex flex-col flex-1  custom-scrollbar space-y-10 px-10 py-6 bg-[#eeeeee]'>
-        <a className='text-black  text-lg font-semibold '>Airticks<span className='text-orange-500'>Events</span></a>
+        <a className='text-black  text-lg font-semibold '>Airticks<span className='text-orange-500'>.events</span></a>
         {/* Progress Indicator */}
         <div className="flex justify-between mb-6">
           {steps.map((s, idx) => (
