@@ -166,7 +166,7 @@ const CreateEvent = () => {
           </div>
         </div>
         {openDate && (<div className='flex justify-center'>
-          <Calendar onChange={handleDate} value={date} /></div>
+          <Calendar onChange={handleDate} value={date} className='text-[#333333]'/></div>
         )}
 
 

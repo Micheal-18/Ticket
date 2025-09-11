@@ -36,30 +36,30 @@ const Tracking = () => {
   return (
     <div className="flex items-center justify-center w-full">
       <div className="flex flex-col items-center justify-center w-full lg:w-2/3 p-4 border border-gray-300 rounded-lg shadow-lg">
-        <h1 className="text-2xl font-bold mb-6">📊 Event Tracking</h1>
+        <h1 className="text-2xl text-[#eeeeee] font-bold mb-6">📊 Event Tracking</h1>
 
         {/* Filter Controls */}
         <div className="flex gap-4 mb-6">
           <button
             onClick={() => setFilter("all")}
-            className={`px-4 py-2 rounded-lg ${
-              filter === "all" ? "bg-blue-500 text-white" : "bg-gray-200"
+            className={`px-4 py-2 rounded-lg active:scale-90 ${
+              filter === "all" ? "bg-blue-500 text-[#eeeeee]" : "bg-gray-200"
             }`}
           >
             All Events
           </button>
           <button
             onClick={() => setFilter("revenue")}
-            className={`px-4 py-2 rounded-lg ${
-              filter === "revenue" ? "bg-green-500 text-white" : "bg-gray-200"
+            className={`px-4 py-2 rounded-lg active:scale-90 ${
+              filter === "revenue" ? "bg-green-500 text-[#333333]" : "bg-gray-200"
             }`}
           >
             Top Revenue
           </button>
           <button
             onClick={() => setFilter("tickets")}
-            className={`px-4 py-2 rounded-lg ${
-              filter === "tickets" ? "bg-purple-500 text-white" : "bg-gray-200"
+            className={`px-4 py-2 rounded-lg active:scale-90 ${
+              filter === "tickets" ? "bg-purple-500 text-[#333333]" : "bg-gray-200"
             }`}
           >
             Most Tickets Sold
@@ -77,7 +77,7 @@ const Tracking = () => {
               key={event.id}
               className="h-[200px] flex flex-col items-center justify-center mb-6 rounded-lg bg-gray-100 w-full p-4"
             >
-              <p className="text-xl font-semibold mb-2">{event.name}</p>
+              <p className="text-xl text-[#333333] font-semibold mb-2">{event.name}</p>
               <p className="text-gray-600">
                 Status:{" "}
                 <span className="text-green-500 font-semibold">
