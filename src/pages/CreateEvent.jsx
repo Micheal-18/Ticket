@@ -1,21 +1,28 @@
 import React, { useRef, useState } from 'react'
-import Calendar from "react-calendar";
-import "react-calendar/dist/Calendar.css"; // default styling
+// import Calendar from "react-calendar";
+// import "react-calendar/dist/Calendar.css"; // default styling
 import { FaCalendarCheck } from 'react-icons/fa6'
 import { RiArrowLeftFill } from 'react-icons/ri'
 import { uploadToCloudinary } from "../utils/cloudinaryUpload";
 import { doc, setDoc } from "firebase/firestore";
 import { db, auth } from "../firebase/firebase";
 import { useNavigate } from 'react-router-dom';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { format } from "date-fns";
+import { formatEventStatus } from '../utils/formatEventRange';
 
 const CreateEvent = () => {
   const [openDate, setOpenDate] = useState(false);
   const [date, setDate] = useState(new Date());
+  const [startTime, setStartTime] = useState(new Date());
+  const [endTime, setEndTime] = useState(new Date());
   const [currency, setCurrency] = useState("₦");
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState("");
+  const [organizer, setOrganizer] = useState("");
   const [photo, setPhoto] = useState(null);
   const [price, setPrice] = useState("");
   const navigate = useNavigate()
@@ -73,6 +80,13 @@ const CreateEvent = () => {
         }
       }
 
+     // Combine selected date with startTime
+const finalStart = new Date(date);
+finalStart.setHours(startTime.getHours(), startTime.getMinutes());
+
+// Combine selected date with endTime
+const finalEnd = new Date(date);
+finalEnd.setHours(endTime.getHours(), endTime.getMinutes());
 
 
       // Save event in Firestore
@@ -81,10 +95,13 @@ const CreateEvent = () => {
         category,
         description,
         location,
+        organizer,
         price: parseFloat(price),
         currency,
         photoURL,
-        date: date.toISOString(),
+        date: date.toISOString(),       // main date
+        startTime: finalStart.toISOString(), // start datetime
+        endTime: finalEnd.toISOString(),
         createdBy: user.uid,
         ownerId: user.uid,
         createdAt: new Date().toISOString(),
@@ -96,6 +113,7 @@ const CreateEvent = () => {
       setCategory("");
       setDescription("");
       setLocation("");
+      setOrganizer("");
       setPrice("");
       setPhoto(null);
       setDate(new Date());
@@ -123,9 +141,9 @@ const CreateEvent = () => {
         <div className='flex items-center justify-between py-4 space-x-2 border-b '>
           <label htmlFor="category">Category:</label>
           <select onChange={(e) => setCategory(e.target.value)} value={category} className=' py-4 border rounded-lg' required>
-            <option value="">Choose</option>
+            <option className='bg-gray-700' value="">Choose</option>
             {Category.map((cate, idx) => (
-              <option key={idx} value={cate}>
+              <option className='bg-gray-700' key={idx} value={cate}>
                 {cate}
               </option>
             ))}
@@ -148,19 +166,61 @@ const CreateEvent = () => {
           <input required onChange={(e) => setLocation(e.target.value)} type='text' value={location} placeholder='Address' className='w-full p-6 flex justify-center' />
         </div>
 
+        <div className='flex items-center p-2 w-full space-x-2 border-b '>
+          <label className='flex' htmlFor="Location">Organized by:</label>
+          <input required onChange={(e) => setOrganizer(e.target.value)} type='text' value={organizer} placeholder='Organizer' className='w-full p-6 flex justify-center' />
+        </div>
+
         {/* Calendar */}
         <div className='relative flex justify-between border-b py-6'>
           <div className='flex items-center space-x-4'>
             <h1 className='font-semibold text-xl uppercase '>Dates:</h1>
-            <p className="text-sm text-gray-600">{date.toDateString()}</p>
+            <p className="text-sm text-gray-600">
+              {startTime && !endTime && `Starts: ${startDate.toLocaleDateString()} at ${startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
+              {endTime && `From ${startTime.toLocaleDateString()} ${startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} →  ${endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
+              {formatEventStatus(startTime, endTime)}
+            </p>
           </div>
           <div onClick={handleOpenDate} className='border p-2 space-x-2 flex items-center'>
             <FaCalendarCheck className='text-gray-500' />
             <h1 className='uppercase font-semibold text-xl'>Calendar</h1>
           </div>
         </div>
-        {openDate && (<div className='flex justify-center'>
-          <Calendar onChange={handleDate} value={date} className='text-[#333333]'/></div>
+        {openDate && (<div className='flex flex-col  gap-2  justify-center'>
+          {/* Date */}
+          <DatePicker
+            selected={date}
+            onChange={(newDate) => setDate(newDate)}
+            dateFormat="MMMM d, yyyy"
+            className='text-white cursor-pointer bg-gray-800 p-4 rounded-lg'
+          />
+
+
+
+          {/* Start Time */}
+          <DatePicker
+            selected={startTime}
+            onChange={(time) => setStartTime(time)}
+            showTimeSelect
+            showTimeSelectOnly
+            timeIntervals={30}
+            timeCaption="Start Time"
+            dateFormat="h:mm aa"
+            className='text-white cursor-pointer bg-gray-800 p-4 rounded-lg'
+          />
+
+          {/* End Time */}
+          <DatePicker
+            selected={endTime}
+            onChange={(time) => setEndTime(time)}
+            showTimeSelect
+            showTimeSelectOnly
+            timeIntervals={30}
+            timeCaption="End Time"
+            dateFormat="h:mm aa"
+            className='text-white cursor-pointer bg-gray-800 p-4 rounded-lg'
+          />
+        </div>
         )}
 
 
@@ -188,7 +248,6 @@ const CreateEvent = () => {
             min="0"
           />
         </div>
-
 
         <button type='submit' className='bg-orange-500 text-white py-3 rounded-lg font-bold active:scale-90 hover:bg-orange-600'>
           Save Event

@@ -4,11 +4,12 @@ import astera from "../assets/Astera.jpg"
 import rep from "../assets/rep.jpg"
 import { db } from "../firebase/firebase";
 import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
-import { FaCalendar, FaCaretDown, FaLocationArrow, FaLocationPin } from 'react-icons/fa6'
+import { FaCalendar, FaCaretDown, FaClock, FaLocationArrow, FaLocationPin } from 'react-icons/fa6'
 import { useAdmin } from "../hooks/useAdmin";
 import { FiX } from 'react-icons/fi';
 import walkGif from "../assets/dog.gif"
 import PaystackPayment from "../components/PaystackPayment";
+import { formatEventStatus } from '../utils/formatEventRange';
 
 const Event = ({ currentUser, events, setEvents }) => {
   const isAdmin = useAdmin();
@@ -43,24 +44,24 @@ const Event = ({ currentUser, events, setEvents }) => {
 
     fetchEvents();
   }, []);
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const day = date.getDate();
-    const month = date.toLocaleString("default", { month: "long" });
-    const year = date.getFullYear();
+  // const formatDate = (dateString) => {
+  //   const date = new Date(dateString);
+  //   const day = date.getDate();
+  //   const month = date.toLocaleString("default", { month: "long" });
+  //   const year = date.getFullYear();
 
-    const getOrdinal = (n) => {
-      if (n > 3 && n < 21) return "th";
-      switch (n % 10) {
-        case 1: return "st";
-        case 2: return "nd";
-        case 3: return "rd";
-        default: return "th";
-      }
-    };
+  //   const getOrdinal = (n) => {
+  //     if (n > 3 && n < 21) return "th";
+  //     switch (n % 10) {
+  //       case 1: return "st";
+  //       case 2: return "nd";
+  //       case 3: return "rd";
+  //       default: return "th";
+  //     }
+  //   };
 
-    return `${day}${getOrdinal(day)}, ${month}, ${year}`;
-  };
+  //   return `${day}${getOrdinal(day)}, ${month}, ${year}`;
+  // };
 
   const deleteEvent = async (eventId) => {
     try {
@@ -114,8 +115,31 @@ const Event = ({ currentUser, events, setEvents }) => {
               </div>
 
               <div className='border-b space-y-2 border-gray-300 w-full'>
-                <h1 className='uppercase font-semibold text-xl'>Date</h1>
-                <p className='text-gray-700 mb-2'>{formatDate(selectedEvent?.date)}</p>
+                <h1 className='uppercase font-semibold text-xl'>Organized by</h1>
+                <p className='text-gray-700 mb-2'>{selectedEvent?.organizer}</p>
+              </div>
+
+              <div className='border-b space-y-2 border-gray-300 w-full'>
+                <h1 className='uppercase font-semibold text-xl'>Date & Time</h1>
+                <p className="text-gray-700 mb-2">
+                  {new Date(selectedEvent.date).toLocaleDateString("en-US", {
+                    weekday: "short",
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                  {" | "}
+                  {new Date(selectedEvent.startTime).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                  {" → "}
+                  {new Date(selectedEvent.endTime).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </p>
+
               </div>
 
               <div className='border-b space-y-2 border-gray-300 w-full'>
@@ -161,8 +185,23 @@ const Event = ({ currentUser, events, setEvents }) => {
                 )}
                 <span className='space-y-2 flex flex-col'>
                   <h1 className='font-bold uppercase text-2xl w-[150px] truncate lg:w-auto lg:whitespace-normal lg:overflow-visible'>{event.name}</h1>
-                  <p className='md:text-lg text-sm font-regular text-gray-500 flex gap-2 items-center'><FaCalendar />{formatDate(event.date)}</p>
-                  <p className='md:text-lg text-md font-regular text-gray-500 flex gap-2 items-center'><FaLocationArrow />{event.location}</p>
+                  <p className='md:text-lg text-sm font-regular text-gray-500 flex gap-2 items-center'><FaCalendar /> {new Date(event.date).toLocaleDateString("en-US", {
+                    weekday: "short",
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}</p>
+                  <p className="text-sm text-gray-500 flex items-center gap-2">
+                    <FaClock />
+                    {formatEventStatus(event.startTime, event.endTime)}
+                  </p>
+                  <p className="md:text-lg text-md w-[200px] lg:w-auto font-normal text-gray-500 flex gap-2 items-center">
+                    <FaLocationArrow />
+                    <span className="truncate lg:whitespace-normal lg:overflow-visible">
+                      {event.location}
+                    </span>
+                  </p>
+
                   <span className='flex  justify-between items-center lg:gap-4 gap-2'>
                     <p className='font-bold text-lg text-orange-500'>{event.currency}{event.price}</p>
                     <button
@@ -196,9 +235,9 @@ const Event = ({ currentUser, events, setEvents }) => {
           </div>
         </div>
       </div>
-              <footer className='mt-10'>
-                <img src={walkGif} alt='walking gif' className='w-20 h-20 animation-walk' />
-              </footer>
+      <footer className='mt-10'>
+        <img src={walkGif} alt='walking gif' className='w-20 h-20 animation-walk' />
+      </footer>
     </section>
   )
 }
