@@ -9,6 +9,7 @@ import { auth, db } from '../firebase/firebase'; // make sure firebase.js is set
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { FaEye, FaEyeSlash } from 'react-icons/fa6';
 import Verify from './Verify';
+import walkGif from "../assets/dog.gif"
 
 const Register = ({ step, setStep }) => {
 
@@ -187,7 +188,7 @@ const Register = ({ step, setStep }) => {
 
 
   return (
-    <section data-aos="fade-out"  className='relative w-full grid grid-cols-1 md:grid-cols-2 h-screen '>
+    <section data-aos="fade-out" className='relative w-full grid grid-cols-1 md:grid-cols-2 h-screen '>
       <div className='flex flex-col flex-1  custom-scrollbar space-y-10 px-10 py-6 '>
         <a className='text-lg font-semibold '>Airticks<span className='text-orange-500'>.events</span></a>
         {/* Progress Indicator */}
@@ -207,7 +208,7 @@ const Register = ({ step, setStep }) => {
             <>
               <div className='flex flex-col space-y-4'>
                 <h1 className='font-bold md:text-5xl text-3xl'>Create an account</h1>
-                <p className='md:text-lg text-sm'>it's free to create an account and get started with Airways!</p>
+                <p className='md:text-lg text-sm'>it's free to create an account and get started with Airticks!</p>
               </div>
 
               <div className='flex flex-col space-y-4 '>
@@ -392,13 +393,16 @@ const Register = ({ step, setStep }) => {
             setStep={setStep}
           />
         )}
-
+        <footer className='mt-2'>
+          <img src={walkGif} alt='walking gif' className='w-20 h-20 animation-walk' />
+        </footer>
       </div>
 
       {/* Right side - Background Image */}
       <div className='hidden md:block w-[40%] h-screen fixed right-0 top-0'>
         <img src={pictureBg} className='object-cover w-full h-full' />
       </div>
+
     </section>
   )
 }

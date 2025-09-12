@@ -93,3 +93,16 @@ html, body {
     background-color: #eeeeee;
   }
 }
+
+@keyframes walk-across {
+    0% {
+      transform: translateX(-100vw);
+    }
+    100% {
+      transform: translateX(100vw);
+    }
+}
+
+.animation-walk {
+    animation: walk-across 10s linear infinite;
+}

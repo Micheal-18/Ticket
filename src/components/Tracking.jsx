@@ -34,8 +34,8 @@ const Tracking = () => {
   });
 
   return (
-    <div className="flex items-center justify-center w-full">
-      <div className="flex flex-col items-center justify-center w-full lg:w-2/3 p-4 border border-gray-300 rounded-lg shadow-lg">
+    <div className="flex items-center justify-center w-full mt-6">
+      <div className="flex flex-col items-center justify-center w-full lg:w-2/3 p-4 border-2 border-gray-300 rounded-lg shadow-lg">
         <h1 className="text-2xl text-[#eeeeee] font-bold mb-6">📊 Event Tracking</h1>
 
         {/* Filter Controls */}
@@ -43,23 +43,23 @@ const Tracking = () => {
           <button
             onClick={() => setFilter("all")}
             className={`px-4 py-2 rounded-lg active:scale-90 ${
-              filter === "all" ? "bg-blue-500 text-[#eeeeee]" : "bg-gray-200"
+              filter === "all" ? "bg-blue-500 text-[#eeeeee]" : "bg-gray-200 text-[#333333]"
             }`}
           >
             All Events
           </button>
           <button
             onClick={() => setFilter("revenue")}
-            className={`px-4 py-2 rounded-lg active:scale-90 ${
-              filter === "revenue" ? "bg-green-500 text-[#333333]" : "bg-gray-200"
+            className={`px-4 py-2 rounded-lg  active:scale-90 ${
+              filter === "revenue" ? "bg-green-500 text-[#eeeeee]" : "bg-gray-200 text-[#333333]"
             }`}
           >
             Top Revenue
           </button>
           <button
             onClick={() => setFilter("tickets")}
-            className={`px-4 py-2 rounded-lg active:scale-90 ${
-              filter === "tickets" ? "bg-purple-500 text-[#333333]" : "bg-gray-200"
+            className={`px-4 py-2 rounded-lg  active:scale-90 ${
+              filter === "tickets" ? "bg-purple-500 text-[#eeeeee]" : "bg-gray-200 text-[#333333]"
             }`}
           >
             Most Tickets Sold

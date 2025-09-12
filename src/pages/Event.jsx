@@ -7,6 +7,7 @@ import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
 import { FaCalendar, FaCaretDown, FaLocationArrow, FaLocationPin } from 'react-icons/fa6'
 import { useAdmin } from "../hooks/useAdmin";
 import { FiX } from 'react-icons/fi';
+import walkGif from "../assets/dog.gif"
 import PaystackPayment from "../components/PaystackPayment";
 
 const Event = ({ currentUser, events, setEvents }) => {
@@ -195,6 +196,9 @@ const Event = ({ currentUser, events, setEvents }) => {
           </div>
         </div>
       </div>
+              <footer className='mt-10'>
+                <img src={walkGif} alt='walking gif' className='w-20 h-20 animation-walk' />
+              </footer>
     </section>
   )
 }

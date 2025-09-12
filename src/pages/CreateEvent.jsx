@@ -21,8 +21,6 @@ const CreateEvent = () => {
   const navigate = useNavigate()
   const fileInputRef = useRef(null);
 
-
-
   const Category = ["Art", "Business", "Entertainment"]
   const currencies = ["₦", "$", "€"];
 
@@ -38,9 +36,6 @@ const CreateEvent = () => {
     setDate(selectedDate);
   };
 
-  // const handleCloseDate = () => {
-  //   setOpenDate(false)
-  // }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -144,7 +139,6 @@ const CreateEvent = () => {
 
         <div className='flex items-center py-4 space-x-4  border-b '>
           <label htmlFor="photo">Photos:</label>
-
           <input ref={fileInputRef} onChange={handlePhotoUpload} type='file' name='photo' accept='image/*' className='border w-[100%] p-2' />
 
         </div>

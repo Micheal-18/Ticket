@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
 import { FiMenu, FiX } from 'react-icons/fi'
-import { RiDashboardLine, RiLogoutBoxLine, RiProfileLine, RiQrScan2Line, RiQrScanLine, RiTicket2Line, RiUser3Line } from 'react-icons/ri';
+import {  RiLogoutBoxLine, RiQrScanLine, RiTicket2Line, RiUser3Line } from 'react-icons/ri';
 import { href, Link, useNavigate } from 'react-router-dom';
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase/firebase";
+import { FaMoneyBillTrendUp } from 'react-icons/fa6';
 
 
 const Navbar = ({ currentUser }) => {
@@ -44,12 +45,12 @@ const Navbar = ({ currentUser }) => {
   return (
     <section className='sticky w-full flex top-0 z-50'>
       <div className='flex w-full bg-gray-100 opacity-90 items-center lg:justify-center flex-1 border border-x-transparent border-b-4 lg:border-b-transparent border-b-gray-700 justify-between px-6 font-bold '>
-        <div className='lg:border py-10 lg:py-5.5  lg:px-20 border-t-transparent '>
+        <div className='lg:border border-black py-10 lg:py-5.5  lg:px-20 border-t-transparent  '>
           <a href='/' className='cursor-pointer text-[#333333] text-lg'>Airticks<span className='text-orange-500'>.event</span></a>
         </div>
         <div className='hidden lg:flex'>
           {navItems.map((item, idx) => (
-            <div key={idx} className='border  hover:bg-yellow-400 active:scale-90 hidden lg:flex border-t-transparent'>
+            <div key={idx} className='border text-[#333333]  hover:bg-yellow-400 active:scale-90 hidden lg:flex border-t-transparent'>
               <a href={item.href} className='py-6 px-16'>{item.id}</a>
             </div>
           ))}
@@ -62,7 +63,7 @@ const Navbar = ({ currentUser }) => {
               Register
             </a>
           ) : (
-            <div onClick={() => setDropdown(!dropdown)} className="relative flex items-center bg-orange-500 py-3 px-16">
+            <div onClick={() => setDropdown(!dropdown)} className="relative flex items-center bg-orange-500 active:scale-90 py-3 px-16">
               <h1 className='text-gray-700'>{currentUser?.fullName?.slice(0, 2)}</h1>
               <RiUser3Line
                 className="text-3xl cursor-pointer hover:scale-105"
@@ -78,7 +79,7 @@ const Navbar = ({ currentUser }) => {
                       <li onClick={() => navigate("/scanner")} className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-gray-100 cursor-pointer"><RiQrScanLine />Scanner</li>
                     )}
                     {currentUser?.isAdmin && (
-                      <li onClick={() => navigate("/tracking")} className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-gray-100 cursor-pointer"><RiQrScanLine />Tracking</li>
+                      <li onClick={() => navigate("/tracking")} className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-gray-100 cursor-pointer"><FaMoneyBillTrendUp/>Tracking</li>
                     )}
                     <li
                       onClick={handleLogout}
