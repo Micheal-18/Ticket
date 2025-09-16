@@ -96,10 +96,10 @@ html, body {
 
 @keyframes walk-across {
     0% {
-      transform: translateX(-100vw);
+      transform: translateX(-50vw);
     }
     100% {
-      transform: translateX(100vw);
+      transform: translateX(50vw);
     }
 }
 
