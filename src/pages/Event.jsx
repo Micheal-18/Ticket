@@ -16,6 +16,8 @@ const Event = ({ currentUser, events, setEvents }) => {
   const [open, setOpen] = useState(false);
   const [openTicket, setOpenTicket] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [selectedTicket, setSelectedTicket] = useState(null);
+
 
   const handleOpenTicket = (event) => {
     setSelectedEvent(event);
@@ -75,10 +77,11 @@ const Event = ({ currentUser, events, setEvents }) => {
 
 
   return (
-    <section data-aos="fade-out" className='relative min-h-screen w-full flex flex-col lg:mt-5 mt-4 flex-1 custom-scrollbar  z-10'>
+    <section data-aos="fade-out" className='relative min-h-screen w-full flex flex-col lg:mt-5 mt-4 flex-1  custom-scrollbar z-10'>
       {openTicket && selectedEvent && (
-        <div className='absolute left-0 w-full h-full backdrop-blur-xs flex justify-center items-center z-[9999]'>
-          <div className='relative w-full lg:top-1/4 top-1/8 flex justify-center items-center'>
+        <div className='fixed left-0 w-full h-full backdrop-blur-xs flex justify-center items-center z-[9999] custom-scrollbar'>
+          <div className='absolute on top-1/8'>
+            <div className='relative w-full  flex justify-center items-center'>
             <div className='flex flex-col bg-[#eeeeee] text-[#333333] space-y-6 p-6 rounded-lg shadow-lg relative w-[80%] h-[100%]'>
               <div
                 className=' text-2xl absolute top-4 right-4 cursor-pointer hover:scale-105'
@@ -87,11 +90,11 @@ const Event = ({ currentUser, events, setEvents }) => {
                 <FiX />
               </div>
 
-              <div className='flex justify-center overflow-hidden rounded-xl'>
+              <div className='flex justify-center overflow-hidden rounded-2xl'>
                 <img
                   src={selectedEvent?.photoURL}
                   alt={selectedEvent?.name}
-                  className='object-cover w-[150px] h-[150px] hover:scale-105 duration-500 rounded-2xl'
+                  className='object-cover w-1/2 hover:scale-105 duration-500 rounded-2xl'
                 />
               </div>
 
@@ -144,13 +147,33 @@ const Event = ({ currentUser, events, setEvents }) => {
 
               <div className='border-b space-y-2 border-gray-300 w-full'>
                 <h1 className='uppercase font-semibold text-xl'>Price</h1>
-                <p className='text-gray-700 mb-2'>
-                  {selectedEvent?.currency}{selectedEvent?.price}
-                </p>
+                {/* <p className='text-gray-700 mb-2'>
+                  {selectedEvent?.label}: {selectedEvent?.currency}{selectedEvent?.price}
+                </p> */}
+
+                <div className='space-y-2'>
+                  {selectedEvent?.price?.map((ticket) => (
+                    <button
+                      key={ticket.id}
+                      onClick={() => setSelectedTicket(ticket)} // 👈 track which ticket user picked
+                      className='w-full text-left p-2 border rounded-lg hover:bg-orange-100 active:scale-95'
+                    >
+                      {ticket.label}: {ticket.currency}{ticket.amount}
+                    </button>
+                  ))}
+                </div>
               </div>
 
-              <PaystackPayment events={selectedEvent} currentUser={currentUser} />
+              {/* <PaystackPayment  events={selectedEvent} currentUser={currentUser} /> */}
+              {selectedTicket && (
+                <PaystackPayment
+                  events={selectedEvent}
+                  ticket={selectedTicket} // 👈 pass the chosen ticket
+                  currentUser={currentUser}
+                />
+              )}
             </div>
+          </div>
           </div>
         </div>
       )}
@@ -175,16 +198,16 @@ const Event = ({ currentUser, events, setEvents }) => {
         </div>
 
         <div className='flex justify-center items-center mt-8  w-full max-w-6xl '>
-          <div data-aos="fade-up" className='grid grid-cols-1 md:grid-cols-2 md:gap-10 gap-6 w-full'>
+          <div data-aos="fade-up" className='grid grid-cols-1 md:grid-cols-2 md:gap-10 gap-6 w-full '>
             {events.map((event) => (
-              <div key={event.id} className='flex items-center  justify-between flex-1 lg:gap-10 gap-4 relative lg:px-8 px-2 w-full h-[200px] bg-[#eeeeee] text-[#333333] rounded-3xl'>
+              <div key={event.id} className='flex items-center justify-between flex-1 lg:gap-10 gap-4 relative lg:px-8 px-2 w-full bg-[#eeeeee] py-4  text-[#333333] rounded-3xl'>
                 {isAdmin && (
                   <div className='absolute top-1 right-1  cursor-pointer' onClick={() => setOpen(!open)}>
                     {open ? <FiX size={24} /> : <FaCaretDown size={24} />}
                   </div>
                 )}
                 <span className='space-y-2 flex flex-col'>
-                  <h1 className='font-bold uppercase text-2xl w-[150px] truncate lg:w-auto lg:whitespace-normal lg:overflow-visible'>{event.name}</h1>
+                  <h1 className='font-bold text-gray-700 uppercase text-2xl w-[150px] truncate lg:w-auto lg:whitespace-normal lg:overflow-visible'>{event.name}</h1>
                   <p className='md:text-lg text-sm font-regular text-gray-500 flex gap-2 items-center'><FaCalendar /> {new Date(event.date).toLocaleDateString("en-US", {
                     weekday: "short",
                     month: "short",
@@ -202,8 +225,15 @@ const Event = ({ currentUser, events, setEvents }) => {
                     </span>
                   </p>
 
-                  <span className='flex  justify-between items-center lg:gap-4 gap-2'>
-                    <p className='font-bold text-lg text-orange-500'>{event.currency}{event.price}</p>
+                  <span className='flex justify-between items-center'>
+                    {/* <p key={event.id} className='font-bold text-lg text-orange-500'>{event.label}: {event.currency}{event.price}</p>
+                    <div className="flex flex-col">
+                      {event.price?.map((ticket) => (
+                        <p key={ticket.id} className="font-bold text-lg text-orange-500">
+                          {ticket.label}: {ticket.currency}{ticket.amount}
+                        </p>
+                      ))}
+                    </div> */}
                     <button
                       onClick={() => handleOpenTicket(event)}
                       className='bg-orange-500 p-2 rounded-lg hover:scale-105 active:scale-90'
@@ -211,14 +241,7 @@ const Event = ({ currentUser, events, setEvents }) => {
                       View Ticket
                     </button>
 
-                  </span>
-                </span>
-
-                <span className='overflow-hidden rounded-xl'>
-                  <img src={event.photoURL} alt={event.name} className='object-cover w-[150px] h-[150px] hover:scale-105 duration-500 rounded-2xl' />
-                </span>
-
-                <div className='absolute flex left-4 -bottom-10 '>
+                    <div >
                   {/* ✅ Show delete button only for admins */}
                   {isAdmin && open && (
                     <button
@@ -229,6 +252,14 @@ const Event = ({ currentUser, events, setEvents }) => {
                     </button>
                   )}
                 </div>
+
+                  </span>
+                </span>
+
+                <span className='overflow-hidden rounded-xl'>
+                  <img src={event.photoURL} alt={event.name} className='object-cover w-[250px] h-[200px] hover:scale-105 duration-500 rounded-2xl' />
+                </span>
+
               </div>
             ))}
 

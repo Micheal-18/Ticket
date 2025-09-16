@@ -25,7 +25,7 @@ app.get("/", (req, res) => {
 
 app.post("/api/purchase", async (req, res) => {
   try {
-    const { reference, email, eventId } = req.body;
+    const { reference, email, eventId, ticketType} = req.body;
     console.log(req.body, "===>>>> body");
 
     console.log(reference)
@@ -59,11 +59,13 @@ app.post("/api/purchase", async (req, res) => {
     console.log("Event updated");
 
     // Save ticket in Firestore
+    
     const ticketRef = db.collection("tickets").doc();
     await ticketRef.set({
       email,
       eventId,
       reference,
+      ticketType,  
       amount: verifyData.data.amount / 100, // Paystack returns amount in kobo
       status: verifyData.data.status,
       used: false,
@@ -128,7 +130,12 @@ app.post("/api/purchase", async (req, res) => {
       ],
     });
 
-    res.json({ success: true, ticketId: ticketRef.id });
+    res.json({
+      success: true, ticketId: ticketRef.id, reference,
+      eventId,
+      amount: verifyData.data.amount / 100,
+      status: verifyData.data.status,
+    });
   } catch (err) {
     console.error("API error:", err);
     res.status(500).json({ error: "Server error" });

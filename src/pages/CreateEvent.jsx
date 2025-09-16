@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react'
 // import Calendar from "react-calendar";
 // import "react-calendar/dist/Calendar.css"; // default styling
-import { FaCalendarCheck } from 'react-icons/fa6'
+import { FaCalendarCheck, FaPlus } from 'react-icons/fa6'
 import { RiArrowLeftFill } from 'react-icons/ri'
 import { uploadToCloudinary } from "../utils/cloudinaryUpload";
 import { doc, setDoc } from "firebase/firestore";
@@ -11,6 +11,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
 import { formatEventStatus } from '../utils/formatEventRange';
+import { FiX } from 'react-icons/fi';
 
 const CreateEvent = () => {
   const [openDate, setOpenDate] = useState(false);
@@ -24,12 +25,29 @@ const CreateEvent = () => {
   const [location, setLocation] = useState("");
   const [organizer, setOrganizer] = useState("");
   const [photo, setPhoto] = useState(null);
-  const [price, setPrice] = useState("");
+  const [price, setPrice] = useState([
+    { id: 1, label: "", amount: "", currency: "₦" },
+  ]);;
   const navigate = useNavigate()
   const fileInputRef = useRef(null);
 
   const Category = ["Art", "Business", "Entertainment"]
   const currencies = ["₦", "$", "€"];
+
+  const handleAddInput = () => {
+    setPrice([
+      ...price,
+      { id: price.length + 1, label: "", amount: "", currency: "₦" },
+    ]);
+  };
+
+  const handlePriceChange = (id, field, value) => {
+    setPrice(price.map((p) => (p.id === id ? { ...p, [field]: value } : p)));
+  };
+
+  const handleRemoveInput = (id) => {
+    setPrice(price.filter((p) => p.id !== id));
+  };
 
   const handleOpenDate = () => {
     setOpenDate(!openDate)
@@ -39,9 +57,9 @@ const CreateEvent = () => {
     setPhoto(e.target.files[0]);
   };
 
-  const handleDate = (selectedDate) => {
-    setDate(selectedDate);
-  };
+  // const handleDate = (selectedDate) => {
+  //   setDate(selectedDate);
+  // };
 
 
   const handleSubmit = async (e) => {
@@ -57,11 +75,11 @@ const CreateEvent = () => {
       return;
     }
 
-    const numericPrice = parseFloat(price);
-    if (Number.isNaN(numericPrice) || numericPrice < 0) {
-      alert("Please enter a valid price.");
-      return;
-    }
+    // const numericPrice = parseFloat(price);
+    // if (Number.isNaN(numericPrice) || numericPrice < 0) {
+    //   alert("Please enter a valid price.");
+    //   return;
+    // }
 
     try {
       // Generate unique ID for event
@@ -80,13 +98,13 @@ const CreateEvent = () => {
         }
       }
 
-     // Combine selected date with startTime
-const finalStart = new Date(date);
-finalStart.setHours(startTime.getHours(), startTime.getMinutes());
+      // Combine selected date with startTime
+      const finalStart = new Date(date);
+      finalStart.setHours(startTime.getHours(), startTime.getMinutes());
 
-// Combine selected date with endTime
-const finalEnd = new Date(date);
-finalEnd.setHours(endTime.getHours(), endTime.getMinutes());
+      // Combine selected date with endTime
+      const finalEnd = new Date(date);
+      finalEnd.setHours(endTime.getHours(), endTime.getMinutes());
 
 
       // Save event in Firestore
@@ -96,7 +114,7 @@ finalEnd.setHours(endTime.getHours(), endTime.getMinutes());
         description,
         location,
         organizer,
-        price: parseFloat(price),
+        price,
         currency,
         photoURL,
         date: date.toISOString(),       // main date
@@ -223,30 +241,126 @@ finalEnd.setHours(endTime.getHours(), endTime.getMinutes());
         </div>
         )}
 
+        {/* <div className='flex flex-col'>
+          <div className="flex items-center p-2 w-full space-x-4 border-b">
+            <label htmlFor="price">Price:</label>
+            <input type='text' id='value' className='p-2 border rounded-lg' />
+            <select
+              name="currency"
+              className="p-2 border bg-gray-700 rounded-lg"
+              value={currency}
+              onChange={(e) => setCurrency(e.target.value)}
+            >
+              {currencies.map((cur, idx) => (
+                <option key={idx} value={cur}>
+                  {cur}
+                </option>
+              ))}
+            </select>
+            <input
+              id="price"
+              type="number"
+              placeholder="0.00"
+              className="p-2 border rounded-lg w-40"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              min="0"
+            />
+            <FaPlus onClick={handleAddInput
+            } className='text-2xl text-gray-500' />
 
-        <div className="flex items-center p-2 w-full space-x-4 border-b">
-          <label htmlFor="price">Price:</label>
-          <select
-            name="currency"
-            className="p-2 border rounded-lg"
-            value={currency}
-            onChange={(e) => setCurrency(e.target.value)}
+          </div>
+          {addInput && (
+            <div className="flex items-center p-2 w-full space-x-4 border-b">
+              <label htmlFor="price">Price:</label>
+              <input type='text' id='value' className='p-2 border rounded-lg' />
+              <select
+                name="currency"
+                className="p-2 border bg-gray-700 rounded-lg"
+                value={currency}
+                onChange={(e) => setCurrency(e.target.value)}
+              >
+                {currencies.map((cur, idx) => (
+                  <option key={idx} value={cur}>
+                    {cur}
+                  </option>
+                ))}
+              </select>
+              <input
+                id="price"
+                type="number"
+                placeholder="0.00"
+                className="p-2 border rounded-lg w-40"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                min="0"
+              /></div>
+          )}
+        </div> */}
+
+        {/* Price Section */}
+        <div className="flex flex-col space-y-2">
+          {price.map((p) => (
+            <div
+              key={p.id}
+              className="flex items-center p-2 w-full space-x-4 border-b"
+            >
+              <label htmlFor={`label-${p.id}`}>Ticket:</label>
+
+              {/* Ticket type (Regular, VIP, etc.) */}
+              <input
+                type="text"
+                id={`label-${p.id}`}
+                className="p-2 border rounded-lg"
+                placeholder="Type (e.g. Regular, VIP)"
+                value={p.label}
+                onChange={(e) => handlePriceChange(p.id, "label", e.target.value)}
+              />
+
+              {/* Currency */}
+              <select
+                value={p.currency}
+                onChange={(e) => handlePriceChange(p.id, "currency", e.target.value)}
+                className="p-2 border bg-gray-700 rounded-lg"
+              >
+                {currencies.map((cur, idx) => (
+                  <option key={idx} value={cur}>
+                    {cur}
+                  </option>
+                ))}
+              </select>
+
+              {/* Amount */}
+              <input
+                type="number"
+                placeholder="0.00"
+                className="p-2 border rounded-lg w-40"
+                value={p.amount}
+                onChange={(e) => handlePriceChange(p.id, "amount", e.target.value)}
+                min="0"
+              />
+
+              {/* Delete row (only if > 1 row exists) */}
+              {price.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => handleRemoveInput(p.id)}
+                  className="text-red-500 hover:text-red-700 font-bold"
+                >
+                  <FiX />
+                </button>
+              )}
+            </div>
+          ))}
+
+          {/* Add new tier */}
+          <button
+            type="button"
+            onClick={handleAddInput}
+            className="flex items-center gap-2 text-gray-500 hover:text-gray-700 mt-2"
           >
-            {currencies.map((cur, idx) => (
-              <option key={idx} value={cur}>
-                {cur}
-              </option>
-            ))}
-          </select>
-          <input
-            id="price"
-            type="number"
-            placeholder="0.00"
-            className="p-2 border rounded-lg w-40"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            min="0"
-          />
+            <FaPlus /> Add another price
+          </button>
         </div>
 
         <button type='submit' className='bg-orange-500 text-white py-3 rounded-lg font-bold active:scale-90 hover:bg-orange-600'>
