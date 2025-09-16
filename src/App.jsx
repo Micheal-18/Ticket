@@ -17,6 +17,7 @@ import Guide from "./pages/Guide";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import Tracking from "./components/Tracking";
+import Contact from "./pages/Contact";
 
 const App = () => {
   const [step, setStep] = useState("select");
@@ -169,6 +170,11 @@ const App = () => {
             <Tracking />
           </Layout>  
         }/>
+        <Route path="/contact" element={
+          <Layout currentUser={currentUser}>
+            <Contact />
+          </Layout>
+        } />
     </Routes>
   );
 };

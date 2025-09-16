@@ -19,7 +19,7 @@ const Footer = () => {
                     <div className='flex lg:flex-row flex-col gap-6 text-sm uppercase'>
                         <a href='#' className='hover:text-orange-500 transition'>Privacy & Policy</a>
                         <a href='#' className='hover:text-orange-500 transition'>Terms & Condition</a>
-                        <a href='#' className='hover:text-orange-500 transition'>Contact Us</a>
+                        <a href='/contact' className='hover:text-orange-500 transition'>Contact Us</a>
                     </div>
 
                     {/* Copyright */}
