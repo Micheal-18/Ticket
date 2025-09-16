@@ -79,7 +79,7 @@ const Navbar = ({ currentUser }) => {
                       <li onClick={() => navigate("/scanner")} className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-gray-100 cursor-pointer"><RiQrScanLine />Scanner</li>
                     )}
                     {currentUser?.isAdmin && (
-                      <li onClick={() => navigate("/tracking")} className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-gray-100 cursor-pointer"><FaMoneyBillTrendUp/>Tracking</li>
+                      <li onClick={() => navigate("/tracking")} className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-gray-100 cursor-pointer"><FaMoneyBillTrendUp/>Analytic</li>
                     )}
                     <li
                       onClick={handleLogout}
@@ -155,7 +155,7 @@ const Navbar = ({ currentUser }) => {
                   onClick={() => navigate("/tracking")}
                   className="px-4 py-2 bg-gray-100 rounded-md active:scale-90 hover:bg-gray-200"
                 >
-                  Tracking
+                  Analytic
                 </button>
               )}
 

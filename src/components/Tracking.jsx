@@ -36,7 +36,7 @@ const Tracking = () => {
   return (
     <div className="flex items-center justify-center w-full mt-6">
       <div className="flex flex-col items-center justify-center w-full lg:w-2/3 p-4 border-2 border-gray-300 rounded-lg shadow-lg">
-        <h1 className="text-2xl text-[#eeeeee] font-bold mb-6">📊 Event Tracking</h1>
+        <h1 className="text-2xl text-[#eeeeee] font-bold mb-6">📊 Event Analytics</h1>
 
         {/* Filter Controls */}
         <div className="flex gap-4 mb-6">
@@ -77,7 +77,7 @@ const Tracking = () => {
               key={event.id}
               className="h-[200px] flex flex-col items-center justify-center mb-6 rounded-lg bg-gray-100 w-full p-4"
             >
-              <p className="text-xl text-[#333333] font-semibold mb-2">{event.name}</p>
+              <p className="text-xl uppercase text-[#333333] font-semibold mb-2">{event.name}</p>
               <p className="text-gray-600">
                 Status:{" "}
                 <span className="text-green-500 font-semibold">
@@ -88,6 +88,12 @@ const Tracking = () => {
                 Revenue:{" "}
                 <span className="text-blue-500 font-semibold">
                   ₦{event.revenue ?? 0}
+                </span>
+              </p>
+              <p className="text-gray-600">
+                Airticks: {" "}
+                <span className="text-purple-500 font-semibold">
+                  {event.currency}{event.revenue/10 ?? 0}
                 </span>
               </p>
             </div>

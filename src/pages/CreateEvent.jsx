@@ -303,7 +303,7 @@ const CreateEvent = () => {
           {price.map((p) => (
             <div
               key={p.id}
-              className="flex items-center p-2 w-full space-x-4 border-b"
+              className="flex flex-wrap space-y-2 items-center p-2 w-full space-x-4 border-b"
             >
               <label htmlFor={`label-${p.id}`}>Ticket:</label>
 
