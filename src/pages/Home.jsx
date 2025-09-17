@@ -61,7 +61,7 @@ const Home = () => {
             </div>
 
             <div className='rounded-xl overflow-hidden'>
-              <img src={register} className='object-cover h-50 w-full hover:scale-105 duration-500 rounded-2xl' />
+              <img src={register} className='object-contain h-50 w-full hover:scale-105 duration-500 rounded-2xl' />
             </div>
           </div>
           <div data-aos="fade-up" className='flex lg:flex-row flex-col  lg:justify-between items-center w-full bg-[#eeeeee] flex-1 gap-10 relative py-10 px-8   rounded-3xl'>
@@ -71,7 +71,7 @@ const Home = () => {
             </div>
 
             <div className='rounded-xl overflow-hidden'>
-              <img src={create} className='object-cover h-50 w-full hover:scale-105 duration-500 rounded-2xl' />
+              <img src={create} className='object-contain h-50 w-full hover:scale-105 duration-500 rounded-2xl' />
             </div>
           </div>
           <div data-aos="fade-up" className='flex lg:flex-row flex-col  lg:justify-between items-center w-full bg-[#eeeeee] flex-1 gap-10 relative py-10 px-8   rounded-3xl'>
@@ -81,7 +81,7 @@ const Home = () => {
             </div>
 
             <div className='rounded-xl overflow-hidden'>
-              <img src={event} className='object-cover h-50 w-full hover:scale-105 duration-500 rounded-2xl' />
+              <img src={event} className='object-contain h-50 w-full hover:scale-105 duration-500 rounded-2xl' />
             </div>
           </div>
 

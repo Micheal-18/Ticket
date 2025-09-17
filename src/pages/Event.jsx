@@ -94,7 +94,7 @@ const Event = ({ currentUser, events, setEvents }) => {
                 <img
                   src={selectedEvent?.photoURL}
                   alt={selectedEvent?.name}
-                  className='object-cover w-1/2 hover:scale-105 duration-500 rounded-2xl'
+                  className='object-contain w-1/2 hover:scale-105 duration-500 rounded-2xl'
                 />
               </div>
 
@@ -257,7 +257,7 @@ const Event = ({ currentUser, events, setEvents }) => {
                 </span>
 
                 <span className='overflow-hidden rounded-xl'>
-                  <img src={event.photoURL} alt={event.name} className='object-cover w-[250px] h-[200px] hover:scale-105 duration-500 rounded-2xl' />
+                  <img src={event.photoURL} alt={event.name} className='object-contain w-[200px] hover:scale-105 duration-500 rounded-2xl' />
                 </span>
 
               </div>
