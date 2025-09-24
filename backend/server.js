@@ -10,7 +10,7 @@ import QRCode from "qrcode";
 
 const app = express();
 app.use(express.json());
-app.use(cors({ origin: "http://localhost:5173" })); // allow Vite frontend
+app.use(cors({ origin: "*" })); // allow Vite frontend
 
 if (!admin.apps.length) {
   const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
@@ -142,4 +142,8 @@ app.post("/api/purchase", async (req, res) => {
   }
 });
 
-app.listen(3000, () => console.log("✅ Backend running at http://localhost:3000"));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`✅ Backend running on port ${PORT}`));
+
+
+// app.listen(3000, () => console.log("✅ Backend running at http://localhost:3000"));

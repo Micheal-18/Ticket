@@ -24,7 +24,7 @@ const PaystackPayment = ({ events, ticket, currentUser }) => {
       callback:(response) =>  {
         (async () => {
         try {
-          axios.post("http://localhost:3000/api/purchase", {
+          axios.post("https://tick-backend-2.onrender.com/api/purchase", {
             reference: response.reference,
             eventId: events.id,
             email: currentUser.email,
