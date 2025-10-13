@@ -6,7 +6,7 @@ const Footer = () => {
         <footer className='sticky flex flex-col items-center justify-center mx-auto w-full h-[100%]'>
             <div className='lg:flex items-center justify-between border-t-2 border-gray-400 w-full mb-8 mt-8 pt-6 px-4 '>
                 <div className='flex justify-center flex-col mb-4 '>
-                    <h1 className='text-2xl font-bold '>Airticks<span className='text-orange-500'>.Events</span></h1>
+                    <h1 className='text-2xl font-bold '>Airticks<span className='text-orange-500'>Event</span></h1>
                     <p className='text-sm text-gray-500'>Plan. Create. Enjoy.</p>
                     <div className='flex gap-4 mt-4  text-xl cursor-pointer'>
                         <a className='text-orange-500 hover:text-gray-500 active:scale-90'><FaInstagram /></a>

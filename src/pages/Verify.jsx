@@ -141,7 +141,7 @@ console.log("oobCode:", query.get("oobCode"));
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 bg-white rounded-2xl shadow-lg p-8 text-center">
+    <div className="max-w-md mx-auto mt-10 bg-gray-500 rounded-2xl shadow-lg p-8 text-center">
       {/* Step Progress */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex-1 h-2 bg-green-500 rounded-l-full"></div>
@@ -177,7 +177,7 @@ console.log("oobCode:", query.get("oobCode"));
       {verified && (
         <button
           onClick={() => navigate("/")}
-          className="w-full bg-green-500 text-white py-2 rounded-xl hover:bg-green-600 transition"
+          className="w-full bg-green-500 text-gray-500 py-2 rounded-xl hover:bg-green-600 transition"
         >
           Continue →
         </button>
@@ -191,8 +191,8 @@ console.log("oobCode:", query.get("oobCode"));
             disabled={cooldown > 0 || loading}
             className={`w-full rounded-xl py-2 active:scale-90 transition ${
               cooldown > 0 || loading
-                ? "bg-gray-400 text-white cursor-not-allowed"
-                : "bg-orange-500 text-white hover:bg-orange-600 hover:scale-105"
+                ? "bg-gray-400 text-gray-500 cursor-not-allowed"
+                : "bg-orange-500 text-gray-500 hover:bg-orange-600 hover:scale-105"
             }`}
           >
             {cooldown > 0 ? `Wait ${cooldown}s ⏳` : "📩 Resend verification email"}

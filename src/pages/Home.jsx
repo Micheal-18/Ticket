@@ -34,7 +34,7 @@ const Home = () => {
     <>
       <section className='relative min-h-screen w-full flex flex-col lg:mt-5 mt-4 flex-1 items-center justify-center z-10'>
         <header data-aos="zoom-out" className='flex flex-1 flex-col items-center justify-center  uppercase space-y-3'>
-          <h1 className='lg:text-9xl md:text-8xl text-5xl tracking-tighter font-bold'>airticks<span className='text-orange-500'>.event</span></h1>
+          <h1 className='lg:text-9xl md:text-8xl text-5xl tracking-tighter font-bold'>airticks<span className='text-orange-500'>event</span></h1>
           <div className='border-y-2 py-4 '>
             <p className='lg:text-6xl md:text-5xl text-2xl font-semibold'>magical meeting places</p>
           </div>
