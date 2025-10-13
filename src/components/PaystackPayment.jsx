@@ -4,6 +4,8 @@ import { addDoc, collection } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 
 const PaystackPayment = ({ events, ticket, currentUser }) => {
+
+  
   const payWithPaystack = () => {
     if (!currentUser || !currentUser.email) {
       alert("Please login before making a payment.");

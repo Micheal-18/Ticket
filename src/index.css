@@ -87,6 +87,13 @@ html,body {
 }
 
 
+.adaptive-text {
+  color: white;
+  mix-blend-mode: difference;
+}
+
+
+
 @media (prefers-color-scheme: light) {
 html, body {
     color: #333333;

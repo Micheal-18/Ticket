@@ -18,6 +18,10 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import Tracking from "./components/Tracking";
 import Contact from "./pages/Contact";
+import Blog from "./pages/Blog";
+import WriteBlog from "./pages/WriteBlog";
+import BlogDetail from "./pages/BlogDetail";
+import Trending from "./pages/Trending";
 
 const App = () => {
   const [step, setStep] = useState("select");
@@ -25,6 +29,7 @@ const App = () => {
   const [loading, setLoading] = useState(true);
   const [isLoaded, setIsLoaded] = useState(false)
   const [events, setEvents] = useState([]);
+  const [blog, setBlog] = useState([]);
 
   useEffect(() => {
     AOS.init(
@@ -175,6 +180,27 @@ const App = () => {
             <Contact />
           </Layout>
         } />
+        <Route path="/blogs" element={
+          <Layout currentUser={currentUser}>
+            <Blog blog={blog} setBlog={setBlog} currentUser={currentUser}/>
+          </Layout>
+        } />
+        <Route path="/Write" element={
+          <Layout currentUser={currentUser}>
+            <WriteBlog />
+          </Layout>
+        } />
+        <Route path="/blogs/:id" element={
+          <Layout currentUser={currentUser}>
+            <BlogDetail />
+          </Layout>
+        } />
+        <Route path="/trending" element={
+          <Layout currentUser={currentUser}>
+            <Trending />
+          </Layout>
+        } />
+        
     </Routes>
   );
 };

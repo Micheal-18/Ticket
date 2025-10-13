@@ -5,6 +5,7 @@ import { href, Link, useNavigate } from 'react-router-dom';
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase/firebase";
 import { FaMoneyBillTrendUp } from 'react-icons/fa6';
+import { SiEagle } from 'react-icons/si';
 
 
 const Navbar = ({ currentUser }) => {
@@ -29,7 +30,7 @@ const Navbar = ({ currentUser }) => {
     },
     {
       id: "Trending",
-      href: "/"
+      href: "/trending"
     },
     {
       id: "Guide",
@@ -37,7 +38,7 @@ const Navbar = ({ currentUser }) => {
     },
     {
       id: "Blogs",
-      href: "/"
+      href: "/blogs"
     }
 
   ]
@@ -46,7 +47,7 @@ const Navbar = ({ currentUser }) => {
     <section className='sticky w-full flex top-0 z-50'>
       <div className='flex w-full bg-gray-100 opacity-90 items-center lg:justify-center flex-1 border border-x-transparent border-b-4 lg:border-b-transparent border-b-gray-700 justify-between px-6 font-bold '>
         <div className='lg:border border-black py-10 lg:py-5.5  lg:px-20 border-t-transparent  '>
-          <a href='/' className='cursor-pointer text-[#333333] text-lg'>Airticks<span className='text-orange-500'>.event</span></a>
+          <a href='/' className='flex items-center space-x-2 cursor-pointer text-[#333333] text-lg'><SiEagle className='text-orange-500 text-xl'/>Airticks<span className='text-orange-500'>.event</span></a>
         </div>
         <div className='hidden lg:flex'>
           {navItems.map((item, idx) => (
@@ -58,12 +59,12 @@ const Navbar = ({ currentUser }) => {
           {!currentUser ? (
             <a
               href="/Register"
-              className="bg-orange-500 flex items-center py-3 px-16 text-white active:scale-90 hover:bg-orange-600"
+              className="bg-orange-500 flex items-center py-3 px-16 text-white cursor-pointer active:scale-90 hover:bg-orange-600"
             >
               Register
             </a>
           ) : (
-            <div onClick={() => setDropdown(!dropdown)} className="relative flex items-center bg-orange-500 active:scale-90 py-3 px-16">
+            <div onClick={() => setDropdown(!dropdown)} className="relative cursor-pointer flex items-center bg-orange-500 active:scale-90 py-3 px-16">
               <h1 className='text-gray-700'>{currentUser?.fullName?.slice(0, 2)}</h1>
               <RiUser3Line
                 className="text-3xl cursor-pointer hover:scale-105"
