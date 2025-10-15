@@ -159,7 +159,7 @@ const Event = ({ currentUser, events, setEvents }) => {
                 Price < FaCaretUp className='ml-2 animate-bounce transition-transform duration-300 group-hover:rotate-180' />
               </button>
 
-              <div value={price} className='fixed z-50 hidden group-hover:block w-1/4 mt-1  rounded-md bg-[#eeeeee]  shadow-md transition duration-1000 ease-in-out p-2 text-[#333333] '>
+              <div  className='fixed z-50 hidden group-hover:block w-1/4 mt-1  rounded-md bg-[#eeeeee]  shadow-md transition duration-1000 ease-in-out p-2 text-[#333333] '>
                 <ul className='space-y-2 '>
                   <li className='flex flex-col space-y-2 text-sm text-gray-500 hover:text-[#333333] duration-1000 w-full'>
                     <a className='hover:bg-orange-500 rounded-sm'>Low to High</a>
@@ -176,7 +176,7 @@ const Event = ({ currentUser, events, setEvents }) => {
                 Category < FaCaretUp className='ml-2 animate-bounce transition-transform duration-300 group-hover:rotate-180' />
               </button>
 
-              <div value={category} className='fixed z-50 hidden group-hover:block w-1/4 mt-1  rounded-md bg-[#eeeeee]  shadow-md transition duration-1000 ease-in-out p-2 text-[#333333] '>
+              <div  className='fixed z-50 hidden group-hover:block w-1/4 mt-1  rounded-md bg-[#eeeeee]  shadow-md transition duration-1000 ease-in-out p-2 text-[#333333] '>
                 <ul className='space-y-2 '>
                   <li className='flex flex-col space-y-2 text-sm text-gray-500 hover:text-[#333333] duration-1000 w-full'>
                     <a className='hover:bg-orange-500 rounded-sm'>Art</a>
