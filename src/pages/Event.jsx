@@ -257,11 +257,13 @@ const Event = ({ currentUser, events, setEvents }) => {
                       onClick={() => handleOpenTicket(event)}
                       className="bg-orange-500 p-2 rounded-lg hover:scale-105 active:scale-90"
                     >
-                      Ticket
+                     View ticket
                     </button>
 
-                    {selectedDropdown === event.id && (
-                      <div className="flex mx-4 gap-2">
+                    
+                  </span>
+                  {selectedDropdown === event.id && (
+                      <div className="flex  gap-2">
                         <button
                           onClick={() => {
                             handleDelete(event)
@@ -280,7 +282,6 @@ const Event = ({ currentUser, events, setEvents }) => {
                         </button>
                       </div>
                     )}
-                  </span>
                 </span>
 
                 <span className="overflow-hidden rounded-xl">
