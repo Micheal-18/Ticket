@@ -5,12 +5,13 @@ import { db } from "../firebase/firebase";
 
 const PaystackPayment = ({ events, ticket, currentUser }) => {
 
-  
+
   const payWithPaystack = () => {
     if (!currentUser || !currentUser.email) {
       alert("Please login before making a payment.");
       return;
     }
+
 
     console.log({
       email: currentUser?.email,
@@ -23,37 +24,43 @@ const PaystackPayment = ({ events, ticket, currentUser }) => {
       email: currentUser?.email,
       amount: ticket?.amount * 100,
 
-      callback:(response) =>  {
+      callback: (response) => {
         (async () => {
-        try {
-          axios.post("https://tick-backend-2.onrender.com/api/purchase", {
-            reference: response.reference,
-            eventId: events.id,
-            email: currentUser.email,
-            ticketType: ticket.label,
-            ticketAmount: ticket.amount
-          });
+          try {
+            await axios.post("https://tick-backend-2.onrender.com/api/purchase", {
+              reference: response.reference,
+              eventId: events.id,
+              email: currentUser.email,
+              ticketType: ticket.label,
+              ticketAmount: ticket.amount,
+            });
 
-      //     await addDoc(collection(db, "transactions"), {
-      //       eventId: events.id,
-      //       eventName: events.name,
-      //       ticketType: ticket.label,
-      //       amount: ticket.amount,
-      //       currency: ticket.currency,
-      //       userEmail: currentUser.email,
-      //       paymentRef: response.reference,
-      //       timestamp: new Date(),
-      // })
-       console.log("Transaction saved to Firestore ✅");
-      } catch (error) {
-          console.error("Error recording transaction: ", error);
-      }
-    })();
-    },
-        onClose: function () {
-          alert("Payment window closed.");
-        },
-      });
+                await addDoc(collection(db, "transactions"), {
+                  eventId: events.id,
+                  eventName: events.name,
+                  ticketType: ticket.label,
+                  amount: ticket.amount,
+                  currency: ticket.currency,
+                  userEmail: currentUser.email,
+                  paymentRef: response.reference,
+                  timestamp: new Date(),
+            })
+
+            const eventRef = doc(db, "events", events.id);
+            await updateDoc(eventRef, {
+              ticketSold: increment(1),
+            });
+
+            console.log("Transaction saved to Firestore ✅");
+          } catch (error) {
+            console.error("Error recording transaction: ", error);
+          }
+        })();
+      },
+      onClose: function () {
+        alert("Payment window closed.");
+      },
+    });
     handler.openIframe();
   };
 

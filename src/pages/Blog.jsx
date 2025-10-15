@@ -52,12 +52,14 @@ const Blog = ({blog, setBlog}) => {
 
             <section className='relative flex flex-col  min-h-screen w-full items-center justify-center'>
 
-                <img src={event} alt="unbox" className='w-full h-full object-cover absolute top-0 left-0 ' />
+                <div className='overflow-hidden rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300'>
+                      <img src={event} alt="unbox" className='w-full h-full object-cover hover:scale-105 duration-500 absolute top-0 left-0 ' />
+                </div>
                 <div className='bg-black/60 absolute top-0 left-0 w-full h-full '></div>
-                <div className='absolute  space-y-6 text-center mx-auto px-6 py-20 text-white'>
+                <div data-aos="zoom-out" className='absolute  space-y-6 text-center mx-auto px-6 py-20 text-white'>
                     <h1 className='font-bold max-w-xl text-4xl md:text-5xl text-[#eeeeee]'>Find Your Next Unforgettable Experience</h1>
                     <p className='text-[#eeeeee] text-md'>Explore the world of events, from concert to conference, all in one places</p>
-                    <a href='/Write' className='bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-md font-medium transition'>Write a Blog</a>
+                    <a href='/Write' className='bg-orange-500 hover:bg-orange-600 active:scale-90 text-white px-6 py-3 rounded-md font-medium transition'>Write a Blog</a>
                 </div>
             </section>
             <section className=" relative my-12  mb-10 ">

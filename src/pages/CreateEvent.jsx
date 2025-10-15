@@ -122,6 +122,7 @@ const CreateEvent = () => {
         endTime: finalEnd.toISOString(),
         createdBy: user.uid,
         ownerId: user.uid,
+        ticketSold: 0,
         createdAt: new Date().toISOString(),
       });
 

@@ -7,6 +7,7 @@ const TicketModal = ({ currentUser, events, setEvents, selectedEvent, setSelecte
 
   const closeOpenTicket = () => setSelectedEvent(null);
 
+
   return (
     <div className="fixed left-0 top-0 w-full h-full backdrop-blur-xs flex justify-center items-center z-[9999] custom-scrollbar">
       <div className="absolute top-1/8">
@@ -19,7 +20,7 @@ const TicketModal = ({ currentUser, events, setEvents, selectedEvent, setSelecte
               <FiX />
             </div>
 
-            <div className="flex justify-center overflow-hidden rounded-2xl">
+            <div className='flex justify-center'>
               <img
                 src={selectedEvent?.photoURL}
                 alt={selectedEvent?.name}

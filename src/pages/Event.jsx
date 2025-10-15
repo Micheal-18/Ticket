@@ -54,6 +54,14 @@ const Event = ({ currentUser, events, setEvents }) => {
     setIsEditing(true);
   };
 
+  const handleDelete = (event) => {
+    setSelectedEvent(event);
+    setIsDeleting(true);
+  }
+  
+  
+  
+
   return (
     <section
       data-aos="fade-out"
@@ -125,7 +133,7 @@ const Event = ({ currentUser, events, setEvents }) => {
             {events.map((event) => (
               <div
                 key={event.id}
-                className="flex items-center justify-between flex-1 lg:gap-10 gap-4 relative lg:px-8 px-2 w-full bg-[#eeeeee] py-4 text-[#333333] rounded-3xl"
+                className="flex items-center justify-between flex-1 lg:gap-10 gap-4 relative lg:px-8 px-6 w-full bg-[#eeeeee] py-4 text-[#333333] rounded-3xl"
               >
                 {isAdmin && (
                   <div
@@ -180,13 +188,14 @@ const Event = ({ currentUser, events, setEvents }) => {
                       <div className="flex mx-4 gap-2">
                         <button
                           onClick={() => {
-                            setSelectedEvent(event);
-                            setIsDeleting(true);
+                            handleDelete(event)
                           }}
                           className="bg-red-500 text-white px-3 py-1 rounded-lg font-bold mt-2 hover:scale-105"
                         >
                           Delete
                         </button>
+                        
+                        
                         <button
                           onClick={() => handleEdit(event)}
                           className="bg-green-500 text-white px-3 py-1 rounded-lg font-bold mt-2 hover:scale-105"

@@ -28,7 +28,7 @@ const Trending = ({currentUser, events, setEvents}) => {
                 }));
 
                 // Fetch top 5 latest events
-                const eventQuery = query(collection(db, "events"), orderBy("createdAt", "desc"), limit(5));
+                const eventQuery = query(collection(db, "events"), orderBy("ticketSold", "desc"), limit(5));
                 const eventSnap = await getDocs(eventQuery);
                 const eventsData = eventSnap.docs.map((doc) => ({
                     id: doc.id,
@@ -86,7 +86,7 @@ const Trending = ({currentUser, events, setEvents}) => {
                                         className="w-full object-contain hover:scale-105  duration-500"
                                     />
                                 </div>
-                                <div className="absolute p-4 top-70 flex-1 flex flex-col">
+                                <div className="absolute p-4 top-1/2 flex-1 flex flex-col">
                                     <h3 className="text-3xl adaptive-text text-gray-600 font-bold line-clamp-2 mb-2">{event.name}</h3>
                                     <p className="text-gray-600 adaptive-text text-sm line-clamp-2 mb-3">{event.description}</p>
                                     <p className="text-sm adaptive-text text-gray-400 mb-4">{event.location}</p>
