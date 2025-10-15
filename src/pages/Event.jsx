@@ -115,7 +115,7 @@ const Event = ({ currentUser, events, setEvents }) => {
               Nigeria
             </button> */}
             <div className="relative w-full group">
-              <button className="w-full bg-[#eeeeee] flex justify-between items-center text-[#333333] text-left p-3 rounded-xl">
+              <button className="w-full bg-black flex justify-between items-center text-white text-left p-3 rounded-xl">
                 Nigeria
                 <FaCaretUp
                   className="ml-2 animate-bounce transition-transform duration-300 group-hover:rotate-180"
@@ -123,12 +123,12 @@ const Event = ({ currentUser, events, setEvents }) => {
               </button>
 
               {/* Dropdown list */}
-              <div className="absolute left-0 mt-1 hidden group-hover:block w-full max-h-40 overflow-hidden custom-scrollbar rounded-lg bg-[#eeeeee] shadow-lg border border-gray-200 z-50">
+              <div className="absolute left-0 mt-1 hidden group-hover:block w-full max-h-40 overflow-hidden custom-scrollbar rounded-lg bg-white shadow-lg border border-gray-200 z-50">
                 {states.map((state, index) => (
                   <div
                     key={index} 
                     value={state}
-                    className="px-3 py-2 text-sm text-gray-700 hover:bg-orange-500 hover:text-white cursor-pointer transition-colors duration-200"
+                    className="px-3 py-2 text-sm text-gray-700 hover:bg-orange-500 hover:text-[#eeeeee] cursor-pointer transition-colors duration-200"
                   >
                     {state}
                   </div>
@@ -159,7 +159,7 @@ const Event = ({ currentUser, events, setEvents }) => {
                 Price < FaCaretUp className='ml-2 animate-bounce transition-transform duration-300 group-hover:rotate-180' />
               </button>
 
-              <div  className='fixed z-50 hidden group-hover:block w-1/4 mt-1  rounded-md bg-[#eeeeee]  shadow-md transition duration-1000 ease-in-out p-2 text-[#333333] '>
+              <div  className='fixed z-50 hidden group-hover:block w-1/4 mt-1  rounded-md bg-white  shadow-md transition duration-1000 ease-in-out p-2 text-[#333333] '>
                 <ul className='space-y-2 '>
                   <li className='flex flex-col space-y-2 text-sm text-gray-500 hover:text-[#333333] duration-1000 w-full'>
                     <a className='hover:bg-orange-500 rounded-sm'>Low to High</a>
@@ -176,7 +176,7 @@ const Event = ({ currentUser, events, setEvents }) => {
                 Category < FaCaretUp className='ml-2 animate-bounce transition-transform duration-300 group-hover:rotate-180' />
               </button>
 
-              <div  className='fixed z-50 hidden group-hover:block w-1/4 mt-1  rounded-md bg-[#eeeeee]  shadow-md transition duration-1000 ease-in-out p-2 text-[#333333] '>
+              <div  className='fixed z-50 hidden group-hover:block w-1/4 mt-1  rounded-md bg-white  shadow-md transition duration-1000 ease-in-out p-2 text-[#333333] '>
                 <ul className='space-y-2 '>
                   <li className='flex flex-col space-y-2 text-sm text-gray-500 hover:text-[#333333] duration-1000 w-full'>
                     <a className='hover:bg-orange-500 rounded-sm'>Art</a>
