@@ -335,7 +335,7 @@ const Register = ({ step, setStep }) => {
             />
 
             {/* Country dropdown */}
-            <select name='country' className='p-3 border rounded-lg' required>
+            <select name='country' className='p-3 border bg-[#333333] rounded-lg' required>
               <option value="">Select Country</option>
               {countries.map((c) => (
                 <option key={c.code} value={c.name}>

@@ -31,7 +31,7 @@ const CreateEvent = () => {
   const navigate = useNavigate()
   const fileInputRef = useRef(null);
 
-  const Category = ["Art", "Business", "Entertainment"]
+  const Category = ["Art", "Business", "Entertainment", "Food", "Health", "Music"];
   const currencies = ["₦", "$", "€"];
 
   const handleAddInput = () => {

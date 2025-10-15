@@ -8,6 +8,15 @@ html,body {
   color: #f0f0f0;
 }
 
+option {
+  background-color: #444444;
+  color: #f0f0f0;
+  border: 1px solid #555555;
+  overflow: scroll;
+
+}
+
+
 .custom-scrollbar {
   overflow: scroll;
 }
@@ -86,6 +95,14 @@ html,body {
   }
 }
 
+.adaptive-bg {
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(90deg, #333333, #eeeeee);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 .adaptive-text {
   color: white;
@@ -95,7 +112,7 @@ html,body {
 
 
 @media (prefers-color-scheme: light) {
-html, body {
+html, body, select {
     color: #333333;
     background-color: #eeeeee;
   }
@@ -113,3 +130,5 @@ html, body {
 .animation-walk {
     animation: walk-across 10s linear infinite;
 }
+
+

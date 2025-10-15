@@ -1,15 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { db } from "../firebase/firebase";
-import {
-  collection,
-  getDocs,
-} from "firebase/firestore";
-import {
-  FaCalendar,
-  FaCaretDown,
-  FaClock,
-  FaLocationArrow,
-} from "react-icons/fa6";
+import { collection, getDocs } from "firebase/firestore";
+import { FaCalendar, FaCaretDown, FaCaretUp, FaClock, FaLocationArrow } from "react-icons/fa6";
 import { useAdmin } from "../hooks/useAdmin";
 import { FiX } from "react-icons/fi";
 import walkGif from "../assets/dog.gif";
@@ -17,6 +9,8 @@ import TicketModal from "../components/TicketModal";
 import EditModal from "../components/EditModal";
 import DeleteModal from "../components/DeleteModal";
 import { formatEventStatus } from "../utils/formatEventRange";
+import naijaStateLocalGov from "naija-state-local-government";
+
 
 const Event = ({ currentUser, events, setEvents }) => {
   const isAdmin = useAdmin();
@@ -26,6 +20,8 @@ const Event = ({ currentUser, events, setEvents }) => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editEvent, setEditEvent] = useState(null);
+
+  const states = naijaStateLocalGov.states();
 
   // fetch events
   useEffect(() => {
@@ -59,8 +55,10 @@ const Event = ({ currentUser, events, setEvents }) => {
     setIsDeleting(true);
   }
   
-  
-  
+
+  // ✅ Filtered events
+
+
 
   return (
     <section
@@ -104,7 +102,7 @@ const Event = ({ currentUser, events, setEvents }) => {
       <div className="flex flex-col space-y-3 p-4">
         <div className="space-y-6">
           <p className="font-regular text-sm text-gray-500">All Events:</p>
-          <h1 className="font-bold text-2xl md:text-4xl text-gray-800">
+          <h1 className="font-bold text-2xl md:text-4xl adaptive-text">
             Find Events
           </h1>
         </div>
@@ -113,15 +111,93 @@ const Event = ({ currentUser, events, setEvents }) => {
           <p className="text-gray-500">Events</p>
           <span>({events.length || 0}) events</span>
           <div className="flex flex-row space-x-2">
-            <button className="w-full bg-black rounded-xl py-2 pl-2 text-left text-white">
+            {/* <button className="w-full bg-black rounded-xl py-2 pl-2 text-left text-white">
               Nigeria
-            </button>
-            <button className="w-full bg-white text-black text-left py-2 pl-2 rounded-xl">
+            </button> */}
+            <div className="relative w-full group">
+              <button className="w-full bg-[#eeeeee] flex justify-between items-center text-[#333333] text-left p-3 rounded-xl">
+                Nigeria
+                <FaCaretUp
+                  className="ml-2 animate-bounce transition-transform duration-300 group-hover:rotate-180"
+                />
+              </button>
+
+              {/* Dropdown list */}
+              <div className="absolute left-0 mt-1 hidden group-hover:block w-full max-h-40 overflow-hidden custom-scrollbar rounded-lg bg-[#eeeeee] shadow-lg border border-gray-200 z-50">
+                {states.map((state, index) => (
+                  <div
+                    key={index} 
+                    value={state}
+                    className="px-3 py-2 text-sm text-gray-700 hover:bg-orange-500 hover:text-white cursor-pointer transition-colors duration-200"
+                  >
+                    {state}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+
+            {/* <select name='state' className='p-3 w-full border bg-[#333333] rounded-lg text-white' required>
+              <option value="">Nigeria</option>
+              {states.map((state, index) => (
+                <option key={index} value={state}>
+                  {state}
+                </option>
+              ))}
+            </select> */}
+
+            {/* <button className="w-full bg-white text-black text-left py-2 pl-2 rounded-xl">
               Price
-            </button>
-            <button className="w-full bg-white text-black text-left py-2 pl-2 rounded-xl">
+            </button> */}
+            {/* <select name="price" className="p-3 w-full border bg-[#eeeeee] text-[#333333] rounded-lg ">
+              <option value="">Price</option>
+              <option value="lowtohigh">Low to High</option>
+              <option value="hightolow">High to Low</option>
+            </select> */}
+            <div className='w-full list-none cursor-pointer outline-none  group'>
+              <button className="w-full bg-[#eeeeee] flex justify-between items-center text-[#333333] text-left p-3 rounded-xl">
+                Price < FaCaretUp className='ml-2 animate-bounce transition-transform duration-300 group-hover:rotate-180' />
+              </button>
+
+              <div value={price} className='fixed z-50 hidden group-hover:block w-1/4 mt-1  rounded-md bg-[#eeeeee]  shadow-md transition duration-1000 ease-in-out p-2 text-[#333333] '>
+                <ul className='space-y-2 '>
+                  <li className='flex flex-col space-y-2 text-sm text-gray-500 hover:text-[#333333] duration-1000 w-full'>
+                    <a className='hover:bg-orange-500 rounded-sm'>Low to High</a>
+                    <a className='hover:bg-orange-500 rounded-sm'>High to Low</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            {/* <button className="w-full bg-white text-black text-left py-2 pl-2 rounded-xl">
               Date
-            </button>
+            </button> */}
+            <div className='w-full list-none cursor-pointer outline-none  group'>
+              <button className="w-full bg-[#eeeeee] flex justify-between items-center text-[#333333] text-left p-3 rounded-xl">
+                Category < FaCaretUp className='ml-2 animate-bounce transition-transform duration-300 group-hover:rotate-180' />
+              </button>
+
+              <div value={category} className='fixed z-50 hidden group-hover:block w-1/4 mt-1  rounded-md bg-[#eeeeee]  shadow-md transition duration-1000 ease-in-out p-2 text-[#333333] '>
+                <ul className='space-y-2 '>
+                  <li className='flex flex-col space-y-2 text-sm text-gray-500 hover:text-[#333333] duration-1000 w-full'>
+                    <a className='hover:bg-orange-500 rounded-sm'>Art</a>
+                    <a className='hover:bg-orange-500 rounded-sm'>Business</a>
+                    <a className='hover:bg-orange-500 rounded-sm'>Entertainment</a>
+                    <a className='hover:bg-orange-500 rounded-sm'>Food</a>
+                    <a className='hover:bg-orange-500 rounded-sm'>Health</a>
+                    <a className='hover:bg-orange-500 rounded-sm'>Music</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            {/* <select name="date" className="p-3 w-full border bg-[#eeeeee] text-[#333333] rounded-lg ">
+              <option value="">Category</option>
+              <option value="Art">Art</option>
+              <option value="Business">Business</option>
+              <option value="Entertainment">Entertainment</option>
+              <option value="Food">Food</option>
+              <option value="Health">Health</option>
+              <option value="Music">Music</option>
+            </select> */}
           </div>
         </div>
 
@@ -133,11 +209,11 @@ const Event = ({ currentUser, events, setEvents }) => {
             {events.map((event) => (
               <div
                 key={event.id}
-                className="flex items-center justify-between flex-1 lg:gap-10 gap-4 relative lg:px-8 px-6 w-full bg-[#eeeeee] py-4 text-[#333333] rounded-3xl"
+                className="flex items-center justify-between flex-1 lg:gap-10 gap-4 relative lg:px-8 px-2 w-full bg-[#eeeeee] py-4 text-[#333333] rounded-3xl"
               >
                 {isAdmin && (
                   <div
-                    className="absolute top-1 right-1 cursor-pointer"
+                    className="absolute top-2 right-2 cursor-pointer"
                     onClick={() =>
                       setSelectedDropdown(
                         selectedDropdown === event.id ? null : event.id
@@ -145,9 +221,9 @@ const Event = ({ currentUser, events, setEvents }) => {
                     }
                   >
                     {selectedDropdown === event.id ? (
-                      <FiX size={24} />
+                      <FiX size={15} />
                     ) : (
-                      <FaCaretDown size={24} />
+                      <FaCaretDown size={15} />
                     )}
                   </div>
                 )}
@@ -181,7 +257,7 @@ const Event = ({ currentUser, events, setEvents }) => {
                       onClick={() => handleOpenTicket(event)}
                       className="bg-orange-500 p-2 rounded-lg hover:scale-105 active:scale-90"
                     >
-                      View Ticket
+                      Ticket
                     </button>
 
                     {selectedDropdown === event.id && (
@@ -192,10 +268,10 @@ const Event = ({ currentUser, events, setEvents }) => {
                           }}
                           className="bg-red-500 text-white px-3 py-1 rounded-lg font-bold mt-2 hover:scale-105"
                         >
-                          Delete
+                          Del
                         </button>
-                        
-                        
+
+
                         <button
                           onClick={() => handleEdit(event)}
                           className="bg-green-500 text-white px-3 py-1 rounded-lg font-bold mt-2 hover:scale-105"
@@ -224,7 +300,7 @@ const Event = ({ currentUser, events, setEvents }) => {
         <img
           src={walkGif}
           alt="walking gif"
-          className="w-20 h-20 animate-bounce"
+          className="w-20 h-20  animation-walk"
         />
       </footer>
     </section>
