@@ -73,9 +73,8 @@ const Navbar = ({ currentUser }) => {
               {dropdown && (
                 <div className="absolute top-20 right-2 mt-3 w-48 bg-white rounded-xl shadow-lg border z-50">
                   <ul className="flex flex-col py-2">
-                    {currentUser?.isAdmin && (
-                      <li onClick={() => navigate("/create")} className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-gray-100 cursor-pointer"><RiTicket2Line />Create Event</li>
-                    )}
+                     <li onClick={() => navigate("/create")} className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-gray-100 cursor-pointer"><RiTicket2Line />Create Event</li>
+                    
                     {currentUser?.isAdmin && (
                       <li onClick={() => navigate("/scanner")} className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-gray-100 cursor-pointer"><RiQrScanLine />Scanner</li>
                     )}
@@ -133,15 +132,13 @@ const Navbar = ({ currentUser }) => {
               Register
             </a>
           ) : (
-            <div className="flex flex-col  gap-2">
-              {currentUser?.isAdmin && (
+            <div className="flex flex-col  gap-2"> 
                 <button
                   onClick={() => navigate("/create")}
                   className="px-4 py-2 bg-gray-100 rounded-md active:scale-90  hover:bg-gray-200"
                 >
                   CreateEvents
                 </button>
-              )}
               {currentUser?.isAdmin && (
                 <button
                   onClick={() => navigate("/scanner")}

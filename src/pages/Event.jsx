@@ -10,6 +10,8 @@ import EditModal from "../components/EditModal";
 import DeleteModal from "../components/DeleteModal";
 import { formatEventStatus } from "../utils/formatEventRange";
 import naijaStateLocalGov from "naija-state-local-government";
+import { FaSearch } from 'react-icons/fa';
+import SearchModal from "../components/SearchModal";
 
 
 const Event = ({ currentUser, events, setEvents }) => {
@@ -20,6 +22,22 @@ const Event = ({ currentUser, events, setEvents }) => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editEvent, setEditEvent] = useState(null);
+  const [isCategory, setIsCategory] = useState(false);
+  const [isPrice, setIsPrice] = useState(false);
+  const [isStateOpen, setIsStateOpen] = useState(false);
+  const [filters, setFilters] = useState({ state: "", category: "", priceOrder: "" });
+
+  const handleState = () => {
+    setIsStateOpen(!isStateOpen);
+  }
+
+  const handlePrice = () => {
+    setIsPrice(!isPrice);
+  }
+
+  const handleCate = () => {
+    setIsCategory(!isCategory);
+  }
 
   const states = naijaStateLocalGov.states();
 
@@ -54,11 +72,24 @@ const Event = ({ currentUser, events, setEvents }) => {
     setSelectedEvent(event);
     setIsDeleting(true);
   }
-  
+
 
   // ✅ Filtered events
 
-
+  const filteredEvents = events
+    .filter((event) =>
+      filters.state ? event.state?.toLowerCase() === filters.state.toLowerCase() : true
+    )
+    .filter((event) =>
+      filters.category
+        ? event.category?.toLowerCase() === filters.category.toLowerCase()
+        : true
+    )
+    .sort((a, b) => {
+      if (filters.priceOrder === "lowtohigh") return a.price - b.price;
+      if (filters.priceOrder === "hightolow") return b.price - a.price;
+      return 0;
+    });
 
   return (
     <section
@@ -102,38 +133,45 @@ const Event = ({ currentUser, events, setEvents }) => {
       <div className="flex flex-col space-y-3 p-4">
         <div className="space-y-6">
           <p className="font-regular text-sm text-gray-500">All Events:</p>
-          <h1 className="font-bold text-2xl md:text-4xl adaptive-text">
-            Find Events
-          </h1>
+          <div className="flex items-center space-x-4">
+            <h1 className="font-bold text-2xl md:text-4xl adaptive-text">
+            Find Events:
+            </h1>
+          <SearchModal />
+          </div>
         </div>
 
         <div className="flex flex-col space-y-2">
           <p className="text-gray-500">Events</p>
-          <span>({events.length || 0}) events</span>
+          <p className="text-gray-200">
+            Showing <span className="font-semibold">{filteredEvents.length}</span>{" "}
+            of {events.length} events
+          </p>
           <div className="flex flex-row space-x-2">
             {/* <button className="w-full bg-black rounded-xl py-2 pl-2 text-left text-white">
               Nigeria
             </button> */}
-            <div className="relative w-full group">
-              <button className="w-full bg-black flex justify-between items-center text-white text-left p-3 rounded-xl">
-                Nigeria
+            <div onClick={handleState} className="relative w-full group">
+              <button className="w-full active:scale-90 bg-black flex justify-between items-center text-white text-left p-3 rounded-xl">
+                {filters.state || "Select State"}
                 <FaCaretUp
                   className="ml-2 animate-bounce transition-transform duration-300 group-hover:rotate-180"
                 />
               </button>
 
-              {/* Dropdown list */}
-              <div className="absolute left-0 mt-1 hidden group-hover:block w-full max-h-40 overflow-hidden custom-scrollbar rounded-lg bg-white shadow-lg border border-gray-200 z-50">
-                {states.map((state, index) => (
-                  <div
-                    key={index} 
-                    value={state}
-                    className="px-3 py-2 text-sm text-gray-700 hover:bg-orange-500 hover:text-[#eeeeee] cursor-pointer transition-colors duration-200"
-                  >
-                    {state}
-                  </div>
-                ))}
-              </div>
+              {isStateOpen && (
+                <div className="absolute left-0 mt-1 lg:hidden lg:group-hover:block w-full max-h-40 overflow-hidden custom-scrollbar rounded-lg bg-white shadow-lg border border-gray-200 z-50">
+                  {states.map((st, index) => (
+                    <div
+                      key={index}
+                      onClick={() => { setFilters({ ...filters, state: st }); handleState(); }}
+                      className="px-3 py-2 text-sm text-gray-700 hover:bg-orange-500 hover:text-[#eeeeee] cursor-pointer transition-colors duration-200"
+                    >
+                      {st}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
 
@@ -154,40 +192,67 @@ const Event = ({ currentUser, events, setEvents }) => {
               <option value="lowtohigh">Low to High</option>
               <option value="hightolow">High to Low</option>
             </select> */}
-            <div className='w-full list-none cursor-pointer outline-none  group'>
-              <button className="w-full bg-[#eeeeee] flex justify-between items-center text-[#333333] text-left p-3 rounded-xl">
-                Price < FaCaretUp className='ml-2 animate-bounce transition-transform duration-300 group-hover:rotate-180' />
+            <div onClick={handlePrice} className='w-full list-none cursor-pointer outline-none  group'>
+              <button className="w-full active:scale-90 bg-[#eeeeee] flex justify-between items-center text-[#333333] text-left p-3 rounded-xl">
+                {filters.priceOrder
+                  ? filters.priceOrder === "lowtohigh"
+                    ? "Price: Low → High"
+                    : "Price: High → Low"
+                  : "Sort by Price"} < FaCaretUp className='ml-2 animate-bounce transition-transform duration-300 group-hover:rotate-180' />
               </button>
 
-              <div  className='fixed z-50 hidden group-hover:block w-1/4 mt-1  rounded-md bg-white  shadow-md transition duration-1000 ease-in-out p-2 text-[#333333] '>
-                <ul className='space-y-2 '>
-                  <li className='flex flex-col space-y-2 text-sm text-gray-500 hover:text-[#333333] duration-1000 w-full'>
-                    <a className='hover:bg-orange-500 rounded-sm'>Low to High</a>
-                    <a className='hover:bg-orange-500 rounded-sm'>High to Low</a>
-                  </li>
-                </ul>
-              </div>
+
+              {isPrice && (
+                <div className='fixed z-50 lg:hidden lg:group-hover:block w-1/4 mt-1  rounded-md bg-white  shadow-md transition duration-1000 ease-in-out p-2 text-[#333333] '>
+                  <ul className='space-y-2 '>
+                    <li className='flex flex-col space-y-2 text-sm text-gray-500 hover:text-[#333333] duration-1000 w-full'>
+                      <a
+                        onClick={() => setFilters({ ...filters, priceOrder: "lowtohigh" })}
+                        className="hover:bg-orange-500 rounded-sm cursor-pointer px-2 py-1"
+                      >
+                        Low to High
+                      </a>
+                      <a
+                        onClick={() => setFilters({ ...filters, priceOrder: "hightolow" })}
+                        className="hover:bg-orange-500 rounded-sm cursor-pointer px-2 py-1"
+                      >
+                        High to Low
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              )}
             </div>
             {/* <button className="w-full bg-white text-black text-left py-2 pl-2 rounded-xl">
               Date
             </button> */}
-            <div className='w-full list-none cursor-pointer outline-none  group'>
-              <button className="w-full bg-[#eeeeee] flex justify-between items-center text-[#333333] text-left p-3 rounded-xl">
-                Category < FaCaretUp className='ml-2 animate-bounce transition-transform duration-300 group-hover:rotate-180' />
+            <div onClick={handleCate} className='w-full list-none cursor-pointer outline-none group'>
+              <button className="w-full bg-[#eeeeee] active:scale-90 flex justify-between items-center text-[#333333] text-left p-3 rounded-xl">
+                {filters.category || "Category"}< FaCaretUp className='ml-2 animate-bounce transition-transform duration-300 group-hover:rotate-180' />
               </button>
 
-              <div  className='fixed z-50 hidden group-hover:block w-1/4 mt-1  rounded-md bg-white  shadow-md transition duration-1000 ease-in-out p-2 text-[#333333] '>
-                <ul className='space-y-2 '>
-                  <li className='flex flex-col space-y-2 text-sm text-gray-500 hover:text-[#333333] duration-1000 w-full'>
-                    <a className='hover:bg-orange-500 rounded-sm'>Art</a>
-                    <a className='hover:bg-orange-500 rounded-sm'>Business</a>
-                    <a className='hover:bg-orange-500 rounded-sm'>Entertainment</a>
-                    <a className='hover:bg-orange-500 rounded-sm'>Food</a>
-                    <a className='hover:bg-orange-500 rounded-sm'>Health</a>
-                    <a className='hover:bg-orange-500 rounded-sm'>Music</a>
-                  </li>
-                </ul>
-              </div>
+
+              {isCategory && (
+                <div className='fixed z-50 md:hidden md:group-hover:block w-1/4 mt-1  rounded-md bg-white  shadow-md transition duration-1000 ease-in-out p-2 text-[#333333] '>
+                  <ul className='space-y-2 '>
+                    <li className='flex flex-col space-y-2 text-sm text-gray-500 hover:text-[#333333] duration-1000 w-full'>
+                      {["Art", "Business", "Entertainment", "Food", "Health", "Music"].map(
+                        (cat) => (
+                          <a
+                            key={cat}
+                            onClick={() => {
+                              setFilters({ ...filters, category: cat });
+                            }}
+                            className="px-3 py-2 text-sm hover:bg-orange-500 hover:text-white cursor-pointer"
+                          >
+                            {cat}
+                          </a>
+                        )
+                      )}
+                    </li>
+                  </ul>
+                </div>
+              )}
             </div>
             {/* <select name="date" className="p-3 w-full border bg-[#eeeeee] text-[#333333] rounded-lg ">
               <option value="">Category</option>
@@ -257,31 +322,31 @@ const Event = ({ currentUser, events, setEvents }) => {
                       onClick={() => handleOpenTicket(event)}
                       className="bg-orange-500 p-2 rounded-lg hover:scale-105 active:scale-90"
                     >
-                     View ticket
+                      View ticket
                     </button>
 
-                    
+
                   </span>
                   {selectedDropdown === event.id && (
-                      <div className="flex  gap-2">
-                        <button
-                          onClick={() => {
-                            handleDelete(event)
-                          }}
-                          className="bg-red-500 text-white px-3 py-1 rounded-lg font-bold mt-2 hover:scale-105"
-                        >
-                          Del
-                        </button>
+                    <div className="flex  gap-2">
+                      <button
+                        onClick={() => {
+                          handleDelete(event)
+                        }}
+                        className="bg-red-500 text-white px-3 py-1 rounded-lg font-bold mt-2 hover:scale-105"
+                      >
+                        Del
+                      </button>
 
 
-                        <button
-                          onClick={() => handleEdit(event)}
-                          className="bg-green-500 text-white px-3 py-1 rounded-lg font-bold mt-2 hover:scale-105"
-                        >
-                          Edit
-                        </button>
-                      </div>
-                    )}
+                      <button
+                        onClick={() => handleEdit(event)}
+                        className="bg-green-500 text-white px-3 py-1 rounded-lg font-bold mt-2 hover:scale-105"
+                      >
+                        Edit
+                      </button>
+                    </div>
+                  )}
                 </span>
 
                 <span className="overflow-hidden rounded-xl">

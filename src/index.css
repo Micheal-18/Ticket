@@ -101,6 +101,7 @@ option {
   background: linear-gradient(90deg, #333333, #eeeeee);
   display: flex;
   align-items: center;
+  background-color: #ed88361c;
   justify-content: center;
 }
 
