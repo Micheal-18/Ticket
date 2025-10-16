@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 
 const LoadingScreen = ({ onComplete }) => {
     const [text, setText] = useState("");
-    const fullText = "AirTicks Event"
+    const fullText = "AirTicksEvent"
 
     useEffect
         (() => {
