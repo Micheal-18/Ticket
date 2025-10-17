@@ -89,7 +89,7 @@ console.log("oobCode:", query.get("oobCode"));
       // }
 
       await sendEmailVerification(user, {
-        url: "https://airticks.vercel.app/verify",
+        url: "https://airticks.com/verify",
         handleCodeInApp: true,
       });
 

@@ -23,7 +23,6 @@ const Register = ({ step, setStep }) => {
   const [success, setSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [registerLoading, setRegisterLoading] = useState(false);
-  const [resendMessage, setResendMessage] = useState("");
   const navigate = useNavigate()
 
   const [click, setClick] = useState(false);

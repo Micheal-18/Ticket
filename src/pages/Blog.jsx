@@ -6,7 +6,7 @@ import tech from "../assets/download3.jpeg"
 import { collection, getDocs } from 'firebase/firestore'
 import { db } from '../firebase/firebase'
 import { Link } from 'react-router-dom'
-const Blog = ({blog, setBlog}) => {
+const Blog = ({blog, setBlog, currentUser}) => {
 
     // const data = [
     //     {
@@ -59,7 +59,9 @@ const Blog = ({blog, setBlog}) => {
                 <div data-aos="zoom-out" className='absolute  space-y-6 text-center mx-auto px-6 py-20 text-white'>
                     <h1 className='font-bold max-w-xl text-4xl md:text-5xl text-[#eeeeee]'>Find Your Next Unforgettable Experience</h1>
                     <p className='text-[#eeeeee] text-md'>Explore the world of events, from concert to conference, all in one places</p>
-                    <a href='/Write' className='bg-orange-500 hover:bg-orange-600 active:scale-90 text-white px-6 py-3 rounded-md font-medium transition'>Write a Blog</a>
+                    {currentUser?.isAdmin && (
+                        <a href='/Write' className='bg-orange-500 hover:bg-orange-600 active:scale-90 text-white px-6 py-3 rounded-md font-medium transition'>Write a Blog</a>
+                    )}
                 </div>
             </section>
             <section className=" relative my-12  mb-10 ">

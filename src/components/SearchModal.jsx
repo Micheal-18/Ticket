@@ -47,7 +47,7 @@ const SearchModal = ({ setSelectedEvent }) => {
     <>
       <button
         onClick={openModal}
-        className="bg-[#eeeeee] w-10 h-10 flex items-center justify-center rounded-lg"
+        className="bg-gray-200 w-10 h-10 flex items-center justify-center rounded-lg"
       >
         <RiSearchLine color="orange" className="w-6 h-6 text-gray-500" />
       </button>
