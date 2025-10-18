@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { collection, getDocs, query, orderBy, limit } from "firebase/firestore";
 import { Link, useNavigate } from "react-router-dom";
 import { db } from "../firebase/firebase";
-import TicketModal from "../components/TicketModal";
+import TicketModal from "./TicketModal";
 
 const Trending = ({currentUser, events, setEvents}) => {
     const [trendingBlogs, setTrendingBlogs] = useState([]);
@@ -55,7 +55,7 @@ const Trending = ({currentUser, events, setEvents}) => {
         <section className="w-full min-h-screen space-y-8 py-16 px-6 max-w-6xl mx-auto">
             <h1 className="text-3xl font-bold text-center mb-12">🔥 Trending Updates</h1>
 
-            {/* TICKET MODAL */}
+            {/* TICKET MODAL
             {openTicket && selectedEvent && (
                 <TicketModal
                     currentUser={currentUser}
@@ -64,7 +64,7 @@ const Trending = ({currentUser, events, setEvents}) => {
                     selectedEvent={selectedEvent}
                     setSelectedEvent={setSelectedEvent}
                 />
-            )}
+            )} */}
 
             {/* Trending Events */}
             <div >
@@ -74,6 +74,7 @@ const Trending = ({currentUser, events, setEvents}) => {
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
                         {trendingEvents.map((event) => (
+                            <Link to={`/event/${event.id}`}>
                             <div
                                 key={event.id}
                                 onClick={() => handleOpenTicket(event)}
@@ -90,14 +91,9 @@ const Trending = ({currentUser, events, setEvents}) => {
                                     <h3 className="text-3xl adaptive-text text-gray-600 font-bold line-clamp-2 mb-2">{event.name}</h3>
                                     <p className="text-gray-600 adaptive-text text-sm line-clamp-2 mb-3">{event.description}</p>
                                     <p className="text-sm adaptive-text text-gray-400 mb-4">{event.location}</p>
-                                    {/* <Link
-                    to={`/event/${event.id}`}
-                    className="text-blue-600 hover:underline mt-auto"
-                  >
-                    View Event →
-                  </Link> */}
                                 </div>
                             </div>
+                            </Link>
                         ))}
                     </div>
                 )}

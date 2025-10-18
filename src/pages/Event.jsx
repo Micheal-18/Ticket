@@ -5,13 +5,14 @@ import { FaCalendar, FaCaretDown, FaCaretUp, FaClock, FaLocationArrow } from "re
 import { useAdmin } from "../hooks/useAdmin";
 import { FiX } from "react-icons/fi";
 import walkGif from "../assets/dog.gif";
-import TicketModal from "../components/TicketModal";
+import TicketModal from "./TicketModal";
 import EditModal from "../components/EditModal";
 import DeleteModal from "../components/DeleteModal";
 import { formatEventStatus } from "../utils/formatEventRange";
 import naijaStateLocalGov from "naija-state-local-government";
 import { FaSearch } from 'react-icons/fa';
 import SearchModal from "../components/SearchModal";
+import { Link } from "react-router-dom";
 
 
 const Event = ({ currentUser, events, setEvents }) => {
@@ -118,7 +119,7 @@ const Event = ({ currentUser, events, setEvents }) => {
         />
       )}
 
-      {/* TICKET MODAL */}
+      {/* TICKET MODAL
       {openTicket && selectedEvent && (
         <TicketModal
           currentUser={currentUser}
@@ -127,7 +128,7 @@ const Event = ({ currentUser, events, setEvents }) => {
           selectedEvent={selectedEvent}
           setSelectedEvent={setSelectedEvent}
         />
-      )}
+      )} */}
 
       {/* EVENT LIST */}
       <div className="flex flex-col space-y-3 p-4">
@@ -135,9 +136,9 @@ const Event = ({ currentUser, events, setEvents }) => {
           <p className="font-regular text-sm text-gray-500">All Events:</p>
           <div className="flex items-center space-x-4">
             <h1 className="font-bold text-2xl md:text-4xl adaptive-text">
-            Find Events:
+              Find Events:
             </h1>
-          <SearchModal />
+            <SearchModal />
           </div>
         </div>
 
@@ -319,7 +320,7 @@ const Event = ({ currentUser, events, setEvents }) => {
                     </span>
                   </p>
 
-                  <span className="flex justify-between items-center">
+                  <Link to={`/event/${event.id}`} className="flex justify-between items-center">
                     <button
                       onClick={() => handleOpenTicket(event)}
                       className="bg-orange-500 p-2 rounded-lg hover:scale-105 active:scale-90"
@@ -328,7 +329,7 @@ const Event = ({ currentUser, events, setEvents }) => {
                     </button>
 
 
-                  </span>
+                  </Link>
                   {selectedDropdown === event.id && (
                     <div className="flex  gap-2">
                       <button
@@ -347,6 +348,17 @@ const Event = ({ currentUser, events, setEvents }) => {
                       >
                         Edit
                       </button>
+
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(`${window.location.origin}/event/${event.id}`);
+                          alert("📋 Link copied!");
+                        }}
+                        className="bg-gray-200 text-sm px-3 py-1 rounded-lg hover:bg-gray-300"
+                      >
+                        Share
+                      </button>
+
                     </div>
                   )}
                 </span>

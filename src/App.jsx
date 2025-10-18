@@ -1,6 +1,6 @@
 // src/App.jsx
 import React, { useEffect, useState } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
@@ -22,6 +22,8 @@ import Blog from "./pages/Blog";
 import WriteBlog from "./pages/WriteBlog";
 import BlogDetail from "./pages/BlogDetail";
 import Trending from "./pages/Trending";
+import TicketModal from "./pages/TicketModal";
+
 
 const App = () => {
   const [step, setStep] = useState("select");
@@ -153,7 +155,14 @@ const App = () => {
       <Route path="/event" element={
         <Layout currentUser={currentUser}>
          <Event events={events} setEvents={setEvents} currentUser={currentUser}/>
-        </Layout>} />
+        </Layout>} 
+      />
+
+      <Route path="/event/:id" element={
+        <Layout currentUser={currentUser}>
+            <TicketModal/>
+          </Layout>
+      } />
 
         <Route path="/create" element={
           <Layout currentUser={currentUser}>

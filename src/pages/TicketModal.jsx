@@ -1,0 +1,159 @@
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../firebase/firebase";
+import { FiX } from "react-icons/fi";
+import PaystackPayment from "../components/PaystackPayment";
+import { formatEventStatus } from "../utils/formatEventRange";
+
+const TicketModal = ({ currentUser }) => {
+  const { id } = useParams();
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [selectedTicket, setSelectedTicket] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // 🧭 Fetch event data
+  useEffect(() => {
+    const fetchEvent = async () => {
+      try {
+        const docRef = doc(db, "events", id);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setSelectedEvent({ id: docSnap.id, ...docSnap.data() });
+        } else {
+          console.error("❌ Event not found!");
+        }
+      } catch (error) {
+        console.error("Error fetching event:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEvent();
+  }, [id]);
+
+  // 🕓 Safe date formatting
+  const formatDate = (date) => {
+    try {
+      if (!date) return "Date not set";
+
+      const formattedDate = date.seconds
+        ? new Date(date.seconds * 1000)
+        : new Date(date);
+
+      if (isNaN(formattedDate)) return "Invalid date";
+
+      return formattedDate.toLocaleDateString("en-US", {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+    } catch {
+      return "Invalid date";
+    }
+  };
+
+  if (loading) return <div className="text-center p-10">Loading event...</div>;
+  if (!selectedEvent) return <div className="text-center p-10">Event not found</div>;
+
+  return (
+    <div className="fixed left-0 top-0 w-full h-full backdrop-blur-xs flex justify-center items-center z-[9999] custom-scrollbar">
+     <div className="relative w-full flex justify-center items-center">
+       <div className="flex flex-col bg-[#eeeeee] text-[#333333] space-y-4 p-6 rounded-lg shadow-lg w-[90%] max-h-[90vh] overflow-y-auto custom-scrollbar">
+        {/* Close Button */}
+        <div
+          className="text-2xl absolute top-4 right-12 cursor-pointer hover:scale-105"
+          onClick={() => window.history.back()}
+        >
+          <FiX />
+        </div>
+
+        {/* Event Image */}
+        <div className="flex justify-center mb-4">
+          <img
+            src={selectedEvent.photoURL}
+            alt={selectedEvent.name}
+            className="object-contain w-1/2 hover:scale-105 duration-500 rounded-2xl"
+          />
+        </div>
+
+        {/* Event Details */}
+        <h2 className="text-2xl text-center uppercase font-bold mb-4">
+          {selectedEvent.name}
+        </h2>
+
+        <div className="space-y-4">
+          {/* Description */}
+          <div className="border-b space-y-2 border-gray-300 w-full">
+            <h1 className="uppercase font-semibold text-xl">Description</h1>
+            <p className="text-gray-700 mb-2">{selectedEvent?.description}</p>
+          </div>
+
+
+          {/* Category */}
+          <div className="border-b space-y-2 border-gray-300 w-full">
+              <h1 className="uppercase font-semibold text-xl">Category</h1>
+              <p className="text-gray-700 mb-2">{selectedEvent?.category}</p>
+            </div>
+
+          {/* Location */}
+         <div className="border-b space-y-2 border-gray-300 w-full">
+              <h1 className="uppercase font-semibold text-xl">Location</h1>
+              <p className="text-gray-700 mb-2">{selectedEvent?.location}</p>
+            </div>
+
+            {/* Oranganizes */}
+
+             <div className="border-b space-y-2 border-gray-300 w-full">
+              <h1 className="uppercase font-semibold text-xl">Organized by</h1>
+              <p className="text-gray-700 mb-2">{selectedEvent?.organizer}</p>
+            </div>
+
+          {/* Date & Time */}
+          <div>
+            <h1 className="uppercase font-semibold text-xl">Date & Time</h1>
+            <p className="text-gray-700">
+              {formatDate(selectedEvent.date)} |{" "}
+              {formatEventStatus(selectedEvent.startTime)} →{" "}
+              {formatEventStatus(selectedEvent.endTime)}
+            </p>
+          </div>
+
+          {/* Ticket List */}
+          <div className="border-b space-y-2 border-gray-300 w-full">
+            <h1 className="uppercase font-semibold text-xl">Tickets</h1>
+            {Array.isArray(selectedEvent.price) && selectedEvent.price.length > 0 ? (
+              selectedEvent.price.map((ticket, index) => (
+                <button
+                  key={index}
+                  onClick={() => setSelectedTicket(ticket)}
+                  className="w-full text-left p-2 border rounded-lg hover:bg-orange-100 active:scale-95 mt-2"
+                >
+                  {ticket.label}: {ticket.currency}
+                  {ticket.amount}
+                </button>
+              ))
+            ) : (
+              <p className="text-gray-500 text-sm">No tickets available</p>
+            )}
+          </div>
+
+          
+        </div>
+        {/* Paystack Payment */}
+          {selectedTicket && (
+            <PaystackPayment
+              events={selectedEvent}
+              ticket={selectedTicket}
+              currentUser={currentUser}
+            />
+          )}
+      </div>
+     </div>
+    </div>
+  );
+};
+
+export default TicketModal;
