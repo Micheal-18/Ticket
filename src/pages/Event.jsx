@@ -294,7 +294,7 @@ const Event = ({ currentUser, events, setEvents }) => {
                 )}
 
                 <span className="space-y-2 flex flex-col">
-                  <h1 className="font-bold text-gray-700 uppercase text-2xl w-[150px] truncate lg:w-auto lg:whitespace-normal lg:overflow-visible">
+                  <h1 className="font-bold text-gray-700 uppercase text-2xl w-[150px] truncate lg:w-[300px] ">
                     {event.name}
                   </h1>
                   <p className="md:text-lg text-sm font-regular text-gray-500 flex gap-2 items-center">
@@ -306,13 +306,15 @@ const Event = ({ currentUser, events, setEvents }) => {
                       year: "numeric",
                     })}
                   </p>
-                  <p className="text-sm text-gray-500 flex items-center gap-2">
+                  <p className="text-sm w-[200px] lg:w-[300px] text-gray-500 flex items-center gap-2">
                     <FaClock />
-                    {formatEventStatus(event.startTime, event.endTime)}
+                    <span className="truncate">
+                      {formatEventStatus(event.startTime, event.endTime)}
+                    </span>
                   </p>
-                  <p className="md:text-lg text-md w-[200px] lg:w-auto font-normal text-gray-500 flex gap-2 items-center">
+                  <p className="md:text-lg text-md w-[200px] lg:w-[300px] font-normal text-gray-500 flex gap-2 items-center">
                     <FaLocationArrow />
-                    <span className="truncate lg:whitespace-normal lg:overflow-visible">
+                    <span className="truncate ">
                       {event.location}
                     </span>
                   </p>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FiX } from 'react-icons/fi';
 import PaystackPayment from './PaystackPayment';
+import { formatEventStatus } from '../utils/formatEventRange';
 
 const TicketModal = ({ currentUser, events, setEvents, selectedEvent, setSelectedEvent }) => {
   const [selectedTicket, setSelectedTicket] = useState(null);
@@ -62,7 +63,7 @@ const TicketModal = ({ currentUser, events, setEvents, selectedEvent, setSelecte
                   year: 'numeric',
                 })}
                 {' | '}
-                {selectedEvent.startTime} → {selectedEvent.endTime}
+                {formatEventStatus(selectedEvent.startTime)} → {formatEventStatus(selectedEvent.endTime)}
               </p>
             </div>
 
