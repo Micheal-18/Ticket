@@ -74,7 +74,7 @@ const Trending = ({currentUser, events, setEvents}) => {
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
                         {trendingEvents.map((event) => (
-                            <Link to={`/event/${event.id}`}>
+                            <Link to={`/event/${event.slug}`}>
                             <div
                                 key={event.id}
                                 onClick={() => handleOpenTicket(event)}

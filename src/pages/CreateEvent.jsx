@@ -61,6 +61,7 @@ const CreateEvent = () => {
   //   setDate(selectedDate);
   // };
 
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -98,6 +99,13 @@ const CreateEvent = () => {
         }
       }
 
+const slug = `${name
+  .toLowerCase()
+  .trim()
+  .replace(/\s+/g, "-")
+  .replace(/[^\w-]+/g, "")}-${Date.now()}`;
+
+
       // Combine selected date with startTime
       const finalStart = new Date(date);
       finalStart.setHours(startTime.getHours(), startTime.getMinutes());
@@ -122,6 +130,7 @@ const CreateEvent = () => {
         endTime: finalEnd.toISOString(),
         createdBy: user.uid,
         ownerId: user.uid,
+        slug,
         ticketSold: 0,
         createdAt: new Date().toISOString(),
       });

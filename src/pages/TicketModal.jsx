@@ -1,37 +1,45 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { doc, getDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, limit, query, where } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import { FiX } from "react-icons/fi";
 import PaystackPayment from "../components/PaystackPayment";
 import { formatEventStatus } from "../utils/formatEventRange";
 
 const TicketModal = ({ currentUser }) => {
-  const { id } = useParams();
+  const { slug } = useParams();
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [loading, setLoading] = useState(true);
 
   // 🧭 Fetch event data
-  useEffect(() => {
-    const fetchEvent = async () => {
-      try {
-        const docRef = doc(db, "events", id);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          setSelectedEvent({ id: docSnap.id, ...docSnap.data() });
-        } else {
-          console.error("❌ Event not found!");
-        }
-      } catch (error) {
-        console.error("Error fetching event:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
 
-    fetchEvent();
-  }, [id]);
+useEffect(() => {
+  const fetchEvent = async () => {
+    try {
+      const eventQuery = query(
+        collection(db, "events"),
+        where("slug", "==", slug),
+        limit(1)
+      );
+      console.log("Slug from URL:", slug);
+
+      const querySnapshot = await getDocs(eventQuery);
+      if (!querySnapshot.empty) {
+        const docSnap = querySnapshot.docs[0];
+        setSelectedEvent({ id: docSnap.id, ...docSnap.data() });
+      } else {
+        console.error("❌ Event not found!");
+      }
+    } catch (error) {
+      console.error("Error fetching event:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchEvent();
+}, [slug]);
 
   // 🕓 Safe date formatting
   const formatDate = (date) => {

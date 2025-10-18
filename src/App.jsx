@@ -121,13 +121,12 @@ const App = () => {
       />
 
       <Route path="/verify" element={<Verify email={currentUser?.email} step="verify"
-                setStep={() => { }}
-                error={""}
-                setError={() => { }}
-                resendMessage={""}
-                setResendMessage={() => { }}/>} />
-
-
+        setStep={() => { }}
+        error={""}
+        setError={() => { }}
+        resendMessage={""}
+        setResendMessage={() => { }}/>}
+      />
       {/* Verify route — force unverified users here */}
       {/* <Route
         path="/verify"
@@ -158,7 +157,7 @@ const App = () => {
         </Layout>} 
       />
 
-      <Route path="/event/:id" element={
+      <Route path="/event/:slug" element={
         <Layout currentUser={currentUser}>
             <TicketModal/>
           </Layout>

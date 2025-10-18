@@ -267,19 +267,19 @@ const Event = ({ currentUser, events, setEvents }) => {
           </div>
         </div>
 
-        <div className="flex justify-center items-center mt-8 w-full max-w-6xl">
+        <div className="flex justify-center items-center mt-8 w-full max-w-7xl">
           <div
             data-aos="fade-up"
-            className="grid grid-cols-1 md:grid-cols-2 md:gap-10 gap-6 w-full"
+            className="grid grid-cols-1 md:grid-cols-2 md:gap-10 gap-8 w-full"
           >
             {events.map((event) => (
               <div
                 key={event.id}
-                className="flex items-center justify-between flex-1 lg:gap-10 gap-4 relative lg:px-8 px-2 w-full bg-[#eeeeee] py-4 text-[#333333] rounded-3xl"
+                className="flex items-center justify-between flex-1 lg:gap-8 gap-4 relative lg:px-8 px-2 w-full bg-[#eeeeee] py-4 text-[#333333] rounded-3xl"
               >
                 {isAdmin && (
                   <div
-                    className="absolute top-2 right-2 cursor-pointer"
+                    className="absolute top-1 right-1 animate-bounce cursor-pointer"
                     onClick={() =>
                       setSelectedDropdown(
                         selectedDropdown === event.id ? null : event.id
@@ -287,9 +287,9 @@ const Event = ({ currentUser, events, setEvents }) => {
                     }
                   >
                     {selectedDropdown === event.id ? (
-                      <FiX size={15} />
+                      <FiX size={20} />
                     ) : (
-                      <FaCaretDown size={15} />
+                      <FaCaretDown size={20} />
                     )}
                   </div>
                 )}
@@ -307,28 +307,26 @@ const Event = ({ currentUser, events, setEvents }) => {
                       year: "numeric",
                     })}
                   </p>
-                  <p className="text-sm w-[200px] lg:w-[300px] text-gray-500 flex items-center gap-2">
+                  <p className="text-sm w-[150px] lg:w-[300px] text-gray-500 flex items-center gap-2">
                     <FaClock />
                     <span className="truncate">
                       {formatEventStatus(event.startTime, event.endTime)}
                     </span>
                   </p>
-                  <p className="md:text-lg text-md w-[200px] lg:w-[300px] font-normal text-gray-500 flex gap-2 items-center">
+                  <p className="md:text-lg text-md w-[180px] lg:w-[300px] font-normal text-gray-500 flex gap-2 items-center">
                     <FaLocationArrow />
                     <span className="truncate ">
                       {event.location}
                     </span>
                   </p>
 
-                  <Link to={`/event/${event.id}`} className="flex justify-between items-center">
+                  <Link to={`/event/${event.slug}`} className="flex justify-between items-center">
                     <button
                       onClick={() => handleOpenTicket(event)}
                       className="bg-orange-500 p-2 rounded-lg hover:scale-105 active:scale-90"
                     >
                       View ticket
                     </button>
-
-
                   </Link>
                   {selectedDropdown === event.id && (
                     <div className="flex  gap-2">
@@ -351,10 +349,10 @@ const Event = ({ currentUser, events, setEvents }) => {
 
                       <button
                         onClick={() => {
-                          navigator.clipboard.writeText(`${window.location.origin}/event/${event.id}`);
+                          navigator.clipboard.writeText(`${window.location.origin}/event/${event.slug}`);
                           alert("📋 Link copied!");
                         }}
-                        className="bg-gray-200 text-sm px-3 py-1 rounded-lg hover:bg-gray-300"
+                        className="bg-gray-500 text-sm px-3 py-1 rounded-lg mt-2 hover:bg-gray-300"
                       >
                         Share
                       </button>
