@@ -201,7 +201,7 @@ console.log("oobCode:", query.get("oobCode"));
           <button
             onClick={iVerifiedAlready}
             disabled={loading}
-            className="w-full bg-gray-100 rounded-xl py-2 active:scale-90 hover:bg-green-600 hover:text-white hover:scale-105 transition"
+            className="w-full bg-gray-700 rounded-xl py-2 active:scale-90 hover:bg-green-600 hover:text-white hover:scale-105 transition"
           >
             I verified already ✅
           </button>
