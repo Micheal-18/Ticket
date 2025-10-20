@@ -6,6 +6,7 @@ import tech from "../assets/download3.jpeg"
 import { collection, getDocs } from 'firebase/firestore'
 import { db } from '../firebase/firebase'
 import { Link } from 'react-router-dom'
+import OptimizedImage from '../components/OptimizedImage'
 const Blog = ({blog, setBlog, currentUser}) => {
 
     // const data = [
@@ -75,7 +76,7 @@ const Blog = ({blog, setBlog, currentUser}) => {
                             <div key={News.No} className='flex flex-col cursor-pointer group'>
                                 {/*card*/}
                                 <div data-aos="fade-out" className='overflow-hidden rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300'>
-                                    <img src={News.photoURL} alt='data' className='object-cover h-[220px] w-full hover:scale-105 duration-500 rounded-2xl' />
+                                    <OptimizedImage src={News.photoURL} alt='data' className='object-cover h-[220px] w-full hover:scale-105 duration-500 rounded-2xl' />
                                 </div>
                                 {/*content info */}
                                 <div className='space-y-2'>

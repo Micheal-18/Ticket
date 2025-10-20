@@ -13,6 +13,7 @@ import naijaStateLocalGov from "naija-state-local-government";
 import { FaSearch } from 'react-icons/fa';
 import SearchModal from "../components/SearchModal";
 import { Link } from "react-router-dom";
+import OptimizedImage from "../components/OptimizedImage";
 
 
 const Event = ({ currentUser, events, setEvents }) => {
@@ -362,7 +363,7 @@ const Event = ({ currentUser, events, setEvents }) => {
                 </span>
 
                 <span className="overflow-hidden rounded-xl">
-                  <img
+                  <OptimizedImage
                     src={event.photoURL}
                     alt={event.name}
                     className="object-contain w-[150px] hover:scale-105 duration-500 rounded-2xl"

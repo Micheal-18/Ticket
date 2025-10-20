@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 import { collection, getDocs, query, orderBy, limit } from "firebase/firestore";
 import { Link, useNavigate } from "react-router-dom";
 import { db } from "../firebase/firebase";
+import OptimizedImage from "../components/OptimizedImage";
 
 
-const Trending = ({currentUser, events, setEvents}) => {
+const Trending = ({ currentUser, events, setEvents }) => {
     const [trendingBlogs, setTrendingBlogs] = useState([]);
     const [trendingEvents, setTrendingEvents] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -51,11 +52,16 @@ const Trending = ({currentUser, events, setEvents}) => {
         return <div className="flex items-center justify-center h-screen text-gray-600">Loading trending updates...</div>;
     }
 
-     const CLOUD_NAME = "dkny4uowy";
-  const optimizeImage = (url) => {
-    // Example: original photoURL = "v1760751787/y2xubxbb1aw2msdojtfq.png"
-    return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/f_auto,q_auto,w_800/${url}`;
-  };
+    const CLOUD_NAME = "dkny4uowy";
+
+    const optimizeImage = (url, width = 600) => {
+        // Extract just the public_id part after "/upload/"
+        const parts = url.split("/upload/");
+        if (parts.length < 2) return url; // fallback if malformed
+
+        return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/f_auto,q_auto,w_${width}/${parts[1]}`;
+    };
+
 
     return (
         <section className="w-full min-h-screen space-y-8 py-16 px-6 max-w-6xl mx-auto">
@@ -81,25 +87,25 @@ const Trending = ({currentUser, events, setEvents}) => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
                         {trendingEvents.map((event) => (
                             <Link to={`/event/${event.slug}`}>
-                            <div
-                                key={event.id}
-                                onClick={() => handleOpenTicket(event)}
-                                className="relative shadow-lg rounded-2xl overflow-hidden hover:shadow-xl transition duration-300 flex flex-col"
-                            >
-                                <div className="flex justify-center overflow-hidden rounded-2xl">
-                                    <img
-                                        src={event.photoURL}
-                                        alt={event.title}
-                                        loading="lazy"
-                                        className="w-full object-contain hover:scale-105  duration-500"
-                                    />
+                                <div
+                                    key={event.id}
+                                    onClick={() => handleOpenTicket(event)}
+                                    className="relative shadow-lg rounded-2xl overflow-hidden hover:shadow-xl transition duration-300 flex flex-col"
+                                >
+                                    <div className="flex justify-center overflow-hidden rounded-2xl">
+                                        <OptimizedImage
+                                            src={event.photoURL}
+                                            alt={event.title}
+                                            loading="lazy"
+                                            className="w-full object-contain hover:scale-105  duration-500"
+                                        />
+                                    </div>
+                                    <div className="absolute p-4 top-1/2 flex-1 flex flex-col">
+                                        <h3 className="text-3xl adaptive-text text-gray-600 font-bold line-clamp-2 mb-2">{event.name}</h3>
+                                        <p className="text-gray-600 adaptive-text text-sm line-clamp-2 mb-3">{event.description}</p>
+                                        <p className="text-sm adaptive-text text-gray-400 mb-4">{event.location}</p>
+                                    </div>
                                 </div>
-                                <div className="absolute p-4 top-1/2 flex-1 flex flex-col">
-                                    <h3 className="text-3xl adaptive-text text-gray-600 font-bold line-clamp-2 mb-2">{event.name}</h3>
-                                    <p className="text-gray-600 adaptive-text text-sm line-clamp-2 mb-3">{event.description}</p>
-                                    <p className="text-sm adaptive-text text-gray-400 mb-4">{event.location}</p>
-                                </div>
-                            </div>
                             </Link>
                         ))}
                     </div>
@@ -119,7 +125,7 @@ const Trending = ({currentUser, events, setEvents}) => {
                                 key={blog.id}
                                 className="bg-white shadow-lg rounded-2xl overflow-hidden hover:shadow-xl transition duration-300 flex flex-col"
                             >
-                                <img
+                                <OptimizedImage
                                     src={blog.photoURL}
                                     alt={blog.title}
                                     loading="lazy"
