@@ -66,6 +66,8 @@ useEffect(() => {
   if (loading) return <div className="text-center p-10">Loading event...</div>;
   if (!selectedEvent) return <div className="text-center p-10">Event not found</div>;
 
+  
+
   return (
     <div className="fixed left-0 top-0 w-full h-full backdrop-blur-xs flex justify-center items-center z-[9999] custom-scrollbar">
      <div className="relative w-full flex justify-center items-center">

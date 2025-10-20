@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { collection, getDocs, query, orderBy, limit } from "firebase/firestore";
 import { Link, useNavigate } from "react-router-dom";
 import { db } from "../firebase/firebase";
-import TicketModal from "./TicketModal";
+
 
 const Trending = ({currentUser, events, setEvents}) => {
     const [trendingBlogs, setTrendingBlogs] = useState([]);
@@ -51,6 +51,12 @@ const Trending = ({currentUser, events, setEvents}) => {
         return <div className="flex items-center justify-center h-screen text-gray-600">Loading trending updates...</div>;
     }
 
+     const CLOUD_NAME = "dkny4uowy";
+  const optimizeImage = (url) => {
+    // Example: original photoURL = "v1760751787/y2xubxbb1aw2msdojtfq.png"
+    return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/f_auto,q_auto,w_800/${url}`;
+  };
+
     return (
         <section className="w-full min-h-screen space-y-8 py-16 px-6 max-w-6xl mx-auto">
             <h1 className="text-3xl font-bold text-center mb-12">🔥 Trending Updates</h1>
@@ -84,6 +90,7 @@ const Trending = ({currentUser, events, setEvents}) => {
                                     <img
                                         src={event.photoURL}
                                         alt={event.title}
+                                        loading="lazy"
                                         className="w-full object-contain hover:scale-105  duration-500"
                                     />
                                 </div>
@@ -115,6 +122,7 @@ const Trending = ({currentUser, events, setEvents}) => {
                                 <img
                                     src={blog.photoURL}
                                     alt={blog.title}
+                                    loading="lazy"
                                     className=" w-full object-cover "
                                 />
                                 <div className="p-4 flex-1 flex flex-col">

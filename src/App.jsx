@@ -76,9 +76,12 @@ const App = () => {
       }
       setLoading(false);
     });
+    
 
     return () => unsubscribe();
   }, []);
+
+ 
 
   if (loading) {
     return <LoadingScreen onComplete={() => setIsLoaded(true)} />;
@@ -159,7 +162,7 @@ const App = () => {
 
       <Route path="/event/:slug" element={
         <Layout currentUser={currentUser}>
-            <TicketModal/>
+            <TicketModal currentUser={currentUser}/>
           </Layout>
       } />
 
