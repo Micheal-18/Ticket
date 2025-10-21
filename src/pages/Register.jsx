@@ -295,7 +295,7 @@ const Register = ({ step, setStep }) => {
                 />
               )}
             </div>
-            {passwordError && (<div className='h-auto text-white text-lg border border-2 bg-orange-600 rounded-md border-orange-500'>{passwordError}</div>)}
+            {passwordError && (<div className='h-auto text-white text-lg  border-2 bg-orange-600 rounded-md border-orange-500'>{passwordError}</div>)}
 
             {/* Confirm Password */}
 
@@ -323,7 +323,7 @@ const Register = ({ step, setStep }) => {
               )}
             </div>
 
-            {confirmPasswordError && (<div className='h-auto text-white text-lg border border-2 bg-orange-600 rounded-md border-orange-500'>{confirmPasswordError}</div>)}
+            {confirmPasswordError && (<div className='h-auto text-white text-lg  border-2 bg-orange-600 rounded-md border-orange-500'>{confirmPasswordError}</div>)}
 
             {/* Phone Number */}
             <input

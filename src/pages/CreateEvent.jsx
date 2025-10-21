@@ -61,7 +61,7 @@ const CreateEvent = () => {
   //   setDate(selectedDate);
   // };
 
-  
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -99,11 +99,11 @@ const CreateEvent = () => {
         }
       }
 
-const slug = `${name
-  .toLowerCase()
-  .trim()
-  .replace(/\s+/g, "-")
-  .replace(/[^\w-]+/g, "")}-${Date.now()}`;
+      const slug = `${name
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, "-")
+        .replace(/[^\w-]+/g, "")}-${Date.now()}`;
 
 
       // Combine selected date with startTime

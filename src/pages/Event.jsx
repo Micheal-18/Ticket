@@ -230,7 +230,7 @@ const Event = ({ currentUser, events, setEvents }) => {
             </button> */}
             <div onClick={handleCate} className='w-full list-none cursor-pointer outline-none group'>
               <button className="w-full bg-[#eeeeee] active:scale-90 flex justify-between items-center text-[#333333] text-left p-3 rounded-xl">
-                {filters.category || "Category"}< FaCaretUp className='ml-2 animate-bounce transition-transform duration-300 group-hover:rotate-180' />
+                {filters.category || "Sort by category"}< FaCaretUp className='ml-2 animate-bounce transition-transform duration-300 group-hover:rotate-180' />
               </button>
 
 
