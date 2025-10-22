@@ -73,7 +73,7 @@ const PaystackPayment = ({ events, ticket, currentUser }) => {
       onClick={payWithPaystack}
       className="bg-orange-500 p-2 rounded-lg text-white active:scale-90 hover:bg-orange-600"
     >
-      Pay for {ticket.label} - {ticket.currency}{Number(ticket.amount * ticket.num).toLocaleString()}
+      Pay for {ticket.label} - {ticket.currency}{Number(ticket.amount * (ticket.num || 1)).toLocaleString()}
 
     </button>
   );

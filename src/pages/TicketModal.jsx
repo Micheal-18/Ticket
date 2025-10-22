@@ -5,6 +5,7 @@ import { db } from "../firebase/firebase";
 import { FiX } from "react-icons/fi";
 import PaystackPayment from "../components/PaystackPayment";
 import { formatEventStatus } from "../utils/formatEventRange";
+import OptimizedImage from "../components/OptimizedImage";
 
 const TicketModal = ({ currentUser }) => {
   const { slug } = useParams();
@@ -83,7 +84,7 @@ const TicketModal = ({ currentUser }) => {
 
           {/* Event Image */}
           <div className="flex justify-center mb-4">
-            <img
+            <OptimizedImage
               src={selectedEvent.photoURL}
               alt={selectedEvent.name}
               className="object-contain w-1/2 hover:scale-105 duration-500 rounded-2xl"

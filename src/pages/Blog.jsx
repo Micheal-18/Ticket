@@ -3,35 +3,13 @@ import event from "../assets/unbox.JPG"
 import iphone from "../assets/rep.jpg"
 import gadget from "../assets/download2.jpeg"
 import tech from "../assets/download3.jpeg"
-import { collection, getDocs } from 'firebase/firestore'
+import { collection, deleteDoc, getDocs } from 'firebase/firestore'
 import { db } from '../firebase/firebase'
 import { Link } from 'react-router-dom'
 import OptimizedImage from '../components/OptimizedImage'
+import { FaEllipsisV } from 'react-icons/fa';
 const Blog = ({blog, setBlog, currentUser}) => {
 
-    // const data = [
-    //     {
-    //         No: 1,
-    //         title: "How to choose perfect smartphone",
-    //         description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloribus, voluptatibus.",
-    //         published: "October 1, 2023 by Jane Doe",
-    //         image: iphone,
-    //     },
-    //     {
-    //         No: 2,
-    //         title: "How to choose perfect gadget",
-    //         description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloribus, voluptatibus.",
-    //         published: "October 2, 2023 by John Smith",
-    //         image: gadget,
-    //     },
-    //     {
-    //         No: 3,
-    //         title: "Latest trends in technology",
-    //         description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloribus, voluptatibus.",
-    //         published: "October 3, 2023 by Alice Johnson",
-    //         image: tech,
-    //     }
-    // ]
 
     useEffect(() => {
         const fetchBlog = async () => {
@@ -48,6 +26,7 @@ const Blog = ({blog, setBlog, currentUser}) => {
         };
         fetchBlog();
     }, [setBlog]);
+
     return (
         <>
 
@@ -73,8 +52,10 @@ const Blog = ({blog, setBlog, currentUser}) => {
                 <div className='flex justify-center items-center mx-auto w-full max-w-6xl px-4'>
                     <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 gap-y-8 sm:gap-4 md:gap-7 my-8  place-items-center '>
                         {blog.map((News) => (
-                            <div key={News.No} className='flex flex-col cursor-pointer group'>
+                            <div key={News.No} className='relative flex flex-col cursor-pointer group'>
                                 {/*card*/}
+
+                                <FaEllipsisV className='absolute top-2 right-2 z-20 hover:scale-105 active:scale-90'/>
                                 <div data-aos="fade-out" className='overflow-hidden rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300'>
                                     <OptimizedImage src={News.photoURL} alt='data' className='object-cover h-[220px] w-full hover:scale-105 duration-500 rounded-2xl' />
                                 </div>
