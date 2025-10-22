@@ -1,28 +1,31 @@
 import React from "react";
 import axios from "axios";
-import { addDoc, collection, doc, increment, updateDoc } from "firebase/firestore";
+import { addDoc, collection, doc, increment, serverTimestamp, updateDoc } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 
-const PaystackPayment = ({ events, ticket, currentUser }) => {
+const PaystackPayment = ({ events, ticket, currentUser, guestEmail }) => {
 
+  const buyerEmail = currentUser?.email || guestEmail;
+  // const transactionId = `${Date.now()}_${user.uid}`;
+  // const transactionRef = doc(db, "transactions", transactionId);
 
-    const totalAmount = ticket.amount * ticket.num; // ✅ reflect quantity
+  const totalAmount = ticket.amount * ticket.num; // ✅ reflect quantity
   const payWithPaystack = () => {
-    if (!currentUser || !currentUser.email) {
+    if (!buyerEmail) {
       alert("Please login before making a payment.");
       return;
     }
 
 
     console.log({
-      email: currentUser?.email,
+      email: buyerEmail,
       amount: totalAmount * 100,
       currency: "NGN",
     });
 
     const handler = window.PaystackPop.setup({
       key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
-      email: currentUser?.email,
+      email: buyerEmail,
       amount: totalAmount * 100,
 
       callback: (response) => {
@@ -31,7 +34,7 @@ const PaystackPayment = ({ events, ticket, currentUser }) => {
             await axios.post("https://tick-backend-2.onrender.com/api/purchase", {
               reference: response.reference,
               eventId: events.id,
-              email: currentUser.email,
+              email: buyerEmail,
               ticketType: ticket.label,
               ticketAmount: ticket.amount,
               ticketNumber: ticket.num,
@@ -41,17 +44,18 @@ const PaystackPayment = ({ events, ticket, currentUser }) => {
                   eventId: events.id,
                   eventName: events.name,
                   ticketType: ticket.label,
-                  amount: ticket.amount,
+                  amount: ticket.amount * ticket.num,
                   number: ticket.num,
                   currency: ticket.currency,
-                  userEmail: currentUser.email,
+                  userEmail: buyerEmail,
                   paymentRef: response.reference,
-                  timestamp: new Date(),
+                  timestamp: serverTimestamp(),
             })
 
             const eventRef = doc(db, "events", events.id);
             await updateDoc(eventRef, {
-              ticketSold: increment(1),
+              ticketSold: increment(ticket.num),
+              revenue: increment(ticket.amount * ticket.num),
             });
 
             console.log("Transaction saved to Firestore ✅");

@@ -30,7 +30,7 @@ const Tracking = () => {
   // ✅ Sorting logic
   const filteredEvents = [...events].sort((a, b) => {
     if (filter === "revenue") return (b.revenue ?? 0) - (a.revenue ?? 0);
-    if (filter === "tickets") return (b.ticketsSold ?? 0) - (a.ticketsSold ?? 0);
+    if (filter === "tickets") return (b.ticketSold ?? 0) - (a.ticketSold ?? 0);
     return 0;
   });
 
@@ -44,7 +44,7 @@ const Tracking = () => {
     try {
       await updateDoc(doc(db, "events", id), {
         revenue: 0,
-        ticketsSold: 0, // optional
+        ticketSold: 0, // optional
       });
 
       // instant UI update
@@ -127,7 +127,7 @@ const Tracking = () => {
               <p className="text-gray-600">
                 Tickets:{" "}
                 <span className="text-green-500 font-semibold">
-                  {event.ticketsSold ?? 0}
+                  {event.ticketSold ?? 0}
                 </span>
               </p>
 

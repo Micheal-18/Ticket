@@ -11,11 +11,11 @@ const TicketModal = ({ currentUser }) => {
   const { slug } = useParams();
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [selectedTicket, setSelectedTicket] = useState(null);
-  const [selectedNumber, setSelectedNumber] = useState(null);
+  const [guestEmail, setGuestEmail] = useState("");
   const [loading, setLoading] = useState(true);
 
   // 🧭 Fetch event data
-const number = [0,1,2,3,4,5,6,7,8,9,10]
+  const number = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
   useEffect(() => {
     const fetchEvent = async () => {
       try {
@@ -154,7 +154,7 @@ const number = [0,1,2,3,4,5,6,7,8,9,10]
                       >
                         {number.map((number, num) => (
                           <option key={num + 1} value={num}>
-                           {number}
+                            {number}
                           </option>
                         ))}
                       </select>
@@ -170,6 +170,21 @@ const number = [0,1,2,3,4,5,6,7,8,9,10]
                           {ticket.amount * (ticket.num || 0)}
                         </strong>
                       </button>
+
+
+                    </div>
+
+                    {/* Email user */}
+                    <div className="flex items-center">
+                      <label className="font-bold">Email:</label>
+                      <input
+                        placeholder="Email"
+                        type="email"
+                        className="border w-1/2 rounded-md p-3"
+                        value={guestEmail}
+                        onChange={(e) => setGuestEmail(e.target.value)}
+                      />
+
                     </div>
                   </div>
                 ))
@@ -187,6 +202,7 @@ const number = [0,1,2,3,4,5,6,7,8,9,10]
               events={selectedEvent}
               ticket={selectedTicket}
               currentUser={currentUser}
+              guestEmail={guestEmail}
             />
           )}
         </div>
