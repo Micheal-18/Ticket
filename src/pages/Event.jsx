@@ -120,16 +120,6 @@ const Event = ({ currentUser, events, setEvents }) => {
         />
       )}
 
-      {/* TICKET MODAL
-      {openTicket && selectedEvent && (
-        <TicketModal
-          currentUser={currentUser}
-          events={events}
-          setEvents={setEvents}
-          selectedEvent={selectedEvent}
-          setSelectedEvent={setSelectedEvent}
-        />
-      )} */}
 
       {/* EVENT LIST */}
       <div className="flex flex-col space-y-3 p-4">
@@ -256,15 +246,6 @@ const Event = ({ currentUser, events, setEvents }) => {
                 </div>
               )}
             </div>
-            {/* <select name="date" className="p-3 w-full border bg-[#eeeeee] text-[#333333] rounded-lg ">
-              <option value="">Category</option>
-              <option value="Art">Art</option>
-              <option value="Business">Business</option>
-              <option value="Entertainment">Entertainment</option>
-              <option value="Food">Food</option>
-              <option value="Health">Health</option>
-              <option value="Music">Music</option>
-            </select> */}
           </div>
         </div>
 

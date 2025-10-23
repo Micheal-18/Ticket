@@ -12,6 +12,8 @@ const TicketModal = ({ currentUser }) => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [guestEmail, setGuestEmail] = useState("");
+  const [guestName, setGuestName] = useState("");
+  const [guestNumber, setGuestNumber] = useState();
   const [loading, setLoading] = useState(true);
 
   // 🧭 Fetch event data
@@ -174,18 +176,46 @@ const TicketModal = ({ currentUser }) => {
 
                     </div>
 
+                    {!currentUser && (
+                      <>
+                      <div className="flex space-x-2 items-center">
+                      <label className="font-bold text-gray-600">Name:</label>
+                      <input
+                        placeholder="Name"
+                        type="text"
+                        className="border-2 border-gray-200 lg:w-1/2 w-full rounded-md p-3"
+                        value={guestName}
+                        onChange={(e) => setGuestName(e.target.value)}
+                      />
+
+                    </div>
+
                     {/* Email user */}
-                    <div className="flex items-center">
-                      <label className="font-bold">Email:</label>
+                    <div className="flex space-x-2 items-center">
+                      <label className="font-bold text-gray-600">Email:</label>
                       <input
                         placeholder="Email"
                         type="email"
-                        className="border w-1/2 rounded-md p-3"
+                        className="lg:w-1/2 w-full border-2 border-gray-200 rounded-md p-3"
                         value={guestEmail}
                         onChange={(e) => setGuestEmail(e.target.value)}
                       />
 
                     </div>
+
+                    <div className="flex space-x-2 items-center">
+                      <label className="font-bold text-gray-600">Number:</label>
+                      <input
+                        placeholder="Phone"
+                        type="number"
+                        className="border-2 border-gray-200 lg:w-1/2 w-full rounded-md p-3"
+                        value={guestNumber}
+                        onChange={(e) => setGuestNumber(e.target.value)}
+                      />
+
+                    </div>
+                      </>
+                    )}
                   </div>
                 ))
               ) : (
@@ -203,6 +233,8 @@ const TicketModal = ({ currentUser }) => {
               ticket={selectedTicket}
               currentUser={currentUser}
               guestEmail={guestEmail}
+              guestName={guestName}
+              guestNumber={guestNumber}
             />
           )}
         </div>

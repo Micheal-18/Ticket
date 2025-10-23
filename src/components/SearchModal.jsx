@@ -66,7 +66,7 @@ const SearchModal = ({ setSelectedEvent }) => {
                 <h3 className="text-xl font-semibold text-gray-700">Search Events</h3>
                 <button
                   onClick={closeModal}
-                  className="text-gray-400 hover:bg-[#ed88364d] hover:text-orange-600 rounded-lg w-8 h-8 flex items-center justify-center"
+                  className="text-gray-400 hover:bg-[#f8882c4d] hover:text-orange-600 rounded-lg w-8 h-8 flex items-center justify-center "
                 >
                   <FaXmark size={20} />
                 </button>
@@ -98,19 +98,19 @@ const SearchModal = ({ setSelectedEvent }) => {
                         setSelectedEvent(event);
                         closeModal();
                       }}
-                      className="flex items-start gap-3 bg-[#15eabc34] rounded-lg p-2 cursor-pointer border border-[#ffffff20] hover:bg-[#13e5b044] transition duration-200"
+                      className="flex items-center gap-3 bg-[#eeeeee] rounded-lg p-2 cursor-pointer border border-[#ffffff20] hover:bg-orange-500/10 transition duration-200"
                     >
                       <img
                         src={event.photoURL || event.image}
                         alt={event.name}
-                        className="w-10 h-10 rounded-full object-cover"
+                        className="w-20 h-20 object-contain"
                       />
                       <span>
-                        <h2 className="text-lg text-gray-300 font-semibold">{event.name}</h2>
-                        <p className="text-xs text-gray-300">
+                        <h2 className="text-lg text-gray-700 font-semibold">{event.name}</h2>
+                        <p className="text-xs text-gray-600">
                           📍 {event.location}
                         </p>
-                        <p className="text-xs text-gray-300">
+                        <p className="text-xs text-gray-500">
                           📆{' '}
                           {new Date(event.date).toLocaleDateString('en-US', {
                             weekday: 'short',

@@ -1,11 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { addDoc, collection, doc, increment, serverTimestamp, updateDoc } from "firebase/firestore";
 import { db } from "../firebase/firebase";
+import { FaCheckCircle } from "react-icons/fa";
 
-const PaystackPayment = ({ events, ticket, currentUser, guestEmail }) => {
+const PaystackPayment = ({ events, ticket, currentUser, guestEmail, guestName, guestNumber }) => {
+
+  const [success, setSuccess] = useState(false)
 
   const buyerEmail = currentUser?.email || guestEmail;
+  const buyerName = currentUser?.fullName || guestName;
+  const buyerNumber = currentUser?.phone || guestNumber;
   // const transactionId = `${Date.now()}_${user.uid}`;
   // const transactionRef = doc(db, "transactions", transactionId);
 
@@ -48,8 +53,11 @@ const PaystackPayment = ({ events, ticket, currentUser, guestEmail }) => {
                   number: ticket.num,
                   currency: ticket.currency,
                   userEmail: buyerEmail,
+                  userName: buyerName,
+                  userNumber: buyerNumber,
                   paymentRef: response.reference,
                   timestamp: serverTimestamp(),
+                  status: "success",
             })
 
             const eventRef = doc(db, "events", events.id);
@@ -57,7 +65,7 @@ const PaystackPayment = ({ events, ticket, currentUser, guestEmail }) => {
               ticketSold: increment(ticket.num),
               revenue: increment(ticket.amount * ticket.num),
             });
-
+            setSuccess(true);
             console.log("Transaction saved to Firestore ✅");
           } catch (error) {
             console.error("Error recording transaction: ", error);
@@ -73,13 +81,31 @@ const PaystackPayment = ({ events, ticket, currentUser, guestEmail }) => {
 
 
   return (
-    <button
-      onClick={payWithPaystack}
-      className="bg-orange-500 p-2 rounded-lg text-white active:scale-90 hover:bg-orange-600"
-    >
-      Pay for {ticket.label} - {ticket.currency}{Number(ticket.amount * (ticket.num || 1)).toLocaleString()}
-
-    </button>
+    <>
+    {!success ? (
+        <button
+          onClick={payWithPaystack}
+          className="bg-orange-500 p-2 rounded-lg text-white active:scale-90 hover:bg-orange-600"
+        >
+          Pay for {ticket.label} – {ticket.currency}
+          {Number(ticket.amount * (ticket.num || 1)).toLocaleString()}
+        </button>
+      ) : (
+        <div className="flex flex-col items-center justify-center w-full min-h-screen text-center px-4">
+          <FaCheckCircle className="text-green-500 text-6xl mb-4" />
+          <h1 className="font-semibold text-gray-700 text-2xl mb-2">
+            Transaction Successful 🎉
+          </h1>
+          <p className="text-gray-600 text-lg">
+            Thank you for purchasing <b>{events.name}</b>,{" "}
+            {buyerName?.split(" ")[1]}!
+          </p>
+          <p className="text-gray-500 mt-2">
+            A QR ticket has been sent to your email <b>{buyerEmail}</b>.
+          </p>
+        </div>
+      )}
+    </>
   );
 };
 
