@@ -60,7 +60,7 @@ const DeleteModal = ({
 
           <button
             className="bg-green-500 text-white px-6 py-2 rounded-lg font-semibold hover:scale-105 transition-transform"
-            onClick={() => deleteEvent(selectedEvent?.id)}
+            onClick={() => deleteEvent(selectedEvent?.slug)}
           >
             Yes
           </button>
