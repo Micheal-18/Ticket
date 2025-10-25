@@ -16,11 +16,11 @@ const PaystackPayment = ({ events, ticket, currentUser, guestEmail, guestName, g
 
   const totalAmount = ticket.amount * ticket.num; // ✅ reflect quantity
   const payWithPaystack = () => {
-    if (!buyerEmail) {
+
+    if (!buyerEmail || !buyerName || !buyerNumber) {
       alert("Please login before making a payment.");
       return;
     }
-
 
     console.log({
       email: buyerEmail,
@@ -45,19 +45,19 @@ const PaystackPayment = ({ events, ticket, currentUser, guestEmail, guestName, g
               ticketNumber: ticket.num,
             });
 
-                await addDoc(collection(db, "transactions"), {
-                  eventId: events.id,
-                  eventName: events.name,
-                  ticketType: ticket.label,
-                  amount: ticket.amount * ticket.num,
-                  number: ticket.num,
-                  currency: ticket.currency,
-                  userEmail: buyerEmail,
-                  userName: buyerName,
-                  userNumber: buyerNumber,
-                  paymentRef: response.reference,
-                  timestamp: serverTimestamp(),
-                  status: "success",
+            await addDoc(collection(db, "transactions"), {
+              eventId: events.id,
+              eventName: events.name,
+              ticketType: ticket.label,
+              amount: ticket.amount * ticket.num,
+              number: ticket.num,
+              currency: ticket.currency,
+              userEmail: buyerEmail,
+              userName: buyerName,
+              userNumber: buyerNumber,
+              paymentRef: response.reference,
+              timestamp: serverTimestamp(),
+              status: "success",
             })
 
             const eventRef = doc(db, "events", events.id);
@@ -82,7 +82,7 @@ const PaystackPayment = ({ events, ticket, currentUser, guestEmail, guestName, g
 
   return (
     <>
-    {!success ? (
+      {!success ? (
         <button
           onClick={payWithPaystack}
           className="bg-orange-500 p-2 rounded-lg text-white active:scale-90 hover:bg-orange-600"

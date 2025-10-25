@@ -9,8 +9,10 @@ const DeleteModal = ({
   setEvents,
 }) => {
   const deleteEvent = async (eventId) => {
+
     try {
       await deleteDoc(doc(db, "events", eventId));
+      console.log()
       alert("✅ Event deleted successfully!");
 
       // Refresh event list after delete
@@ -60,7 +62,7 @@ const DeleteModal = ({
 
           <button
             className="bg-green-500 text-white px-6 py-2 rounded-lg font-semibold hover:scale-105 transition-transform"
-            onClick={() => deleteEvent(selectedEvent?.slug)}
+            onClick={() => deleteEvent(selectedEvent?.id)}
           >
             Yes
           </button>
