@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { db } from "../firebase/firebase";
 import { collection, getDocs } from "firebase/firestore";
-import { FaCalendar, FaCaretDown, FaCaretUp, FaClock, FaLocationArrow } from "react-icons/fa6";
+import { FaCalendar, FaCaretDown, FaCaretUp, FaCircle, FaClock, FaLocationArrow } from "react-icons/fa6";
 import { useAdmin } from "../hooks/useAdmin";
 import { FiX } from "react-icons/fi";
 import walkGif from "../assets/dog.gif";
@@ -14,6 +14,7 @@ import { FaSearch } from 'react-icons/fa';
 import SearchModal from "../components/SearchModal";
 import { Link } from "react-router-dom";
 import OptimizedImage from "../components/OptimizedImage";
+import DatePicker from "react-datepicker";
 
 
 const Event = ({ currentUser, events, setEvents }) => {
@@ -24,9 +25,10 @@ const Event = ({ currentUser, events, setEvents }) => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editEvent, setEditEvent] = useState(null);
-  const [isCategory, setIsCategory] = useState(false);
+  const [isDate, setIsDate] = useState(false);
   const [isPrice, setIsPrice] = useState(false);
   const [isStateOpen, setIsStateOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [filters, setFilters] = useState({ state: "", category: "", priceOrder: "" });
 
   const handleState = () => {
@@ -37,8 +39,8 @@ const Event = ({ currentUser, events, setEvents }) => {
     setIsPrice(!isPrice);
   }
 
-  const handleCate = () => {
-    setIsCategory(!isCategory);
+  const handleDate = () => {
+    setIsDate(!isDate);
   }
 
   const states = naijaStateLocalGov.states();
@@ -80,13 +82,38 @@ const Event = ({ currentUser, events, setEvents }) => {
 
   const filteredEvents = events
     .filter((event) =>
-      filters.state ? event.state?.toLowerCase() === filters.state.toLowerCase() : true
-    )
-    .filter((event) =>
-      filters.category
-        ? event.category?.toLowerCase() === filters.category.toLowerCase()
+      filters.state
+        ? event.location?.toLowerCase().includes(filters.state.toLowerCase())
         : true
     )
+
+    // inside your filteredEvents
+    .filter((event) => {
+      if (!filters.date) return true;
+
+      const today = new Date();
+      const eventDate = new Date(event.date);
+      const tomorrow = new Date();
+      tomorrow.setDate(today.getDate() + 1);
+
+      if (filters.date === "Today")
+        return eventDate.toDateString() === today.toDateString();
+
+      if (filters.date === "Tomorrow")
+        return eventDate.toDateString() === tomorrow.toDateString();
+
+      if (filters.date === "Weekend") {
+        const day = eventDate.getDay();
+        return day === 6 || day === 0; // Saturday or Sunday
+      }
+
+      // If using "Select Date" with a custom date
+      if (filters.date instanceof Date)
+        return eventDate.toDateString() === filters.date.toDateString();
+
+      return true;
+    })
+
     .sort((a, b) => {
       if (filters.priceOrder === "lowtohigh") return a.price - b.price;
       if (filters.priceOrder === "hightolow") return b.price - a.price;
@@ -124,7 +151,7 @@ const Event = ({ currentUser, events, setEvents }) => {
       {/* EVENT LIST */}
       <div className="flex flex-col space-y-3 p-4">
         <div className="space-y-6">
-          <p className="font-regular text-sm text-gray-500">All Events:</p>
+          <p className="font-regular text-sm  adaptive-text">All Events:</p>
           <div className="flex items-center space-x-4">
             <h1 className="font-bold text-2xl md:text-4xl adaptive-text">
               Find Events:
@@ -134,11 +161,12 @@ const Event = ({ currentUser, events, setEvents }) => {
         </div>
 
         <div className="flex flex-col space-y-2">
-          <p className="text-gray-500">Events</p>
-          <p className="text-gray-200">
+          <p className=" adaptive-text">Events</p>
+          <p className="text-gray-200 adaptive-text">
             Showing <span className="font-semibold">{filteredEvents.length}</span>{" "}
             of {events.length} events
           </p>
+
           <div className="flex flex-row space-x-2">
             {/* <button className="w-full bg-black rounded-xl py-2 pl-2 text-left text-white">
               Nigeria
@@ -184,7 +212,7 @@ const Event = ({ currentUser, events, setEvents }) => {
               <option value="lowtohigh">Low to High</option>
               <option value="hightolow">High to Low</option>
             </select> */}
-            <div onClick={handlePrice} className='w-full list-none cursor-pointer outline-none  group'>
+            <div onClick={handlePrice} className='relative w-full list-none cursor-pointer outline-none  group'>
               <button className="w-full active:scale-90 bg-[#eeeeee] flex justify-between items-center text-[#333333] text-left p-3 rounded-xl">
                 {filters.priceOrder
                   ? filters.priceOrder === "lowtohigh"
@@ -195,7 +223,7 @@ const Event = ({ currentUser, events, setEvents }) => {
 
 
               {isPrice && (
-                <div className='fixed z-50 lg:hidden lg:group-hover:block w-1/4 mt-1  rounded-md bg-white  shadow-md transition duration-1000 ease-in-out p-2 text-[#333333] '>
+                <div className='absolute z-50 lg:hidden lg:group-hover:block  mt-1  rounded-md bg-white  shadow-md transition duration-1000 ease-in-out p-2 text-[#333333] '>
                   <ul className='space-y-2 '>
                     <li className='flex flex-col space-y-2 text-sm text-gray-500 hover:text-[#333333] duration-1000 w-full'>
                       <a
@@ -218,35 +246,82 @@ const Event = ({ currentUser, events, setEvents }) => {
             {/* <button className="w-full bg-white text-black text-left py-2 pl-2 rounded-xl">
               Date
             </button> */}
-            <div onClick={handleCate} className='w-full list-none cursor-pointer outline-none group'>
-              <button className="w-full bg-[#eeeeee] active:scale-90 flex justify-between items-center text-[#333333] text-left p-3 rounded-xl">
-                {filters.category || "Sort by category"}< FaCaretUp className='ml-2 animate-bounce transition-transform duration-300 group-hover:rotate-180' />
+            {/* ✅ DATE FILTER DROPDOWN */}
+            <div className="relative w-full list-none cursor-pointer outline-none group">
+              {/* Toggle Button */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation(); // prevent parent click closing it
+                  setIsDate((prev) => !prev); // toggle dropdown
+                }}
+                className="w-full bg-[#eeeeee] active:scale-90 flex justify-between items-center text-[#333333] text-left p-3 rounded-xl"
+              >
+                {filters.date
+                  ? filters.date instanceof Date
+                    ? filters.date.toDateString()
+                    : filters.date
+                  : "Sort by Date"}
+                <FaCaretUp className="ml-2 transition-transform duration-300 group-hover:rotate-180" />
               </button>
 
+              {/* Dropdown List */}
+              {isDate && (
+                <div className="absolute left-0 mt-2 w-full rounded-md bg-white shadow-md border border-gray-200 z-50 p-2 text-[#333333]">
+                  <ul className="space-y-2">
+                    {["Today", "Tomorrow", "Weekend"].map((dat) => (
+                      <li
+                        key={dat}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setFilters({ ...filters, date: dat });
+                          setIsDate(false);
+                        }}
+                        className="px-3 py-2 text-sm hover:bg-orange-500 hover:text-white rounded cursor-pointer transition"
+                      >
+                        {dat}
+                      </li>
+                    ))}
 
-              {isCategory && (
-                <div className='fixed z-50 md:hidden md:group-hover:block w-1/4 mt-1  rounded-md bg-white  shadow-md transition duration-1000 ease-in-out p-2 text-[#333333] '>
-                  <ul className='space-y-2 '>
-                    <li className='flex flex-col space-y-2 text-sm text-gray-500 hover:text-[#333333] duration-1000 w-full'>
-                      {["Art", "Business", "Entertainment", "Food", "Health", "Music"].map(
-                        (cat) => (
-                          <a
-                            key={cat}
-                            onClick={() => {
-                              setFilters({ ...filters, category: cat });
+                    {/* Custom DatePicker */}
+                    <li
+                      className="relative px-3 py-2 text-sm flex items-center gap-2 hover:text-orange-500"
+                      onClick={(e) => e.stopPropagation()} // prevent closing dropdown
+                    >
+                      <FaCalendar
+                        className="cursor-pointer"
+                        onClick={() => setIsOpen((prev) => !prev)}
+                      />
+                      {isOpen && (
+                        <div className="absolute left-0 mt-2 z-50 bg-white shadow-lg rounded-lg border border-gray-200 p-2">
+                          <DatePicker
+                            selected={filters.date instanceof Date ? filters.date : null}
+                            onChange={(date) => {
+                              setFilters({ ...filters, date });
+                              setIsDate(false);
+                              setIsOpen(false);
                             }}
-                            className="px-3 py-2 text-sm hover:bg-orange-500 hover:text-white cursor-pointer"
-                          >
-                            {cat}
-                          </a>
-                        )
+                            dateFormat="EEE, MMM d, yyyy"
+                            placeholderText="Select date..."
+                            className="border border-gray-300 p-2 rounded-lg text-black w-full"
+                            popperPlacement="bottom-start"
+                          />
+                        </div>
                       )}
+                      <span className="text-sm">Pick a date</span>
                     </li>
                   </ul>
                 </div>
               )}
             </div>
+
           </div>
+          <p className="flex items-center gap-2">
+            Reset <FaCircle
+            onClick={() => setFilters({ state: "", category: "", priceOrder: "", date: "" })}
+            className="text-red-600 rounded-full animate-pulse"
+          />
+          </p>
+           
         </div>
 
         <div className="flex justify-center items-center mt-8 w-full max-w-7xl">
@@ -254,7 +329,7 @@ const Event = ({ currentUser, events, setEvents }) => {
             data-aos="fade-up"
             className="grid grid-cols-1 md:grid-cols-2 md:gap-10 gap-8 w-full"
           >
-            {events.map((event) => (
+            {filteredEvents.map((event) => (
               <div
                 key={event.id}
                 className="flex items-center justify-between flex-1 lg:gap-8 gap-4 relative lg:px-8 px-2 w-full bg-[#eeeeee] py-4 text-[#333333] rounded-3xl"
