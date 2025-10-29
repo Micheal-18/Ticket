@@ -194,7 +194,7 @@ const Event = ({ currentUser, events, setEvents }) => {
 
         <div className="relative flex flex-col space-y-4">
           <div onClick={handleState} className="relative w-full group">
-            <button className=" active:scale-90 bg-black flex justify-between items-center text-white text-left p-3 rounded-xl">
+            <button className=" active:scale-90 border-2 border-gray-500 flex justify-between items-center text-left p-3 rounded-xl">
               {filters.state || "Select State"}
               <FaCaretUp
                 className="ml-2 animate-bounce transition-transform duration-300 group-hover:rotate-180"
