@@ -94,10 +94,10 @@ const Guide = () => {
             <p className="text-gray-700">
               If you have any issues, reach our support team at{" "}
               <a
-                href="mailto:michaeleleke259@gmail.com"
+                href='/contact' 
                 className="text-blue-500 hover:text-blue-700 underline"
               >
-                michaeleleke259@gmail.com
+                Contact us
               </a>.
             </p>
           </section>
@@ -128,7 +128,7 @@ const Guide = () => {
         <img
           src={walkGif}
           alt="walking gif"
-          className="w-20 h-20 animate-bounce"
+          className="w-20 h-20 animation-walk"
         />
       </footer>
     </>

@@ -332,7 +332,7 @@ const Event = ({ currentUser, events, setEvents }) => {
             {filteredEvents.map((event) => (
               <div
                 key={event.id}
-                className="flex items-center justify-between flex-1 lg:gap-8 gap-4 relative lg:px-8 px-2 w-full bg-[#eeeeee] py-4 text-[#333333] rounded-3xl"
+                className="flex items-center justify-between flex-1 lg:gap-8 gap-4 relative lg:px-8 px-2 w-full bg-[#eeeeee] py-4 text-[#333333] border-2 border-gray-500 box-shadow-lg rounded-3xl"
               >
                 {isAdmin && (
                   <div
