@@ -9,13 +9,6 @@ const Trending = ({ currentUser, events, setEvents }) => {
     const [trendingBlogs, setTrendingBlogs] = useState([]);
     const [trendingEvents, setTrendingEvents] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [openTicket, setOpenTicket] = useState(false);
-    const [selectedEvent, setSelectedEvent] = useState(null);
-
-    const handleOpenTicket = (event) => {
-        setSelectedEvent(event);
-        setOpenTicket(true);
-    };
 
     useEffect(() => {
         const fetchTrending = async () => {
@@ -29,7 +22,7 @@ const Trending = ({ currentUser, events, setEvents }) => {
                 }));
 
                 // Fetch top 5 latest events
-                const eventQuery = query(collection(db, "events"), orderBy("ticketSold", "desc"), limit(5));
+                const eventQuery = query(collection(db, "events"), orderBy("highlighted", "desc"), limit(5));
                 const eventSnap = await getDocs(eventQuery);
                 const eventsData = eventSnap.docs.map((doc) => ({
                     id: doc.id,
@@ -52,31 +45,11 @@ const Trending = ({ currentUser, events, setEvents }) => {
         return <div className="flex items-center justify-center h-screen text-gray-600">Loading trending updates...</div>;
     }
 
-    const CLOUD_NAME = "dkny4uowy";
-
-    const optimizeImage = (url, width = 600) => {
-        // Extract just the public_id part after "/upload/"
-        const parts = url.split("/upload/");
-        if (parts.length < 2) return url; // fallback if malformed
-
-        return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/f_auto,q_auto,w_${width}/${parts[1]}`;
-    };
 
 
     return (
         <section className="w-full min-h-screen space-y-8 py-16 px-6 max-w-6xl mx-auto">
             <h1 className="text-3xl font-bold text-center mb-12">🔥 Trending Updates</h1>
-
-            {/* TICKET MODAL
-            {openTicket && selectedEvent && (
-                <TicketModal
-                    currentUser={currentUser}
-                    events={events}
-                    setEvents={setEvents}
-                    selectedEvent={selectedEvent}
-                    setSelectedEvent={setSelectedEvent}
-                />
-            )} */}
 
             {/* Trending Events */}
             <div >
@@ -89,7 +62,6 @@ const Trending = ({ currentUser, events, setEvents }) => {
                             <Link to={`/event/${event.slug}`}>
                                 <div
                                     key={event.id}
-                                    onClick={() => handleOpenTicket(event)}
                                     className="relative shadow-lg rounded-2xl overflow-hidden hover:shadow-xl transition duration-300 flex flex-col"
                                 >
                                     <div className="flex justify-center overflow-hidden rounded-2xl">

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { db } from "../firebase/firebase";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
 import { FaCalendar, FaCaretDown, FaCaretUp, FaCircle, FaClock, FaLocationArrow } from "react-icons/fa6";
 import { useAdmin } from "../hooks/useAdmin";
 import { FiX } from "react-icons/fi";
@@ -15,6 +15,7 @@ import SearchModal from "../components/SearchModal";
 import { Link } from "react-router-dom";
 import OptimizedImage from "../components/OptimizedImage";
 import DatePicker from "react-datepicker";
+import { RiStarFill } from "react-icons/ri";
 
 
 const Event = ({ currentUser, events, setEvents }) => {
@@ -28,6 +29,7 @@ const Event = ({ currentUser, events, setEvents }) => {
   const [isDate, setIsDate] = useState(false);
   const [isPrice, setIsPrice] = useState(false);
   const [isStateOpen, setIsStateOpen] = useState(false);
+  const [isCategory, setIsCategory] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [filters, setFilters] = useState({ state: "", category: "", priceOrder: "" });
 
@@ -42,6 +44,26 @@ const Event = ({ currentUser, events, setEvents }) => {
   const handleDate = () => {
     setIsDate(!isDate);
   }
+
+  const toggleHighlight = async (eventId, currentValue) => {
+    try {
+      const eventRef = doc(db, "events", eventId);
+      await updateDoc(eventRef, { highlighted: !currentValue });
+
+      // 🔥 update locally so UI changes instantly
+      setEvents((prevEvents) =>
+        prevEvents.map((ev) =>
+          ev.id === eventId ? { ...ev, highlighted: !currentValue } : ev
+        )
+      );
+    } catch (error) {
+      console.error("Error updating highlight:", error);
+    }
+  };
+
+
+  const highlightedEvents = events.filter(e => e.highlighted);
+
 
   const states = naijaStateLocalGov.states();
 
@@ -75,6 +97,10 @@ const Event = ({ currentUser, events, setEvents }) => {
   const handleDelete = (event) => {
     setSelectedEvent(event);
     setIsDeleting(true);
+  }
+
+  const handleCate = () => {
+    setIsCategory(!isCategory);
   }
 
 
@@ -113,6 +139,12 @@ const Event = ({ currentUser, events, setEvents }) => {
 
       return true;
     })
+
+    .filter((event) =>
+      filters.category
+        ? event.category?.toLowerCase() === filters.category.toLowerCase()
+        : true
+    )
 
     .sort((a, b) => {
       if (filters.priceOrder === "lowtohigh") return a.price - b.price;
@@ -153,74 +185,110 @@ const Event = ({ currentUser, events, setEvents }) => {
         <div className="space-y-6">
           <p className="font-regular text-sm  adaptive-text">All Events:</p>
           <div className="flex items-center space-x-4">
-            <h1 className="font-bold text-2xl md:text-4xl adaptive-text">
+            <h1 className="font-bold text-2xl md:text-4xl">
               Find Events:
             </h1>
             <SearchModal />
           </div>
         </div>
 
-        <div className="flex flex-col space-y-2">
-          <p className=" adaptive-text">Events</p>
+        <div className="relative flex flex-col space-y-4">
+          <div onClick={handleState} className="relative w-full group">
+            <button className=" active:scale-90 bg-black flex justify-between items-center text-white text-left p-3 rounded-xl">
+              {filters.state || "Select State"}
+              <FaCaretUp
+                className="ml-2 animate-bounce transition-transform duration-300 group-hover:rotate-180"
+              />
+            </button>
+
+            {isStateOpen && (
+              <div className="absolute left-0 mt-1 lg:hidden lg:group-hover:block w-full max-h-40 overflow-hidden custom-scrollbar rounded-lg bg-white shadow-lg border border-gray-200 z-50">
+                {states.map((st, index) => (
+                  <div
+                    key={index}
+                    onClick={() => { setFilters({ ...filters, state: st }); handleState(); }}
+                    className="px-3 py-2 text-sm text-gray-700 hover:bg-orange-500 hover:text-[#eeeeee] cursor-pointer transition-colors duration-200"
+                  >
+                    {st}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {highlightedEvents.length === 0 ? (
+            <p className="text-gray-500 text-sm">No highlighted events yet.</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+              {highlightedEvents.map((event) => (
+                <Link to={`/event/${event.slug}`}>
+                  <div
+                    key={event.id}
+                    className="relative shadow-lg rounded-2xl overflow-hidden hover:shadow-xl transition duration-300 flex flex-col"
+                  >
+                    <div className="flex justify-center overflow-hidden rounded-2xl">
+                      <OptimizedImage
+                        src={event.photoURL}
+                        alt={event.title}
+                        loading="lazy"
+                        className="w-full object-contain hover:scale-105  duration-500"
+                      />
+                    </div>
+                    <div className="absolute p-4 top-1/2 flex-1 flex flex-col">
+                      <h3 className="text-3xl adaptive-text text-gray-600 font-bold line-clamp-2 mb-2">{event.name}</h3>
+                      <p className="text-gray-600 adaptive-text text-sm line-clamp-2 mb-3">{event.description}</p>
+                      <p className="text-sm adaptive-text text-gray-400 mb-4">{event.location}</p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+          <p className="fonts-bold text-2xl">Events</p>
           <p className="text-gray-200 adaptive-text">
             Showing <span className="font-semibold">{filteredEvents.length}</span>{" "}
             of {events.length} events
           </p>
 
           <div className="flex flex-row space-x-2">
-            {/* <button className="w-full bg-black rounded-xl py-2 pl-2 text-left text-white">
-              Nigeria
-            </button> */}
-            <div onClick={handleState} className="relative w-full group">
-              <button className="w-full active:scale-90 bg-black flex justify-between items-center text-white text-left p-3 rounded-xl">
-                {filters.state || "Select State"}
-                <FaCaretUp
-                  className="ml-2 animate-bounce transition-transform duration-300 group-hover:rotate-180"
-                />
+
+            <div onClick={handleCate} className='w-full list-none cursor-pointer outline-none group'>
+              <button className="w-full border-2 border-gray-500 bg-[#eeeeee] active:scale-90 flex justify-between items-center text-[#333333] text-left p-3 rounded-xl">
+                {filters.category || "Category"}< FaCaretUp className='ml-2 animate-bounce transition-transform duration-300 group-hover:rotate-180' />
               </button>
 
-              {isStateOpen && (
-                <div className="absolute left-0 mt-1 lg:hidden lg:group-hover:block w-full max-h-40 overflow-hidden custom-scrollbar rounded-lg bg-white shadow-lg border border-gray-200 z-50">
-                  {states.map((st, index) => (
-                    <div
-                      key={index}
-                      onClick={() => { setFilters({ ...filters, state: st }); handleState(); }}
-                      className="px-3 py-2 text-sm text-gray-700 hover:bg-orange-500 hover:text-[#eeeeee] cursor-pointer transition-colors duration-200"
-                    >
-                      {st}
-                    </div>
-                  ))}
+
+              {isCategory && (
+                <div className='fixed z-50 md:hidden md:group-hover:block w-1/4 mt-1  rounded-md bg-white  shadow-md transition duration-1000 ease-in-out p-2 text-[#333333] '>
+                  <ul className='space-y-2 '>
+                    <li className='flex flex-col space-y-2 text-sm text-gray-500 hover:text-[#333333] duration-1000 w-full'>
+                      {["Art", "Business", "Entertainment", "Food", "Health", "Music"].map(
+                        (cat) => (
+                          <a
+                            key={cat}
+                            onClick={() => {
+                              setFilters({ ...filters, category: cat });
+                            }}
+                            className="px-3 py-2 text-sm hover:bg-orange-500 hover:text-white cursor-pointer"
+                          >
+                            {cat}
+                          </a>
+                        )
+                      )}
+                    </li>
+                  </ul>
                 </div>
               )}
             </div>
 
-
-            {/* <select name='state' className='p-3 w-full border bg-[#333333] rounded-lg text-white' required>
-              <option value="">Nigeria</option>
-              {states.map((state, index) => (
-                <option key={index} value={state}>
-                  {state}
-                </option>
-              ))}
-            </select> */}
-
-            {/* <button className="w-full bg-white text-black text-left py-2 pl-2 rounded-xl">
-              Price
-            </button> */}
-            {/* <select name="price" className="p-3 w-full border bg-[#eeeeee] text-[#333333] rounded-lg ">
-              <option value="">Price</option>
-              <option value="lowtohigh">Low to High</option>
-              <option value="hightolow">High to Low</option>
-            </select> */}
             <div onClick={handlePrice} className='relative w-full list-none cursor-pointer outline-none  group'>
-              <button className="w-full active:scale-90 bg-[#eeeeee] flex justify-between items-center text-[#333333] text-left p-3 rounded-xl">
+              <button className="w-full border-2 border-gray-500 active:scale-90 bg-[#eeeeee] flex justify-between items-center text-[#333333] text-left p-3 rounded-xl">
                 {filters.priceOrder
                   ? filters.priceOrder === "lowtohigh"
                     ? "Price: Low → High"
                     : "Price: High → Low"
                   : "Sort by Price"} < FaCaretUp className='ml-2 animate-bounce transition-transform duration-300 group-hover:rotate-180' />
               </button>
-
 
               {isPrice && (
                 <div className='absolute z-50 lg:hidden lg:group-hover:block  mt-1  rounded-md bg-white  shadow-md transition duration-1000 ease-in-out p-2 text-[#333333] '>
@@ -243,9 +311,7 @@ const Event = ({ currentUser, events, setEvents }) => {
                 </div>
               )}
             </div>
-            {/* <button className="w-full bg-white text-black text-left py-2 pl-2 rounded-xl">
-              Date
-            </button> */}
+
             {/* ✅ DATE FILTER DROPDOWN */}
             <div className="relative w-full list-none cursor-pointer outline-none group">
               {/* Toggle Button */}
@@ -254,7 +320,7 @@ const Event = ({ currentUser, events, setEvents }) => {
                   e.stopPropagation(); // prevent parent click closing it
                   setIsDate((prev) => !prev); // toggle dropdown
                 }}
-                className="w-full bg-[#eeeeee] active:scale-90 flex justify-between items-center text-[#333333] text-left p-3 rounded-xl"
+                className="w-full bg-[#eeeeee] border-2 border-gray-500 active:scale-90 flex justify-between items-center text-[#333333] text-left p-3 rounded-xl"
               >
                 {filters.date
                   ? filters.date instanceof Date
@@ -317,11 +383,11 @@ const Event = ({ currentUser, events, setEvents }) => {
           </div>
           <p className="flex items-center gap-2">
             Reset <FaCircle
-            onClick={() => setFilters({ state: "", category: "", priceOrder: "", date: "" })}
-            className="text-red-600 rounded-full animate-pulse"
-          />
+              onClick={() => setFilters({ state: "", category: "", priceOrder: "", date: "" })}
+              className="text-red-600 rounded-full animate-pulse"
+            />
           </p>
-           
+
         </div>
 
         <div className="flex justify-center items-center mt-8 w-full max-w-7xl">
@@ -344,7 +410,7 @@ const Event = ({ currentUser, events, setEvents }) => {
                     }
                   >
                     {selectedDropdown === event.id ? (
-                      <FiX size={20} />
+                      <FiX size={20} className="font-bold" />
                     ) : (
                       <FaCaretDown size={20} />
                     )}
@@ -380,7 +446,7 @@ const Event = ({ currentUser, events, setEvents }) => {
                   <Link to={`/event/${event.slug}`} className="flex justify-between items-center">
                     <button
                       onClick={() => handleOpenTicket(event)}
-                      className="bg-orange-500 p-2 rounded-lg hover:scale-105 active:scale-90"
+                      className="bg-orange-500 cursor-pointer p-2 rounded-lg hover:scale-105 active:scale-90"
                     >
                       View ticket
                     </button>
@@ -391,7 +457,7 @@ const Event = ({ currentUser, events, setEvents }) => {
                         onClick={() => {
                           handleDelete(event)
                         }}
-                        className="bg-red-500 text-white px-3 py-1 rounded-lg font-bold mt-2 hover:scale-105"
+                        className="bg-red-500 text-white cursor-pointer px-3 py-1 rounded-lg font-bold mt-2 hover:scale-105"
                       >
                         Del
                       </button>
@@ -399,7 +465,7 @@ const Event = ({ currentUser, events, setEvents }) => {
 
                       <button
                         onClick={() => handleEdit(event)}
-                        className="bg-green-500 text-white px-3 py-1 rounded-lg font-bold mt-2 hover:scale-105"
+                        className="bg-green-500 text-white cursor-pointer px-3 py-1 rounded-lg font-bold mt-2 hover:scale-105"
                       >
                         Edit
                       </button>
@@ -409,9 +475,17 @@ const Event = ({ currentUser, events, setEvents }) => {
                           navigator.clipboard.writeText(`${window.location.origin}/event/${event.slug}`);
                           alert("📋 Link copied!");
                         }}
-                        className="bg-gray-500 text-sm px-3 py-1 rounded-lg mt-2 hover:bg-gray-300"
+                        className="bg-gray-500 text-sm cursor-pointer px-3 py-1 rounded-lg mt-2 hover:bg-gray-300"
                       >
                         Share
+                      </button>
+
+                      <button
+                        onClick={() => toggleHighlight(event.id, event.highlighted)}
+                        className={`px-3 py-1  rounded-lg cursor-pointer ${event.highlighted ? "text-yellow-600 text-md" : "text-gray-600 text-lg"
+                          }`}
+                      >
+                        <RiStarFill />
                       </button>
 
                     </div>
