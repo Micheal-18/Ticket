@@ -219,7 +219,7 @@ const Event = ({ currentUser, events, setEvents }) => {
           {highlightedEvents.length === 0 ? (
             <p className="text-gray-500 text-sm">No highlighted events yet.</p>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-3 custom-scrollbar gap-8">
               {highlightedEvents.map((event) => (
                 <Link to={`/event/${event.slug}`}>
                   <div
@@ -287,7 +287,7 @@ const Event = ({ currentUser, events, setEvents }) => {
                   ? filters.priceOrder === "lowtohigh"
                     ? "Price: Low → High"
                     : "Price: High → Low"
-                  : "Sort by Price"} < FaCaretUp className='ml-2 animate-bounce transition-transform duration-300 group-hover:rotate-180' />
+                  : "Price"} < FaCaretUp className='ml-2 animate-bounce transition-transform duration-300 group-hover:rotate-180' />
               </button>
 
               {isPrice && (
@@ -326,7 +326,7 @@ const Event = ({ currentUser, events, setEvents }) => {
                   ? filters.date instanceof Date
                     ? filters.date.toDateString()
                     : filters.date
-                  : "Sort by Date"}
+                  : "Date"}
                 <FaCaretUp className="ml-2 transition-transform duration-300 group-hover:rotate-180" />
               </button>
 
