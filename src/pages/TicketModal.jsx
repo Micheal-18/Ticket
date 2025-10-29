@@ -210,7 +210,7 @@ const TicketModal = ({ currentUser }) => {
                         type="number"
                         className="border-2 border-gray-200 lg:w-1/2 w-full rounded-md p-3"
                         value={guestNumber}
-                        onChange={(e) => setGuestNumber(e.target.value)}
+                        onChange={(e) => setGuestNumber(e.target.value.trim())}
                       />
 
                     </div>
