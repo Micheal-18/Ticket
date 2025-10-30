@@ -219,12 +219,12 @@ const Event = ({ currentUser, events, setEvents }) => {
           {highlightedEvents.length === 0 ? (
             <p className="text-gray-500 text-sm">No highlighted events yet.</p>
           ) : (
-            <div className="grid grid-cols-3 custom-scrollbar gap-8">
+            <div className="flex custom-scrollbar space-x-4 py-2">
               {highlightedEvents.map((event) => (
-                <Link to={`/event/${event.slug}`}>
+                <Link to={`/event/${event.slug}`} className="flex-shrink-0">
                   <div
                     key={event.id}
-                    className="relative shadow-lg rounded-2xl overflow-hidden hover:shadow-xl transition duration-300 flex flex-col"
+                    className="relative w-75 shadow-lg rounded-2xl overflow-hidden hover:shadow-xl transition duration-300 flex flex-col"
                   >
                     <div className="flex justify-center overflow-hidden rounded-2xl">
                       <OptimizedImage
@@ -239,6 +239,12 @@ const Event = ({ currentUser, events, setEvents }) => {
                       <p className="text-gray-600 adaptive-text text-sm line-clamp-2 mb-3">{event.description}</p>
                       <p className="text-sm adaptive-text text-gray-400 mb-4">{event.location}</p>
                     </div>
+                    {/* ⭐ Highlight Tag */}
+            {event.highlighted && (
+              <div className="absolute top-2 right-2 text-yellow-400 text-lg font-bold px-2 py-1 rounded-full shadow-sm">
+                <RiStarFill />
+              </div>
+            )}
                   </div>
                 </Link>
               ))}
@@ -398,7 +404,7 @@ const Event = ({ currentUser, events, setEvents }) => {
             {filteredEvents.map((event) => (
               <div
                 key={event.id}
-                className="flex items-center justify-between flex-1 lg:gap-8 gap-4 relative lg:px-8 px-2 w-full bg-[#eeeeee] py-4 text-[#333333] border-2 border-gray-500 box-shadow-lg rounded-3xl"
+                className="flex items-center justify-between flex-1 lg:gap-8 gap-4 adaptive-text relative lg:px-8 px-2 w-full py-4  border-2 border-gray-500 box-shadow-lg rounded-3xl"
               >
                 {isAdmin && (
                   <div
@@ -452,7 +458,7 @@ const Event = ({ currentUser, events, setEvents }) => {
                     </button>
                   </Link>
                   {selectedDropdown === event.id && (
-                    <div className="flex  gap-2">
+                    <div className="flex flex-wrap  gap-2">
                       <button
                         onClick={() => {
                           handleDelete(event)
@@ -482,7 +488,7 @@ const Event = ({ currentUser, events, setEvents }) => {
 
                       <button
                         onClick={() => toggleHighlight(event.id, event.highlighted)}
-                        className={`px-3 py-1  rounded-lg cursor-pointer ${event.highlighted ? "text-yellow-600 text-md" : "text-gray-600 text-lg"
+                        className={`px-3 py-1  rounded-lg cursor-pointer ${event.highlighted ? "text-yellow-400 text-md" : "text-gray-600 text-lg"
                           }`}
                       >
                         <RiStarFill />
