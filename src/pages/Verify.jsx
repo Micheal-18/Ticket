@@ -27,8 +27,7 @@ const Verify = ({ email }) => {
     const query = new URLSearchParams(window.location.search);
     const mode = query.get("mode");
     const oobCode = query.get("oobCode");
-    console.log("mode:", query.get("mode"));
-console.log("oobCode:", query.get("oobCode"));
+
 
     if (mode === "verifyEmail" && oobCode) {
       setLoading(true);
@@ -39,14 +38,17 @@ console.log("oobCode:", query.get("oobCode"));
           const user = auth.currentUser;
           if (user) {
             await user.reload();
-            await setDoc(
-              doc(db, "users", user.uid),
-              { verified: true, verifiedAt: new Date().toISOString() },
-              { merge: true }
-            );
+            const refreshedUser = auth.currentUser;
+            if (refreshedUser.emailVerified) {
+              await setDoc(
+                doc(db, "users", refreshedUser.uid),
+                { verified: true, verifiedAt: new Date().toISOString() },
+                { merge: true }
+              );
+              setVerified(true);
+              setStatus({ type: "success", message: "✅ Email verified successfully!" });
+            }
           }
-          setVerified(true); // ✅ show success UI
-          setStatus({ type: "success", message: "✅ Email verified successfully!" });
         })
         .catch((error) => {
           console.error(error);
@@ -163,11 +165,10 @@ console.log("oobCode:", query.get("oobCode"));
       {loading && <Spinner />}
       {status.message && (
         <div
-          className={`p-2 rounded mb-4 ${
-            status.type === "error"
+          className={`p-2 rounded mb-4 ${status.type === "error"
               ? "bg-red-100 text-red-600"
               : "bg-green-100 text-green-600"
-          }`}
+            }`}
         >
           {status.message}
         </div>
@@ -176,7 +177,11 @@ console.log("oobCode:", query.get("oobCode"));
       {/* ✅ Show Continue button if verified */}
       {verified && (
         <button
-          onClick={() => navigate("/")}
+          disabled={loading}
+          onClick={() => {
+            setStatus({ type: "", message: "Redirecting..." });
+            setTimeout(() => navigate("/"), 500);
+          }}
           className="w-full bg-green-500 text-gray-500 py-2 rounded-xl hover:bg-green-600 transition"
         >
           Continue →
@@ -189,11 +194,10 @@ console.log("oobCode:", query.get("oobCode"));
           <button
             onClick={resendVerificationEmail}
             disabled={cooldown > 0 || loading}
-            className={`w-full rounded-xl py-2 active:scale-90 transition ${
-              cooldown > 0 || loading
+            className={`w-full rounded-xl py-2 active:scale-90 transition ${cooldown > 0 || loading
                 ? "bg-gray-400 text-gray-500 cursor-not-allowed"
                 : "bg-orange-500 text-gray-500 hover:bg-orange-600 hover:scale-105"
-            }`}
+              }`}
           >
             {cooldown > 0 ? `Wait ${cooldown}s ⏳` : "📩 Resend verification email"}
           </button>
