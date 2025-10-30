@@ -79,14 +79,14 @@ console.log("oobCode:", query.get("oobCode"));
 
     try {
       const user = auth.currentUser;
-      // if (!user) {
-      //   setStatus({
-      //     type: "error",
-      //     message: "Please log in first to resend the email.",
-      //   });
-      //   navigate("/Login");
-      //   return;
-      // }
+      if (!user) {
+        setStatus({
+          type: "error",
+          message: "Please log in first to resend the email.",
+        });
+        navigate("/Login");
+        return;
+      }
 
       await sendEmailVerification(user, {
         url: "https://airticks.com/verify",
