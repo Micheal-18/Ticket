@@ -141,7 +141,7 @@ console.log("oobCode:", query.get("oobCode"));
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 bg-gray-500 rounded-2xl shadow-lg p-8 text-center">
+    <div className="max-w-md mx-auto mt-10 bg-gray-200 rounded-2xl shadow-lg p-8 text-center">
       {/* Step Progress */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex-1 h-2 bg-green-500 rounded-l-full"></div>
@@ -150,7 +150,7 @@ console.log("oobCode:", query.get("oobCode"));
       </div>
 
       <h2 className="text-2xl font-bold text-green-600 mb-4">Almost done 🎉</h2>
-      <p className="text-gray-600 mb-6">
+      <p className="adaptive-text mb-6">
         We sent a verification link to{" "}
         <span className="font-semibold">{email}</span>.<br />
         Please check your inbox to verify your account.<br />
@@ -201,7 +201,7 @@ console.log("oobCode:", query.get("oobCode"));
           <button
             onClick={iVerifiedAlready}
             disabled={loading}
-            className="w-full bg-gray-700 rounded-xl py-2 active:scale-90 hover:bg-green-600 hover:text-white hover:scale-105 transition"
+            className="w-full bg-gray-700 rounded-xl py-2 active:scale-90 hover:bg-green-600 adaptive-text hover:text-white hover:scale-105 transition"
           >
             I verified already ✅
           </button>
