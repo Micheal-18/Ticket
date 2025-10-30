@@ -79,14 +79,14 @@ console.log("oobCode:", query.get("oobCode"));
 
     try {
       const user = auth.currentUser;
-      if (!user) {
-        setStatus({
-          type: "error",
-          message: "Please log in first to resend the email.",
-        });
-        navigate("/Login");
-        return;
-      }
+      // if (!user) {
+      //   setStatus({
+      //     type: "error",
+      //     message: "Please log in first to resend the email.",
+      //   });
+      //   navigate("/Login");
+      //   return;
+      // }
 
       await sendEmailVerification(user, {
         url: "https://airticks.com/verify",
@@ -201,7 +201,7 @@ console.log("oobCode:", query.get("oobCode"));
           <button
             onClick={iVerifiedAlready}
             disabled={loading}
-            className="w-full bg-gray-700 rounded-xl py-2 active:scale-90 hover:bg-green-600 adaptive-text hover:text-white hover:scale-105 transition"
+            className="w-full bg-gray-700 rounded-xl py-2 active:scale-90 hover:bg-green-600  hover:text-white hover:scale-105 transition"
           >
             I verified already ✅
           </button>
