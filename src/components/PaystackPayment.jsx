@@ -39,7 +39,7 @@ const PaystackPayment = ({ events, ticket, currentUser, guestEmail, guestName, g
             await axios.post("https://tick-backend-2.onrender.com/api/purchase", {
               reference: response.reference,
               eventId: events.id,
-              email: buyerEmail,
+              email: buyerEmail.
               ticketType: ticket.label,
               ticketAmount: ticket.amount,
               ticketNumber: ticket.num,
