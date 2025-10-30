@@ -144,7 +144,7 @@ const TicketModal = ({ currentUser }) => {
                   <div key={index} className="flex flex-col gap-2 mb-4">
                     <div className="flex items-center gap-2">
                       <select
-                        value={ticket.num || 1}
+                        value={ticket.num || 0}
                         onChange={(e) => {
                           const newNum = Number(e.target.value);
                           const updatedPrices = selectedEvent.price.map((t, i) =>
