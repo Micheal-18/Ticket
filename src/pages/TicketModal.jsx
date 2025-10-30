@@ -166,10 +166,10 @@ const TicketModal = ({ currentUser }) => {
                         className="flex-1 text-left p-2 border rounded-lg hover:bg-orange-100 active:scale-95 transition"
                       >
                         {ticket.label}: {ticket.currency}
-                        {ticket.amount} × {ticket.num || 1} ={" "}
+                        {ticket.amount} × {ticket.num || 0} ={" "}
                         <strong>
                           {ticket.currency}
-                          {ticket.amount * (ticket.num || 1)}
+                          {ticket.amount * (ticket.num || 0)}
                         </strong>
                       </button>
 

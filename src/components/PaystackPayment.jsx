@@ -39,7 +39,7 @@ const PaystackPayment = ({ events, ticket, currentUser, guestEmail, guestName, g
             await axios.post("https://tick-backend-2.onrender.com/api/purchase", {
               reference: response.reference,
               eventId: events.id,
-              email: buyerEmail.
+              email: buyerEmail,
               ticketType: ticket.label,
               ticketAmount: ticket.amount,
               ticketNumber: ticket.num,
@@ -88,7 +88,7 @@ const PaystackPayment = ({ events, ticket, currentUser, guestEmail, guestName, g
           className="bg-orange-500 p-2 rounded-lg text-white active:scale-90 hover:bg-orange-600"
         >
           Pay for {ticket.label} – {ticket.currency}
-          {Number(ticket.amount * (ticket.num || 1)).toLocaleString()}
+          {Number(ticket.amount * (ticket.num || 0)).toLocaleString()}
         </button>
       ) : (
         <div className="flex flex-col items-center justify-center w-full min-h-screen text-center px-4">
