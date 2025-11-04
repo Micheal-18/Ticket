@@ -258,16 +258,16 @@ const Event = ({ currentUser, events, setEvents }) => {
 
           <div className="flex flex-row space-x-2">
 
-            <div onClick={handleCate} className='w-full list-none cursor-pointer outline-none group'>
+            <div onClick={handleCate} className='relative w-full list-none cursor-pointer outline-none group'>
               <button className="w-full border-2 border-gray-500 bg-[#eeeeee] active:scale-90 flex justify-between items-center text-[#333333] text-left p-3 rounded-xl">
                 {filters.category || "Category"}< FaCaretUp className='ml-2 animate-bounce transition-transform duration-300 group-hover:rotate-180' />
               </button>
 
 
               {isCategory && (
-                <div className='fixed z-50 md:hidden md:group-hover:block w-1/4 mt-1  rounded-md bg-white  shadow-md transition duration-1000 ease-in-out p-2 text-[#333333] '>
+                <div className='absolute z-50 md:hidden md:group-hover:block mt-1  rounded-md bg-white  shadow-md transition duration-1000 ease-in-out p-2 text-[#333333] '>
                   <ul className='space-y-2 '>
-                    <li className='flex flex-col space-y-2 text-sm text-gray-500 hover:text-[#333333] duration-1000 w-full'>
+                    <li className='flex flex-col  space-y-2 text-sm text-gray-500 hover:text-[#333333] duration-1000 w-full'>
                       {["Art", "Business", "Entertainment", "Food", "Health", "Music"].map(
                         (cat) => (
                           <a
@@ -408,7 +408,7 @@ const Event = ({ currentUser, events, setEvents }) => {
               >
                 {isAdmin && (
                   <div
-                    className="absolute top-1 right-1 animate-bounce cursor-pointer"
+                    className="absolute top-1 right-1  animate-bounce cursor-pointer"
                     onClick={() =>
                       setSelectedDropdown(
                         selectedDropdown === event.id ? null : event.id
