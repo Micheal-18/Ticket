@@ -202,7 +202,7 @@ const Event = ({ currentUser, events, setEvents }) => {
             </button>
 
             {isStateOpen && (
-              <div className="absolute left-0 mt-1 lg:hidden lg:group-hover:block w-full max-h-40 overflow-hidden custom-scrollbar rounded-lg bg-white shadow-lg border border-gray-200 z-50">
+              <div className="absolute left-0 mt-1 lg:hidden lg:group-hover:block  max-h-40 overflow-hidden custom-scrollbar rounded-lg bg-white shadow-lg border border-gray-200 z-50">
                 {states.map((st, index) => (
                   <div
                     key={index}
@@ -265,7 +265,7 @@ const Event = ({ currentUser, events, setEvents }) => {
 
 
               {isCategory && (
-                <div className='absolute z-50 md:hidden md:group-hover:block mt-1  rounded-md bg-white  shadow-md transition duration-1000 ease-in-out p-2 text-[#333333] '>
+                <div className='absolute z-50 md:hidden md:group-hover:block mt-1 w-full  rounded-md bg-white  shadow-md transition duration-1000 ease-in-out p-2 text-[#333333] '>
                   <ul className='space-y-2 '>
                     <li className='flex flex-col  space-y-2 text-sm text-gray-500 hover:text-[#333333] duration-1000 w-full'>
                       {["Art", "Business", "Entertainment", "Food", "Health", "Music"].map(
@@ -297,7 +297,7 @@ const Event = ({ currentUser, events, setEvents }) => {
               </button>
 
               {isPrice && (
-                <div className='absolute z-50 lg:hidden lg:group-hover:block  mt-1  rounded-md bg-white  shadow-md transition duration-1000 ease-in-out p-2 text-[#333333] '>
+                <div className='absolute z-50 lg:hidden w-full lg:group-hover:block  mt-1  rounded-md bg-white  shadow-md transition duration-1000 ease-in-out p-2 text-[#333333] '>
                   <ul className='space-y-2 '>
                     <li className='flex flex-col space-y-2 text-sm text-gray-500 hover:text-[#333333] duration-1000 w-full'>
                       <a
