@@ -15,9 +15,9 @@ const Home = () => {
   const [blog, setBlog] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
 
-  const categories = [
-    "Business", "Music", "Arts", "Technology", "Health", "Sports",
-    "Education", "Food", "Networking", "Entertainment", "Workshops"
+  const categories = [ "Arts",
+    "Business", "Education", "Entertainment", "Food", "Health", "Music", "Networking", "Sports", "Technology", 
+    "Workshops"
   ];
 
   // ✅ Fetch Events
@@ -60,10 +60,18 @@ const Home = () => {
       ? events
       : events.filter((event) => event?.category === selectedCategory);
 
-  const filteredBlogs =
-    selectedCategory === "All"
-      ? blog
-      : blog.filter((b) => b?.category === selectedCategory);
+ const filteredBlogs =
+  selectedCategory === "All"
+    ? blog
+    : blog.filter(
+        (b) =>
+          b?.content?.toLowerCase().includes(selectedCategory.toLowerCase()) ||
+          b?.title?.toLowerCase().includes(selectedCategory.toLowerCase()) ||
+          b?.tags?.some((t) =>
+            t.toLowerCase().includes(selectedCategory.toLowerCase())
+          )
+      );
+
 
   // ✅ Optional Loading UI
   if (!events.length && !blog.length) {
@@ -206,6 +214,7 @@ const Home = () => {
       </section>
 
       <section  className='relative w-full min-h-screen bg-yellow-400  p-4 z-40'>
+        <h1 className='uppercase md:text-6xl text-5xl font-bold p-4'>Steps</h1>
         <div data-aos="fade-out"  className='flex flex-col space-y-6 justify-center items-center mx-auto w-full max-w-6xl px-4'>
             <div data-aos="fade-up"  className='flex lg:flex-row flex-col  lg:justify-between items-center w-full bg-[#eeeeee] flex-1 gap-10 relative py-10 px-8   rounded-3xl'>
               <div className='space-y-4 flex flex-col justify-center items-center'>
