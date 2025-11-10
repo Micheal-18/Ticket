@@ -8,6 +8,7 @@ import { collection, getDocs } from 'firebase/firestore'
 import { db } from '../firebase/firebase'
 import { FaEllipsisV } from 'react-icons/fa'
 import OptimizedImage from '../components/OptimizedImage'
+import Spinner from '../components/Spinner'
 import { Link } from 'react-router-dom'
 
 const Home = () => {
@@ -77,8 +78,7 @@ const Home = () => {
   if (!events.length && !blog.length) {
     return (
       <div className='flex space-x-2 justify-center items-center h-screen'>
-        <div className='loading'></div>
-        <p className='text-gray-500 text-lg animate-pulse'>Loading content...</p>
+        <Spinner />
       </div>
     );
   }

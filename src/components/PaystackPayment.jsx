@@ -15,6 +15,7 @@ const PaystackPayment = ({ events, ticket, currentUser, guestEmail, guestName, g
   // const transactionRef = doc(db, "transactions", transactionId);
 
   const totalAmount = ticket.amount * ticket.num; // ✅ reflect quantity
+  const finalAmount = totalAmount + ((1.5 / 100) * totalAmount + 100 * (ticket.num || 0)); // ✅ include fees
   const payWithPaystack = () => {
 
     if (!buyerEmail || !buyerName || !buyerNumber) {
@@ -24,14 +25,14 @@ const PaystackPayment = ({ events, ticket, currentUser, guestEmail, guestName, g
 
     console.log({
       email: buyerEmail,
-      amount: totalAmount * 100,
+      amount: finalAmount * 100,
       currency: "NGN",
     });
 
     const handler = window.PaystackPop.setup({
       key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
       email: buyerEmail,
-      amount: totalAmount * 100,
+      amount: finalAmount * 100,
 
       callback: (response) => {
         (async () => {
@@ -49,7 +50,7 @@ const PaystackPayment = ({ events, ticket, currentUser, guestEmail, guestName, g
               eventId: events.id,
               eventName: events.name,
               ticketType: ticket.label,
-              amount: ticket.amount * ticket.num,
+              amount: totalAmount,
               number: ticket.num,
               currency: ticket.currency,
               userEmail: buyerEmail,
@@ -63,7 +64,7 @@ const PaystackPayment = ({ events, ticket, currentUser, guestEmail, guestName, g
             const eventRef = doc(db, "events", events.id);
             await updateDoc(eventRef, {
               ticketSold: increment(ticket.num),
-              revenue: increment(ticket.amount * ticket.num),
+              revenue: increment(totalAmount),
             });
             setSuccess(true);
             console.log("Transaction saved to Firestore ✅");
@@ -88,7 +89,7 @@ const PaystackPayment = ({ events, ticket, currentUser, guestEmail, guestName, g
           className="bg-orange-500 p-2 rounded-lg text-white active:scale-90 hover:bg-orange-600"
         >
           Pay for {ticket.label} – {ticket.currency}
-          {Number(ticket.amount * (ticket.num || 0)).toLocaleString()}
+          {Number(finalAmount).toLocaleString()}
         </button>
       ) : (
         <div className="flex flex-col items-center justify-center w-full min-h-screen text-center px-4">

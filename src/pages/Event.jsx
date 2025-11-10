@@ -15,6 +15,7 @@ import SearchModal from "../components/SearchModal";
 import { Link } from "react-router-dom";
 import OptimizedImage from "../components/OptimizedImage";
 import DatePicker from "react-datepicker";
+import { FaEllipsisV } from 'react-icons/fa'
 import { RiStarFill } from "react-icons/ri";
 
 
@@ -240,11 +241,11 @@ const Event = ({ currentUser, events, setEvents }) => {
                       <p className="text-sm adaptive-text text-gray-400 mb-4">{event.location}</p>
                     </div>
                     {/* ⭐ Highlight Tag */}
-            {event.highlighted && (
-              <div className="absolute top-2 right-2 text-yellow-400 text-lg font-bold px-2 py-1 rounded-full shadow-sm">
-                <RiStarFill />
-              </div>
-            )}
+                    {event.highlighted && (
+                      <div className="absolute top-2 right-2 text-yellow-400 text-lg font-bold px-2 py-1 rounded-full shadow-sm">
+                        <RiStarFill />
+                      </div>
+                    )}
                   </div>
                 </Link>
               ))}
@@ -387,10 +388,8 @@ const Event = ({ currentUser, events, setEvents }) => {
             </div>
 
           </div>
-          <p className="flex items-center gap-2">
-            Reset <FaCircle
-              onClick={() => setFilters({ state: "", category: "", priceOrder: "", date: "" })}
-              className="text-red-600 rounded-full animate-pulse"
+          <p onClick={() => setFilters({ state: "", category: "", priceOrder: "", date: "" })} className="flex items-center cursor-pointer gap-2">
+            Reset <FaCircle className="text-red-600 active:scale-90 rounded-full animate-pulse"
             />
           </p>
 
@@ -402,25 +401,28 @@ const Event = ({ currentUser, events, setEvents }) => {
             className="grid grid-cols-1 md:grid-cols-2 md:gap-10 gap-8 w-full"
           >
             {filteredEvents.map((event) => (
-              <div
+
+              <Link to={`/event/${event.slug}`}
                 key={event.id}
-                className="flex items-center justify-between flex-1 lg:gap-8 gap-4 adaptive-text relative lg:px-8 px-2 w-full py-4  border-2 border-gray-500 box-shadow-lg rounded-3xl"
+                onClick={() => handleOpenTicket(event)}
+                className="flex items-center justify-between flex-1 lg:gap-8 gap-4 adaptive-text relative lg:px-8 px-2 w-full py-4  border-2 border-gray-500 box-shadow-lg rounded-3xl cursor-pointer"
               >
                 {isAdmin && (
-                  <div
-                    className="absolute top-1 right-1  animate-bounce cursor-pointer"
-                    onClick={() =>
+                  <button
+                    className="absolute top-2 right-2 cursor-pointer"
+                    onClick={(e) =>
+                    {e.preventDefault();
+                      e.stopPropagation();
                       setSelectedDropdown(
                         selectedDropdown === event.id ? null : event.id
-                      )
+                      );
+                      }
                     }
                   >
-                    {selectedDropdown === event.id ? (
-                      <FiX size={20} className="font-bold" />
-                    ) : (
-                      <FaCaretDown size={20} />
-                    )}
-                  </div>
+                   
+                      <FaEllipsisV size={20} className="font-bold" />
+                   
+                  </button>
                 )}
 
                 <span className="space-y-2 flex flex-col">
@@ -449,18 +451,31 @@ const Event = ({ currentUser, events, setEvents }) => {
                     </span>
                   </p>
 
-                  <Link to={`/event/${event.slug}`} className="flex justify-between items-center">
-                    <button
-                      onClick={() => handleOpenTicket(event)}
-                      className="bg-orange-500 cursor-pointer p-2 rounded-lg hover:scale-105 active:scale-90"
-                    >
-                      View ticket
-                    </button>
-                  </Link>
+                  {Array.isArray(event.price) ? (
+                    event.price.map((priceOption, index) => (
+                      <p key={index}>
+                        <span className="text-orange-500 text-lg font-semibold">
+                          {priceOption.currency} {" "}
+                          {Number(priceOption.amount) + ((1.5 / 100) * Number(priceOption.amount) + 100)}
+                        </span>
+                      </p>
+                    ))
+                  ) : (
+                    <p>
+                      <span className="text-orange-500 text-lg font-semibold">
+                        {event.currency} {" "}
+                        {Number(event.price?.amount) + ((1.5 / 100) * Number(event.price?.amount) + 100)}
+                      </span>
+                    </p>
+                  )}
+
+
+
                   {selectedDropdown === event.id && (
                     <div className="flex flex-wrap  gap-2">
                       <button
-                        onClick={() => {
+                        onClick={(e) => {e.preventDefault();
+                          e.stopPropagation();
                           handleDelete(event)
                         }}
                         className="bg-red-500 text-white cursor-pointer px-3 py-1 rounded-lg font-bold mt-2 hover:scale-105"
@@ -470,14 +485,17 @@ const Event = ({ currentUser, events, setEvents }) => {
 
 
                       <button
-                        onClick={() => handleEdit(event)}
+                        onClick={(e) => {e.preventDefault(); 
+                          e.stopPropagation();
+                          handleEdit(event);}}
                         className="bg-green-500 text-white cursor-pointer px-3 py-1 rounded-lg font-bold mt-2 hover:scale-105"
                       >
                         Edit
                       </button>
 
                       <button
-                        onClick={() => {
+                        onClick={(e) => {e.preventDefault();
+                          e.stopPropagation();
                           navigator.clipboard.writeText(`${window.location.origin}/event/${event.slug}`);
                           alert("📋 Link copied!");
                         }}
@@ -487,7 +505,9 @@ const Event = ({ currentUser, events, setEvents }) => {
                       </button>
 
                       <button
-                        onClick={() => toggleHighlight(event.id, event.highlighted)}
+                        onClick={(e) => {e.preventDefault();
+                          e.stopPropagation();
+                          toggleHighlight(event.id, event.highlighted)}}
                         className={`px-3 py-1  rounded-lg cursor-pointer ${event.highlighted ? "text-yellow-400 text-md" : "text-gray-600 text-lg"
                           }`}
                       >
@@ -505,7 +525,7 @@ const Event = ({ currentUser, events, setEvents }) => {
                     className="object-contain w-[150px] hover:scale-105 duration-500 rounded-2xl"
                   />
                 </span>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

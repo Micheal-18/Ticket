@@ -163,14 +163,18 @@ const TicketModal = ({ currentUser }) => {
 
                       <button
                         onClick={() => setSelectedTicket(ticket)}
-                        className="flex-1 text-left p-2 border rounded-lg hover:bg-orange-100 active:scale-95 transition"
+                        className="flex-1 flex space-x-4 text-left p-2 border rounded-lg hover:bg-orange-100 active:scale-95 transition"
                       >
                         {ticket.label}: {ticket.currency}
                         {ticket.amount} × {ticket.num || 0} ={" "}
                         <strong>
                           {ticket.currency}
-                          {ticket.amount * (ticket.num || 0)}
+                          {ticket.amount * (ticket.num || 0) + ((1.5 / 100) * ticket.amount * (ticket.num || 0) + 100 * (ticket.num || 0))}
                         </strong>
+
+                        <p>
+                          includes fee of 1.5% + 100 Paystack fee = {ticket.currency}{((1.5 / 100) * ticket.amount * (ticket.num || 0) + 100 * (ticket.num || 0))}
+                        </p>
                       </button>
 
 
