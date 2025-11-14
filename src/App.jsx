@@ -23,7 +23,6 @@ import WriteBlog from "./pages/WriteBlog";
 import BlogDetail from "./pages/BlogDetail";
 import Trending from "./pages/Trending";
 import TicketModal from "./pages/TicketModal";
-import Dashboard from "./pages/Dashboard";
 import DashboardLayout from "./dashboard/DashboardLayout";
 import DashboardHome from "./dashboard/DashboardHome";
 
