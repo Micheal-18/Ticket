@@ -215,12 +215,6 @@ const App = () => {
         </Layout>
       } />
 
-      {/* <Route path="/dashboard" element={
-          <Layout currentUser={currentUser}>
-          <Dashboard currentUser={currentUser} events={events} setEvents={setEvents}/>
-          </Layout>
-          } /> */}
-
       <Route
         path="/dashboard"
         element={
