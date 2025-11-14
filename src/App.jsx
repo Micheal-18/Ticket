@@ -169,26 +169,14 @@ const App = () => {
         </Layout>
       } />
 
-      <Route path="/create" element={
-        <Layout currentUser={currentUser}>
-          <CreateEvent />
-        </Layout>
-      } />
-      <Route path="/scanner" element={
-        <Layout currentUser={currentUser}>
-          <TicketScanner />
-        </Layout>
-      } />
+
+
       <Route path="/guide" element={
         <Layout currentUser={currentUser}>
           <Guide />
         </Layout>
       } />
-      <Route path="/tracking" element={
-        <Layout currentUser={currentUser}>
-          <Tracking />
-        </Layout>
-      } />
+
       <Route path="/contact" element={
         <Layout currentUser={currentUser}>
           <Contact />
@@ -231,10 +219,10 @@ const App = () => {
         <Route path="create" element={<CreateEvent currentUser={currentUser} />} />
 
         {/* Scanner */}
-        <Route path="scanner" element={<TicketScanner />} />
+        <Route path="scanner" element={<TicketScanner currentUser={currentUser}/>} />
 
         {/* Analytics/Tracking */}
-        <Route path="tracking" element={<Tracking />} />
+        <Route path="tracking" element={<Tracking currentUser={currentUser}/>} />
       </Route>
 
 
