@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { FiMenu, FiX } from 'react-icons/fi'
-import {  RiLogoutBoxLine, RiQrScanLine, RiTicket2Line, RiUser3Line } from 'react-icons/ri';
+import { RiDashboard2Line, RiLogoutBoxLine, RiQrScanLine, RiTicket2Line, RiUser3Line } from 'react-icons/ri';
 import { href, Link, useNavigate } from 'react-router-dom';
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase/firebase";
@@ -47,7 +47,7 @@ const Navbar = ({ currentUser }) => {
     <section className='sticky w-full flex top-0 z-50'>
       <div className='flex w-full bg-gray-100 opacity-90 items-center lg:justify-center flex-1 border border-x-transparent border-b-4 lg:border-b-transparent border-b-gray-700 justify-between px-6 font-bold '>
         <div className='lg:border border-black py-10 lg:py-5.5  lg:px-20 border-t-transparent  '>
-          <a href='/' className='flex items-center space-x-2 cursor-pointer text-[#333333] text-lg'><SiEagle className='text-orange-500 text-xl'/>Airticks<span className='text-orange-500'>Event</span></a>
+          <a href='/' className='flex items-center space-x-2 cursor-pointer text-[#333333] text-lg'><SiEagle className='text-orange-500 text-xl' />Airticks<span className='text-orange-500'>Event</span></a>
         </div>
         <div className='hidden lg:flex'>
           {navItems.map((item, idx) => (
@@ -73,16 +73,19 @@ const Navbar = ({ currentUser }) => {
               {dropdown && (
                 <div className="absolute top-20 right-2 mt-3 w-48 bg-white rounded-xl shadow-lg border z-50">
                   <ul className="flex flex-col py-2">
-                    {currentUser?.isAdmin && (
+                    {/* {currentUser?.isAdmin && (
                        <li onClick={() => navigate("/create")} className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-gray-100 cursor-pointer"><RiTicket2Line />Create Event</li>
-                    )}
-                    
+                    )} */}
                     {currentUser?.isAdmin && (
+                      <li onClick={() => navigate("/dashboard")} className="flex items-center gap-2 px-4 py-2 text-orange-600 hover:bg-gray-100 cursor-pointer"><RiDashboard2Line />Dashboard</li>
+                    )}
+
+                    {/* {currentUser?.isAdmin && (
                       <li onClick={() => navigate("/scanner")} className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-gray-100 cursor-pointer"><RiQrScanLine />Scanner</li>
                     )}
                     {currentUser?.isAdmin && (
                       <li onClick={() => navigate("/tracking")} className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-gray-100 cursor-pointer"><FaMoneyBillTrendUp/>Analytic</li>
-                    )}
+                    )} */}
                     <li
                       onClick={handleLogout}
                       className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-gray-100 cursor-pointer"
@@ -134,32 +137,42 @@ const Navbar = ({ currentUser }) => {
               Register
             </a>
           ) : (
-            <div className="flex flex-col  gap-2"> 
-                {currentUser?.isAdmin && (
+            <div className="flex flex-col  gap-2">
+              {/* {currentUser?.isAdmin && (
                   <button
                   onClick={() => navigate("/create")}
                   className="px-4 py-2 bg-gray-100 rounded-md active:scale-90  hover:bg-gray-200"
                 >
                   CreateEvents
                 </button>
-                )}
-              {currentUser?.isAdmin && (
+                )} */}
+              {/* {currentUser?.isAdmin && (
                 <button
                   onClick={() => navigate("/scanner")}
                   className="px-4 py-2 bg-gray-100 rounded-md active:scale-90 hover:bg-gray-200"
                 >
                   Scanner
                 </button>
-              )}
+              )} */}
+
 
               {currentUser?.isAdmin && (
+                <button
+                  onClick={() => navigate("/dashboard")}
+                  className="px-4 py-2 bg-gray-100 rounded-md active:scale-90 hover:bg-gray-200"
+                >
+                  Dashboard
+                </button>
+              )}
+
+              {/* {currentUser?.isAdmin && (
                 <button
                   onClick={() => navigate("/tracking")}
                   className="px-4 py-2 bg-gray-100 rounded-md active:scale-90 hover:bg-gray-200"
                 >
                   Analytic
                 </button>
-              )}
+              )} */}
 
               <button
                 onClick={handleLogout}

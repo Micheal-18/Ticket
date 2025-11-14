@@ -155,9 +155,9 @@ const CreateEvent = () => {
   }
 
   return (
-    <section className='w-full h-screen px-4 flex flex-col space-y-6 custom-scrollbar'>
-      <div className=' border-b p-4 border-gray-600 space-y-4'>
-        <RiArrowLeftFill onClick={() => navigate("/")} />
+    <section className='w-full h-screen py-4 flex flex-col space-y-6 custom-scrollbar'>
+      <div className=' border-b p-4 border-gray-600 flex space-x-4'>
+        <RiArrowLeftFill onClick={() => navigate("/dashboard")} className='cursor-pointer text-xl text-orange-600'/>
         <h1 className='uppercase font-semibold lg:text-5xl text-2xl'>What are you creating</h1>
       </div>
       <form onSubmit={handleSubmit} className='uppercase font-semibold space-y-4 flex flex-col mb-4'>
@@ -185,7 +185,7 @@ const CreateEvent = () => {
 
         <div className='flex items-center py-4 space-x-4  border-b '>
           <label htmlFor="photo">Photos:</label>
-          <input ref={fileInputRef} onChange={handlePhotoUpload} type='file' name='photo' accept='image/*' className='border w-[100%] p-2' />
+          <input ref={fileInputRef} onChange={handlePhotoUpload} type='file' name='photo' accept='image/*' className='border  rounded-xl w-[100%] p-2' />
 
         </div>
 
@@ -202,16 +202,16 @@ const CreateEvent = () => {
         {/* Calendar */}
         <div className='relative flex justify-between border-b py-6'>
           <div className='flex items-center space-x-4'>
-            <h1 className='font-semibold text-xl uppercase '>Dates:</h1>
+            <h1 className='font-semibold  uppercase '>Dates:</h1>
             <p className="text-sm text-gray-600">
               {startTime && !endTime && `Starts: ${startDate.toLocaleDateString()} at ${startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
               {endTime && `From ${startTime.toLocaleDateString()} ${startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} →  ${endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
               {formatEventStatus(startTime, endTime)}
             </p>
           </div>
-          <div onClick={handleOpenDate} className='border p-2 space-x-2 flex items-center'>
+          <div onClick={handleOpenDate} className='border rounded-xl px-2 space-x-2 flex items-center'>
             <FaCalendarCheck className='text-gray-500' />
-            <h1 className='uppercase font-semibold text-xl'>Calendar</h1>
+            <h1 className='uppercase font-semibold lg:text-xl text-sm'>Calendar</h1>
           </div>
         </div>
         {openDate && (<div className='flex flex-col  gap-2  justify-center'>

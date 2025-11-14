@@ -23,6 +23,10 @@ import WriteBlog from "./pages/WriteBlog";
 import BlogDetail from "./pages/BlogDetail";
 import Trending from "./pages/Trending";
 import TicketModal from "./pages/TicketModal";
+import Dashboard from "./pages/Dashboard";
+import DashboardLayout from "./dashboard/DashboardLayout";
+import DashboardHome from "./dashboard/DashboardHome";
+
 
 
 const App = () => {
@@ -39,7 +43,7 @@ const App = () => {
         duration: 2000,
         easing: "ease",
         delay: 100,
-        offset: 100,       
+        offset: 100,
       }
     );
     AOS.refresh();
@@ -60,7 +64,7 @@ const App = () => {
         if (docSnap.exists()) {
           userData = { ...user, ...docSnap.data() }; // merge Firestore data
         }
-        
+
         // sync Firestore verified field
         if (!user.verified) {
           await setDoc(
@@ -76,12 +80,12 @@ const App = () => {
       }
       setLoading(false);
     });
-    
+
 
     return () => unsubscribe();
   }, []);
 
- 
+
 
   if (loading) {
     return <LoadingScreen onComplete={() => setIsLoaded(true)} />;
@@ -96,11 +100,11 @@ const App = () => {
           currentUser && !currentUser.emailVerified ? (
             <Navigate to="/verify" replace />
           ) : (
-            
-              <Layout currentUser={currentUser}>
+
+            <Layout currentUser={currentUser}>
               <Home />
-              </Layout>
-            
+            </Layout>
+
           )
         }
       />
@@ -108,7 +112,7 @@ const App = () => {
       {/* Login route */}
       <Route
         path="/Login"
-        element={currentUser ? <Navigate to="/" replace /> : <Login />}
+        element={currentUser ? <Navigate to="/dashboard" replace /> : <Login />}
       />
 
       {/* Register route */}
@@ -128,7 +132,7 @@ const App = () => {
         error={""}
         setError={() => { }}
         resendMessage={""}
-        setResendMessage={() => { }}/>}
+        setResendMessage={() => { }} />}
       />
       {/* Verify route — force unverified users here */}
       {/* <Route
@@ -156,62 +160,91 @@ const App = () => {
 
       <Route path="/event" element={
         <Layout currentUser={currentUser}>
-         <Event events={events} setEvents={setEvents} currentUser={currentUser}/>
-        </Layout>} 
+          <Event events={events} setEvents={setEvents} currentUser={currentUser} />
+        </Layout>}
       />
 
       <Route path="/event/:slug" element={
         <Layout currentUser={currentUser}>
-            <TicketModal currentUser={currentUser}/>
-          </Layout>
+          <TicketModal currentUser={currentUser} />
+        </Layout>
       } />
 
-        <Route path="/create" element={
+      <Route path="/create" element={
+        <Layout currentUser={currentUser}>
+          <CreateEvent />
+        </Layout>
+      } />
+      <Route path="/scanner" element={
+        <Layout currentUser={currentUser}>
+          <TicketScanner />
+        </Layout>
+      } />
+      <Route path="/guide" element={
+        <Layout currentUser={currentUser}>
+          <Guide />
+        </Layout>
+      } />
+      <Route path="/tracking" element={
+        <Layout currentUser={currentUser}>
+          <Tracking />
+        </Layout>
+      } />
+      <Route path="/contact" element={
+        <Layout currentUser={currentUser}>
+          <Contact />
+        </Layout>
+      } />
+      <Route path="/blogs" element={
+        <Layout currentUser={currentUser}>
+          <Blog blog={blog} setBlog={setBlog} currentUser={currentUser} />
+        </Layout>
+      } />
+      <Route path="/Write" element={
+        <Layout currentUser={currentUser}>
+          <WriteBlog />
+        </Layout>
+      } />
+      <Route path="/blogs/:id" element={
+        <Layout currentUser={currentUser}>
+          <BlogDetail />
+        </Layout>
+      } />
+      <Route path="/trending" element={
+        <Layout currentUser={currentUser}>
+          <Trending />
+        </Layout>
+      } />
+
+      {/* <Route path="/dashboard" element={
           <Layout currentUser={currentUser}>
-            <CreateEvent />
+          <Dashboard currentUser={currentUser} events={events} setEvents={setEvents}/>
           </Layout>
-        } />
-        <Route path="/scanner" element={
-          <Layout currentUser={currentUser}>
-            <TicketScanner />
-          </Layout>   
-        } />
-        <Route path="/guide" element={
-          <Layout currentUser={currentUser}>
-            <Guide />
-          </Layout>  
-        }/>
-        <Route path="/tracking" element={
-          <Layout currentUser={currentUser}>
-            <Tracking />
-          </Layout>  
-        }/>
-        <Route path="/contact" element={
-          <Layout currentUser={currentUser}>
-            <Contact />
-          </Layout>
-        } />
-        <Route path="/blogs" element={
-          <Layout currentUser={currentUser}>
-            <Blog blog={blog} setBlog={setBlog} currentUser={currentUser}/>
-          </Layout>
-        } />
-        <Route path="/Write" element={
-          <Layout currentUser={currentUser}>
-            <WriteBlog />
-          </Layout>
-        } />
-        <Route path="/blogs/:id" element={
-          <Layout currentUser={currentUser}>
-            <BlogDetail />
-          </Layout>
-        } />
-        <Route path="/trending" element={
-          <Layout currentUser={currentUser}>
-            <Trending />
-          </Layout>
-        } />
-        
+          } /> */}
+
+      <Route
+        path="/dashboard"
+        element={
+          currentUser?.isAdmin ? (
+            <DashboardLayout currentUser={currentUser} />
+          ) : (
+            <Navigate to="/" replace />
+          )
+        }
+      >
+        <Route index element={<DashboardHome currentUser={currentUser} />} />
+
+        {/* Create Event */}
+        <Route path="create" element={<CreateEvent currentUser={currentUser} />} />
+
+        {/* Scanner */}
+        <Route path="scanner" element={<TicketScanner />} />
+
+        {/* Analytics/Tracking */}
+        <Route path="tracking" element={<Tracking />} />
+      </Route>
+
+
     </Routes>
   );
 };

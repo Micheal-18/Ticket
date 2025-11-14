@@ -39,12 +39,12 @@ const Register = ({ step, setStep }) => {
       writeup: "Creating an account for personal use? This is the account type for you",
 
     },
-    // {
-    //   id: "organization",
-    //   icon: <RiBriefcaseLine className="text-5xl text-orange-500" />,
-    //   header: "Organization",
-    //   writeup: "Selling tickets as a registered business? This is the account type for you",
-    // },
+    {
+      id: "organization",
+      icon: <RiBriefcaseLine className="text-5xl text-orange-500" />,
+      header: "Organization",
+      writeup: "Selling tickets as a registered business? This is the account type for you",
+    },
   ]
 
   const handlePasswordChange = (e) => {

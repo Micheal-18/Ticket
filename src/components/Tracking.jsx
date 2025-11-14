@@ -62,7 +62,7 @@ const Tracking = () => {
   };
 
   return (
-    <div className="flex items-center justify-center w-full mt-6">
+    <div className="flex items-center justify-center w-full p-4">
       <div className="flex flex-col items-center justify-center w-full lg:w-2/3 p-4 border-2 border-gray-300 rounded-lg shadow-lg">
         <h1 className="text-2xl text-[#eeeeee] font-bold mb-6">
           📊 Event Analytics

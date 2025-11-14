@@ -56,7 +56,7 @@ const TicketScanner = () => {
   };
 
   return (
-    <div className="flex flex-col gap-6 items-center">
+    <div className="flex flex-col gap-6 p-4 items-center">
       <h2 className="text-xl font-bold">🎟 Ticket Scanner</h2>
 
       {status && (

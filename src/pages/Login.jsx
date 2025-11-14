@@ -60,7 +60,12 @@ const Login = () => {
             const userSnap = await getDoc(userRef);
 
             if (userSnap.exists()) {
-                navigate("/"); // fallback
+                const userData = userSnap.data(); 
+                if(userData.isAdmin === true){
+                    navigate("/dashboard");
+                }else{
+                    navigate("/");
+                } // fallback
             } else {
                 setError("User profile not found.");
             }

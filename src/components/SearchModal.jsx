@@ -54,7 +54,7 @@ const SearchModal = ({ setSelectedEvent }) => {
 
       {isOpen && (
         <div
-          className="fixed inset-0 z-[100] flex justify-center items-center bg-[#ed88361c]"
+          className="fixed inset-0 z-[100] backdrop-blur-md flex justify-center items-center bg-[#ed88361c]"
           onClick={closeModal}
         >
           <div
