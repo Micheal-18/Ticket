@@ -72,20 +72,11 @@ const Navbar = ({ currentUser }) => {
 
               {dropdown && (
                 <div className="absolute top-20 right-2 mt-3 w-48 bg-white rounded-xl shadow-lg border z-50">
-                  <ul className="flex flex-col py-2">
-                    {/* {currentUser?.isAdmin && (
-                       <li onClick={() => navigate("/create")} className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-gray-100 cursor-pointer"><RiTicket2Line />Create Event</li>
-                    )} */}
+                  <ul className="flex flex-col py-2">              
                     {currentUser?.isAdmin && (
                       <li onClick={() => navigate("/dashboard")} className="flex items-center gap-2 px-4 py-2 text-orange-600 hover:bg-gray-100 cursor-pointer"><RiDashboard2Line />Dashboard</li>
                     )}
 
-                    {/* {currentUser?.isAdmin && (
-                      <li onClick={() => navigate("/scanner")} className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-gray-100 cursor-pointer"><RiQrScanLine />Scanner</li>
-                    )}
-                    {currentUser?.isAdmin && (
-                      <li onClick={() => navigate("/tracking")} className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-gray-100 cursor-pointer"><FaMoneyBillTrendUp/>Analytic</li>
-                    )} */}
                     <li
                       onClick={handleLogout}
                       className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-gray-100 cursor-pointer"
