@@ -35,7 +35,7 @@ const DashboardHome = () => {
   return (
     <main className="flex-1 p-4 overflow-y-auto">
               {/* Summary Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 md:gap-4 gap-2 mb-8">
                 <div className=" p-4 rounded-2xl shadow">
                   <h2 className="text-gray-400">Total Events</h2>
                   <p className="text-3xl font-semibold mt-2">{events.length}</p>
@@ -54,7 +54,7 @@ const DashboardHome = () => {
                 )}
                 <div className=" p-4 rounded-2xl shadow">
                   <h2 className="text-gray-400">Revenue</h2>
-                  <span className="text-3xl font-semibold mt-2">{events[0]?.currency}{" "}{totalRevenue.toLocaleString()}</span>
+                  <span className="font-semibold mt-2 text-3xl">{events[0]?.currency}{totalRevenue.toLocaleString()}</span>
                 </div>
                 <div className=" p-4 rounded-2xl shadow">
                   <h2 className="text-gray-400">TicketSold</h2>

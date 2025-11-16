@@ -203,16 +203,17 @@ const App = () => {
         </Layout>
       } />
 
-      <Route
-        path="/dashboard"
-        element={
-          currentUser?.isAdmin ? (
-            <DashboardLayout currentUser={currentUser} />
-          ) : (
-            <Navigate to="/" replace />
-          )
-        }
-      >
+<Route
+  path="/dashboard"
+  element={
+    currentUser === null
+      ? <LoadingScreen />
+      : currentUser.isAdmin
+        ? <DashboardLayout currentUser={currentUser} />
+        : <Navigate to="/" replace />
+  }
+>
+
         <Route index element={<DashboardHome currentUser={currentUser} />} />
 
         {/* Create Event */}

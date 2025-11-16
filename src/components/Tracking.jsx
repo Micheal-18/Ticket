@@ -62,9 +62,9 @@ const Tracking = () => {
   };
 
   return (
-    <div className="flex items-center justify-center w-full p-4">
-      <div className="flex flex-col items-center justify-center w-full lg:w-2/3 p-4 border-2 border-gray-300 rounded-lg shadow-lg">
-        <h1 className="text-2xl text-[#eeeeee] font-bold mb-6">
+    <div className="flex items-center justify-center w-full">
+      <div className="flex flex-col items-center justify-center w-full lg:w-2/3 p-4   rounded-lg shadow">
+        <h1 className="text-2xl  font-bold mb-6">
           📊 Event Analytics
         </h1>
 
@@ -72,30 +72,30 @@ const Tracking = () => {
         <div className="flex gap-4 mb-6">
           <button
             onClick={() => setFilter("all")}
-            className={`px-4 py-2 rounded-lg active:scale-90 ${
+            className={`px-4 py-2 rounded-lg active:scale-90 shadow ${
               filter === "all"
                 ? "bg-blue-500 text-[#eeeeee]"
-                : "bg-gray-200 text-[#333333]"
+                : ""
             }`}
           >
             All Events
           </button>
           <button
             onClick={() => setFilter("revenue")}
-            className={`px-4 py-2 rounded-lg active:scale-90 ${
+            className={`px-4 py-2 rounded-lg active:scale-90 shadow ${
               filter === "revenue"
                 ? "bg-green-500 text-[#eeeeee]"
-                : "bg-gray-200 text-[#333333]"
+                : ""
             }`}
           >
             Top Revenue
           </button>
           <button
             onClick={() => setFilter("tickets")}
-            className={`px-4 py-2 rounded-lg active:scale-90 ${
+            className={`px-4 py-2 rounded-lg active:scale-90 shadow ${
               filter === "tickets"
                 ? "bg-purple-500 text-[#eeeeee]"
-                : "bg-gray-200 text-[#333333]"
+                : ""
             }`}
           >
             Most Tickets Sold
@@ -111,34 +111,34 @@ const Tracking = () => {
           filteredEvents.map((event) => (
             <div
               key={event.id}
-              className="h-[200px] relative flex flex-col items-center justify-center mb-6 rounded-lg bg-gray-100 w-full p-4"
+              className="h-[200px] relative flex flex-col items-center justify-center mb-6 rounded-lg  w-full p-4"
             >
               {/* ERASE Trigger */}
               <FaEllipsisV
-                className="absolute top-2 right-2 cursor-pointer z-50 text-black text-sm active:scale-90"
+                className="absolute top-2 right-2 cursor-pointer z-50  text-sm active:scale-90"
                 onClick={() => eraseRevenue(event.id)}
                 title="Erase Revenue"
               />
 
-              <p className="text-xl uppercase text-[#333333] font-semibold mb-2">
+              <p className="md:text-xl text-lg uppercase  font-semibold mb-2">
                 {event.name}
               </p>
 
-              <p className="text-gray-600">
+              <p className="">
                 Tickets:{" "}
                 <span className="text-green-500 font-semibold">
                   {event.ticketSold ?? 0}
                 </span>
               </p>
 
-              <p className="text-gray-600">
+              <p className="">
                 Revenue:{" "}
                 <span className="text-blue-500 font-semibold">
                   ₦{event.revenue ?? 0}
                 </span>
               </p>
 
-              <p className="text-gray-600">
+              <p className="">
                 Airticks:{" "}
                 <span className="text-purple-500 font-semibold">
                   {event.currency}
