@@ -405,28 +405,11 @@ const Event = ({ currentUser, events, setEvents }) => {
               <Link to={`/event/${event.slug}`}
                 key={event.id}
                 onClick={() => handleOpenTicket(event)}
-                className="flex items-center justify-between flex-1 lg:gap-8 gap-4 adaptive-text relative lg:px-8 px-2 w-full py-4  border-2 border-gray-500 box-shadow-lg rounded-3xl cursor-pointer"
+                className="flex items-center justify-between flex-1 lg:gap-8 gap-4  relative lg:px-8 px-2 w-full py-4 shadow rounded-3xl cursor-pointer"
               >
-                {isAdmin && (
-                  <button
-                    className="absolute top-2 right-2 cursor-pointer"
-                    onClick={(e) =>
-                    {e.preventDefault();
-                      e.stopPropagation();
-                      setSelectedDropdown(
-                        selectedDropdown === event.id ? null : event.id
-                      );
-                      }
-                    }
-                  >
-                   
-                      <FaEllipsisV size={20} className="font-bold" />
-                   
-                  </button>
-                )}
 
                 <span className="space-y-2 flex flex-col">
-                  <h1 className="font-bold text-gray-700 uppercase text-2xl w-[150px] truncate lg:w-[300px] ">
+                  <h1 className="font-bold  uppercase text-2xl w-[150px] truncate lg:w-[300px] ">
                     {event.name}
                   </h1>
                   <p className="md:text-lg text-sm font-regular text-gray-500 flex gap-2 items-center">
@@ -467,54 +450,6 @@ const Event = ({ currentUser, events, setEvents }) => {
                         {Number(event.price?.amount) + ((1.5 / 100) * Number(event.price?.amount) + 100)}
                       </span>
                     </p>
-                  )}
-
-
-
-                  {selectedDropdown === event.id && (
-                    <div className="flex flex-wrap  gap-2">
-                      <button
-                        onClick={(e) => {e.preventDefault();
-                          e.stopPropagation();
-                          handleDelete(event)
-                        }}
-                        className="bg-red-500 text-white cursor-pointer px-3 py-1 rounded-lg font-bold mt-2 hover:scale-105"
-                      >
-                        Del
-                      </button>
-
-
-                      <button
-                        onClick={(e) => {e.preventDefault(); 
-                          e.stopPropagation();
-                          handleEdit(event);}}
-                        className="bg-green-500 text-white cursor-pointer px-3 py-1 rounded-lg font-bold mt-2 hover:scale-105"
-                      >
-                        Edit
-                      </button>
-
-                      <button
-                        onClick={(e) => {e.preventDefault();
-                          e.stopPropagation();
-                          navigator.clipboard.writeText(`${window.location.origin}/event/${event.slug}`);
-                          alert("📋 Link copied!");
-                        }}
-                        className="bg-gray-500 text-sm cursor-pointer px-3 py-1 rounded-lg mt-2 hover:bg-gray-300"
-                      >
-                        Share
-                      </button>
-
-                      <button
-                        onClick={(e) => {e.preventDefault();
-                          e.stopPropagation();
-                          toggleHighlight(event.id, event.highlighted)}}
-                        className={`px-3 py-1  rounded-lg cursor-pointer ${event.highlighted ? "text-yellow-400 text-md" : "text-gray-600 text-lg"
-                          }`}
-                      >
-                        <RiStarFill />
-                      </button>
-
-                    </div>
                   )}
                 </span>
 

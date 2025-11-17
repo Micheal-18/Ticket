@@ -25,6 +25,7 @@ import Trending from "./pages/Trending";
 import TicketModal from "./pages/TicketModal";
 import DashboardLayout from "./dashboard/DashboardLayout";
 import DashboardHome from "./dashboard/DashboardHome";
+import Dashevents from "./pages/Dashevents";
 
 
 
@@ -169,8 +170,6 @@ const App = () => {
         </Layout>
       } />
 
-
-
       <Route path="/guide" element={
         <Layout currentUser={currentUser}>
           <Guide />
@@ -224,6 +223,9 @@ const App = () => {
 
         {/* Analytics/Tracking */}
         <Route path="tracking" element={<Tracking currentUser={currentUser}/>} />
+
+        {/*Event in dashboard */}
+        <Route path="events" element={<Dashevents events={events} setEvents={setEvents} currentUser={currentUser}/>} />
       </Route>
 
 

@@ -93,33 +93,47 @@ const DashboardLayout = ({ currentUser }) => {
                     </h1>
                 </Link>
                 <nav className="w-full">
-                    <ul className="w-full flex justify-evenly space-y-2 items-center  lg:flex-col lg:justify-start lg:items-start">
-                        <Link to='/dashboard'>
-                            <li className="mb-4 flex flex-col lg:flex-row space-x-2 justify-center items-center hover:scale-150 transition ease-in-out  duration-800">
+                    <ul className="w-full flex justify-evenly space-y-2 items-center lg:flex-col lg:justify-start lg:items-start">
+
+                        <li className="mb-4">
+                            <Link
+                                to="/dashboard"
+                                className="flex flex-col lg:flex-row space-x-2 justify-center items-center hover:scale-150 transition ease-in-out duration-800"
+                            >
                                 <RiHome2Line className="text-orange-500 hover:text-orange-700 text-xl" />
-                                <a className="hover:underline">Home</a>
-                            </li>
-                        </Link>
-                        <Link to="/dashboard/events">
-                            <li className="mb-4 flex flex-col lg:flex-row space-x-2 justify-center items-center hover:scale-150 transition ease-in-out duration-900">
+                                <span className="hover:underline">Home</span>
+                            </Link>
+                        </li>
+
+                        <li className="mb-4">
+                            <Link
+                                to="/dashboard/events"
+                                className="flex flex-col lg:flex-row space-x-2 justify-center items-center hover:scale-150 transition ease-in-out duration-900"
+                            >
                                 <RiTicket2Line className="hover:text-orange-500 text-xl" />
-                                <a className="text-gray-300 hover:text-orange-500">Events</a>
-                            </li>
-                        </Link>
+                                <span className="text-gray-300 hover:text-orange-500">Events</span>
+                            </Link>
+                        </li>
 
-                        <Link to="/dashboard/scanner">
-                            <li className="mb-4 flex flex-col lg:flex-row space-x-2 justify-center items-center hover:scale-150 transition ease-in-out duration-1000">
+                        <li className="mb-4">
+                            <Link
+                                to="/dashboard/scanner"
+                                className="flex flex-col lg:flex-row space-x-2 justify-center items-center hover:scale-150 transition ease-in-out duration-1000"
+                            >
                                 <RiQrScanLine className="hover:text-orange-500 text-xl" />
-                                <a className="text-gray-300 hover:text-orange-500">QR Scanner</a>
-                            </li>
-                        </Link>
+                                <span className="text-gray-300 hover:text-orange-500">QR Scanner</span>
+                            </Link>
+                        </li>
 
-                        <Link to="/dashboard/tracking">
-                            <li className="mb-4 flex flex-col lg:flex-row space-x-2 justify-center items-center hover:scale-150 transition ease-in-out  duration-1200">
+                        <li className="mb-4">
+                            <Link
+                                to="/dashboard/tracking"
+                                className="flex flex-col lg:flex-row space-x-2 justify-center items-center hover:scale-150 transition ease-in-out duration-1200"
+                            >
                                 <FaMoneyBillTrendUp className="hover:text-orange-500 text-xl" />
-                                <a className="text-gray-300 hover:text-orange-500">Analytics</a>
-                            </li>
-                        </Link>
+                                <span className="text-gray-300 hover:text-orange-500">Analytics</span>
+                            </Link>
+                        </li>
 
                     </ul>
                 </nav>
@@ -175,7 +189,7 @@ const DashboardLayout = ({ currentUser }) => {
                                 <FaBell size={22} className="cursor-pointer " />
                                 <span className="absolute -top-2 -right-2 bg-red-600 text-xs rounded-full w-5 h-5 flex items-center justify-center">{recentActivities.length}</span>
                             </div>
-                            <button onClick={() =>{handleLogout(); setOpen(false)}} className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg">
+                            <button onClick={() => { handleLogout(); setOpen(false) }} className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg">
                                 Logout
                             </button>
                         </div>
@@ -191,7 +205,7 @@ const DashboardLayout = ({ currentUser }) => {
                 </main>
             </div>
 
-        </section>
+        </section >
     );
 };
 
