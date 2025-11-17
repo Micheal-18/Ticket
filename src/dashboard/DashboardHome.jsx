@@ -33,7 +33,7 @@ const DashboardHome = () => {
   })();
     
   return (
-    <main className="flex-1 p-4 overflow-y-auto">
+    <main className="flex-1 py-4 overflow-y-auto">
               {/* Summary Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 md:gap-4 gap-2 mb-8">
                 <div className=" p-4 rounded-2xl shadow">
@@ -64,7 +64,7 @@ const DashboardHome = () => {
     
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {/* Chart Section */}
-                <div className=" p-6 rounded-2xl shadow mb-8">
+                <div className="lg:px-4 px-0 py-4 rounded-2xl shadow mb-8">
                   <h2 className="text-xl font-semibold mb-4">Events per Month</h2>
                   <div className="h-64">
                     <ResponsiveContainer width="100%" height="100%">
@@ -80,7 +80,7 @@ const DashboardHome = () => {
                 </div>
     
                 {/* Recent Activities Section */}
-                <div className=" p-6 rounded-2xl shadow mb-8">
+                <div className="lg:px-4 px-0 py-6  rounded-2xl shadow mb-8">
                   <h2 className="text-xl font-semibold mb-4">Recent Activities</h2>
                   <div className="space-y-4 max-h-96 overflow-y-auto">
                     {recentActivities.map((activity, index) => (
@@ -117,7 +117,7 @@ const DashboardHome = () => {
               </div>
     
               {/*Upcoming Events Section */}
-              <div className=" p-6 rounded-2xl shadow mb-8">
+              <div className="lg:px-4 px-0 py-6 rounded-2xl shadow mb-8">
                 <h2 className="text-xl font-semibold mb-4">Upcoming Events</h2>
                 <div className="space-y-4 max-h-96 overflow-y-auto">
                   {events

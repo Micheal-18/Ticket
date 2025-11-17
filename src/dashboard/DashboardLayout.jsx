@@ -165,12 +165,12 @@ const DashboardLayout = ({ currentUser }) => {
                     >
                         {/* Menu icon */}
                         <FiMenu
-                            className={`absolute inset-0 m-auto origin-center transform transition-all duration-[1200ms] ease-in-out
+                            className={`absolute inset-0 m-auto origin-center transform transition-all duration-[300ms] ease-in-out
                                   ${open ? "opacity-0 scale-0 rotate-180" : "opacity-100 scale-100 rotate-0"}`}
                         />
                         {/* Close icon */}
                         <FiX
-                            className={`absolute inset-0 m-auto origin-center transform transition-all duration-[1200ms] ease-in-out
+                            className={`absolute inset-0 m-auto origin-center transform transition-all duration-[300ms] ease-in-out
                                   ${open ? "opacity-100 scale-100 rotate-180" : "opacity-0 scale-0 rotate-0"}`}
                         />
                     </button>
