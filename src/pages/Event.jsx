@@ -189,7 +189,10 @@ const Event = ({ currentUser, events, setEvents }) => {
             <h1 className="font-bold text-2xl md:text-4xl">
               Find Events:
             </h1>
-            <SearchModal />
+            <SearchModal 
+            selectedEvent={selectedEvent}
+            setSelectedEvent={setSelectedEvent}
+            />
           </div>
         </div>
 

@@ -4,12 +4,15 @@ import { FaXmark } from 'react-icons/fa6';
 import { RiSearchLine } from 'react-icons/ri';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
+import { useNavigate } from 'react-router-dom';
 
-const SearchModal = ({ setSelectedEvent }) => {
+const SearchModal = ({selectedEvent, setSelectedEvent }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   const openModal = () => setIsOpen(true);
   const closeModal = () => {
@@ -97,6 +100,7 @@ const SearchModal = ({ setSelectedEvent }) => {
                       onClick={() => {
                         setSelectedEvent(event);
                         closeModal();
+                        navigate(`/event/${event.slug}`);
                       }}
                       className="flex items-center gap-3 bg-[#eeeeee] rounded-lg p-2 cursor-pointer border border-[#ffffff20] hover:bg-orange-500/10 transition duration-200"
                     >

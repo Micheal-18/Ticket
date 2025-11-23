@@ -86,7 +86,7 @@ const DashboardLayout = ({ currentUser }) => {
     return (
         <section className="relative flex scheme-light-dark lg:space-y-0 space-y-2">
             {/* Sidebar */}
-            <div className=" fixed left-0 bottom-0 z-50 space-y-2 w-full h-20 border-t border-gray-800 p-3 flex justify-center items-center lg:static lg:w-50 lg:h-full lg:border-t-0 lg:border-r lg:border-gray-800 lg:p-6 flex-col lg:items-start">
+            <div className=" fixed bg-gray-100/10  left-0 bottom-0 z-50 space-y-2 w-full h-20 border-t border-gray-800 p-3 flex justify-center items-center lg:static lg:w-50 lg:h-full lg:border-t-0 lg:border-r lg:border-gray-800 lg:p-6 flex-col lg:items-start">
                 <Link to='/'>
                     <h1 className="text-2xl text-left font-bold mb-2">
                         Airticks<span className="text-orange-600">Events</span>
@@ -111,7 +111,7 @@ const DashboardLayout = ({ currentUser }) => {
                                 className="flex flex-col lg:flex-row space-x-2 justify-center items-center hover:scale-150 transition ease-in-out duration-900"
                             >
                                 <RiTicket2Line className="hover:text-orange-500 text-xl" />
-                                <span className="text-gray-300 hover:text-orange-500">Events</span>
+                                <span className=" hover:text-orange-500">Events</span>
                             </Link>
                         </li>
 
@@ -121,7 +121,7 @@ const DashboardLayout = ({ currentUser }) => {
                                 className="flex flex-col lg:flex-row space-x-2 justify-center items-center hover:scale-150 transition ease-in-out duration-1000"
                             >
                                 <RiQrScanLine className="hover:text-orange-500 text-xl" />
-                                <span className="text-gray-300 hover:text-orange-500">QR Scanner</span>
+                                <span className=" hover:text-orange-500">QR Scanner</span>
                             </Link>
                         </li>
 
@@ -131,7 +131,7 @@ const DashboardLayout = ({ currentUser }) => {
                                 className="flex flex-col lg:flex-row space-x-2 justify-center items-center hover:scale-150 transition ease-in-out duration-1200"
                             >
                                 <FaMoneyBillTrendUp className="hover:text-orange-500 text-xl" />
-                                <span className="text-gray-300 hover:text-orange-500">Analytics</span>
+                                <span className=" hover:text-orange-500">Analytics</span>
                             </Link>
                         </li>
 
@@ -176,7 +176,7 @@ const DashboardLayout = ({ currentUser }) => {
                     </button>
 
                     {open && (
-                        <div className="absolute top-16 right-4  p-4 rounded-lg shadow-lg flex  items-center gap-4 lg:hidden z-50">
+                        <div className="absolute top-16 right-4 w-full justify-evenly  p-4 rounded-lg shadow-lg flex  items-center gap-4 lg:hidden z-50">
                             <SearchModal />
                             <Link onClick={() => {
                                 setOpen(false)
