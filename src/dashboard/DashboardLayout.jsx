@@ -84,16 +84,16 @@ const DashboardLayout = ({ currentUser }) => {
 
 
     return (
-        <section className="relative flex scheme-light-dark lg:space-y-0 space-y-2">
+        <section className="relative flex  lg:space-y-0 space-y-2">
             {/* Sidebar */}
-            <div className=" fixed bg-gray-100/10  left-0 bottom-0 z-50 space-y-2 w-full h-20 border-t border-gray-800 p-3 flex justify-center items-center lg:static lg:w-50 lg:h-full lg:border-t-0 lg:border-r lg:border-gray-800 lg:p-6 flex-col lg:items-start">
+            <div className=" fixed bg-[#eeeeee] dark:bg-[#333333]  left-0 bottom-0 text-[#333333] dark:text-[#eeeeee] z-50 space-y-2 w-full h-20 border-t border-gray-800 p-3 flex justify-center items-center lg:static lg:w-50 lg:h-full lg:border-t-0 lg:border-r lg:border-gray-800 lg:p-6 flex-col lg:items-start">
                 <Link to='/'>
                     <h1 className="text-2xl text-left font-bold mb-2">
                         Airticks<span className="text-orange-600">Events</span>
                     </h1>
                 </Link>
                 <nav className="w-full">
-                    <ul className="w-full flex justify-evenly space-y-2 items-center lg:flex-col lg:justify-start lg:items-start">
+                    <ul className="w-full flex justify-evenly space-y-2 items-center lg:flex-col lg:justify-start lg:items-start ">
 
                         <li className="mb-4">
                             <Link
@@ -121,7 +121,7 @@ const DashboardLayout = ({ currentUser }) => {
                                 className="flex flex-col lg:flex-row space-x-2 justify-center items-center hover:scale-150 transition ease-in-out duration-1000"
                             >
                                 <RiQrScanLine className="hover:text-orange-500 text-xl" />
-                                <span className=" hover:text-orange-500">QR Scanner</span>
+                                <span className="  hover:text-orange-500">QR Scanner</span>
                             </Link>
                         </li>
 
@@ -146,14 +146,14 @@ const DashboardLayout = ({ currentUser }) => {
 
                     <div className="lg:flex hidden items-center gap-4">
                         <SearchModal />
-                        <Link to="/dashboard/create" className="bg-orange-600 hover:bg-orange-700 px-4 py-2 rounded-lg">
+                        <Link to="/dashboard/create" className="bg-orange-600 text-[#333333] dark:text-[#eeeeee] hover:bg-orange-700 px-4 py-2 rounded-lg">
                             Create Event
                         </Link>
                         <div className="relative">
                             <FaBell size={22} className="cursor-pointer " />
-                            <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">{recentActivities.length}</span>
+                            <span className="absolute -top-2 -right-2 bg-red-600 text-[#333333] dark:text-[#eeeeee] text-xs rounded-full w-5 h-5 flex items-center justify-center">{recentActivities.length}</span>
                         </div>
-                        <button onClick={handleLogout} className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg">
+                        <button onClick={handleLogout} className="bg-gray-700 text-[#333333] dark:text-[#eeeeee] hover:bg-gray-600 px-4 py-2 rounded-lg">
                             Logout
                         </button>
                     </div>
@@ -161,7 +161,7 @@ const DashboardLayout = ({ currentUser }) => {
                     <button
                         onClick={toggleOpen}
                         aria-label="Toggle menu"
-                        className="relative w-10 h-10 lg:hidden flex items-center justify-center text-3xl  cursor-pointer"
+                        className="relative w-10 h-10 lg:hidden flex items-center justify-center text-3xl text-[#333333] dark:text-[#eeeeee] cursor-pointer"
                     >
                         {/* Menu icon */}
                         <FiMenu
@@ -180,16 +180,16 @@ const DashboardLayout = ({ currentUser }) => {
                             <SearchModal />
                             <Link onClick={() => {
                                 setOpen(false)
-                            }} to="/dashboard/create" className="bg-orange-600 hover:bg-orange-700 px-4 py-2 rounded-lg">
+                            }} to="/dashboard/create" className="bg-orange-600 text-[#333333] dark:text-[#eeeeee] hover:bg-orange-700 px-4 py-2 rounded-lg">
                                 Create Event
                             </Link>
                             <div onClick={() => {
                                 setOpen(false)
                             }} className="relative">
                                 <FaBell size={22} className="cursor-pointer " />
-                                <span className="absolute -top-2 -right-2 bg-red-600 text-xs rounded-full w-5 h-5 flex items-center justify-center">{recentActivities.length}</span>
+                                <span className="absolute -top-2 -right-2 bg-red-600 text-xs text-[#333333] dark:text-[#eeeeee] rounded-full w-5 h-5 flex items-center justify-center">{recentActivities.length}</span>
                             </div>
-                            <button onClick={() => { handleLogout(); setOpen(false) }} className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg">
+                            <button onClick={() => { handleLogout(); setOpen(false) }} className="bg-gray-700 hover:bg-gray-600 text-[#333333] dark:text-[#eeeeee] px-4 py-2 rounded-lg">
                                 Logout
                             </button>
                         </div>

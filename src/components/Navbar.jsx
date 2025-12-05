@@ -45,13 +45,13 @@ const Navbar = ({ currentUser }) => {
 
   return (
     <section className='sticky w-full flex top-0 z-50'>
-      <div className='flex w-full bg-gray-100 opacity-90 items-center lg:justify-center flex-1 border border-x-transparent border-b-4 lg:border-b-transparent border-b-gray-700 justify-between px-6 font-bold '>
+      <div className='flex w-full bg-[#eeeeee] dark:bg-[#333333] text-[#333333] dark:text-[#eeeeee] opacity-90 items-center lg:justify-center flex-1 border border-x-transparent border-b-4 lg:border-b-transparent border-b-gray-700 justify-between px-6 font-bold '>
         <div className='lg:border border-black py-10 lg:py-5.5  lg:px-20 border-t-transparent  '>
-          <a href='/' className='flex items-center space-x-2 cursor-pointer text-[#333333] text-lg'><SiEagle className='text-orange-500 text-xl' />Airticks<span className='text-orange-500'>Event</span></a>
+          <a href='/' className='flex items-center space-x-2 cursor-pointer  text-lg'><SiEagle className='text-orange-500 text-xl' />Airticks<span className='text-orange-500'>Event</span></a>
         </div>
         <div className='hidden lg:flex'>
           {navItems.map((item, idx) => (
-            <div key={idx} className='border text-[#333333]  hover:bg-yellow-400 active:scale-90 hidden lg:flex border-t-transparent'>
+            <div key={idx} className='border  hover:bg-yellow-400 active:scale-90 hidden lg:flex border-t-transparent'>
               <a href={item.href} className='py-6 px-16'>{item.id}</a>
             </div>
           ))}
@@ -59,7 +59,7 @@ const Navbar = ({ currentUser }) => {
           {!currentUser ? (
             <a
               href="/Register"
-              className="bg-orange-500 flex items-center py-3 px-16 text-white cursor-pointer active:scale-90 hover:bg-orange-600"
+              className="bg-orange-500 flex items-center py-3 px-16  cursor-pointer active:scale-90 hover:bg-orange-600"
             >
               Register
             </a>
@@ -71,7 +71,7 @@ const Navbar = ({ currentUser }) => {
               />
 
               {dropdown && (
-                <div className="absolute top-20 right-2 mt-3 w-48 bg-white rounded-xl shadow-lg border z-50">
+                <div className="absolute top-20 right-2 mt-3 w-48 bg-[#eeeeee] dark:bg-[#333333] text-[#333333] dark:text-[#eeeeee] rounded-xl shadow-lg border z-50">
                   <ul className="flex flex-col py-2">              
                     {currentUser?.isAdmin && (
                       <li onClick={() => navigate("/dashboard")} className="flex items-center gap-2 px-4 py-2 text-orange-600 hover:bg-gray-100 cursor-pointer"><RiDashboard2Line />Dashboard</li>
@@ -95,7 +95,7 @@ const Navbar = ({ currentUser }) => {
         <button
           onClick={handleOpen}
           aria-label="Toggle menu"
-          className="relative w-10 h-10 lg:hidden flex items-center justify-center text-3xl text-black cursor-pointer"
+          className="relative w-10 h-10 lg:hidden flex items-center justify-center text-3xl text-[#333333] dark:text-[#eeeeee] cursor-pointer"
         >
           {/* Menu icon */}
           <FiMenu
@@ -111,9 +111,9 @@ const Navbar = ({ currentUser }) => {
       </div>
 
 
-      <div onClick={handleOpen} className={`lg:hidden fixed top-30 px-6 left-0 z-40 h-full w-[60%] bg-gray-100 opacity-90 custom-scrollbar shadow-md transform transition-all duration-1000 ease-in-out ${open ? "translate-x-0 opacity-100" : "-translate-x-full opacity-0"
+      <div onClick={handleOpen} className={`lg:hidden fixed top-30 px-6 left-0 z-40 h-full w-[60%] bg-[#eeeeee] dark:bg-[#333333] text-[#333333] dark:text-[#eeeeee] opacity-90 custom-scrollbar shadow-md transform transition-all duration-1000 ease-in-out ${open ? "translate-x-0 opacity-100" : "-translate-x-full opacity-0"
         }`}>
-        <div className='p-6 flex flex-col gap-8 text-[#333333]'>
+        <div className='p-6 flex flex-col gap-8 '>
           {navItems.map((item, idx) => (
             <a key={idx} href={item.href} className="hover:text-orange-500 active:scale-90 ">
               {item.id}
@@ -123,7 +123,7 @@ const Navbar = ({ currentUser }) => {
           {!currentUser ? (
             <a
               href="/Register"
-              className="bg-orange-500 text-white px-6 py-2 rounded-md active:scale-90 hover:bg-orange-600"
+              className="bg-orange-500  px-6 py-2 rounded-md active:scale-90 hover:bg-orange-600"
             >
               Register
             </a>
@@ -150,7 +150,7 @@ const Navbar = ({ currentUser }) => {
               {currentUser?.isAdmin && (
                 <button
                   onClick={() => navigate("/dashboard")}
-                  className="px-4 py-2 bg-gray-100 rounded-md active:scale-90 hover:bg-gray-200"
+                  className="px-4 py-2 bg-[#eeeeee] dark:bg-[#333333] rounded-md active:scale-90 hover:bg-gray-200 dark:hover:bg-gray-700"
                 >
                   Dashboard
                 </button>
@@ -167,7 +167,7 @@ const Navbar = ({ currentUser }) => {
 
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 bg-red-100 text-red-600 rounded-md active:scale-90 hover:bg-red-200"
+                className="px-4 py-2 bg-[#eeeeee] dark:bg-[#333333] text-red-600 rounded-md active:scale-90 hover:bg-red-200"
               >
                 Logout
               </button>
