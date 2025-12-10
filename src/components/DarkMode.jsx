@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { FaMoon, FaSun } from 'react-icons/fa';
 import { FiSun, FiMoon } from 'react-icons/fi';
-import { Link } from 'react-router-dom'
 
 const Darkmode = () => {
 

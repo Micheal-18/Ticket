@@ -4,8 +4,9 @@ import { RiDashboard2Line, RiLogoutBoxLine, RiQrScanLine, RiTicket2Line, RiUser3
 import { href, Link, useNavigate } from 'react-router-dom';
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase/firebase";
-import { FaMoneyBillTrendUp } from 'react-icons/fa6';
+import { FaMoneyBillTrendUp, FaUserPlus } from 'react-icons/fa6';
 import { SiEagle } from 'react-icons/si';
+import Darkmode from './DarkMode';
 
 
 const Navbar = ({ currentUser }) => {
@@ -45,8 +46,8 @@ const Navbar = ({ currentUser }) => {
 
   return (
     <section className='sticky w-full flex top-0 z-50'>
-      <div className='flex w-full bg-[#eeeeee] dark:bg-[#333333] text-[#333333] dark:text-[#eeeeee] opacity-90 items-center lg:justify-center flex-1 border border-x-transparent border-b-4 lg:border-b-transparent border-b-gray-700 justify-between px-6 font-bold '>
-        <div className='lg:border border-black py-10 lg:py-5.5  lg:px-20 border-t-transparent  '>
+      <div className='flex w-full  bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color)  opacity-90 items-center lg:justify-center flex-1 border border-x-transparent  border-b-transparent  justify-between px-6 font-bold '>
+        <div className='lg:border py-10 lg:py-5.5  lg:px-20 border-t-transparent  '>
           <a href='/' className='flex items-center space-x-2 cursor-pointer  text-lg'><SiEagle className='text-orange-500 text-xl' />Airticks<span className='text-orange-500'>Event</span></a>
         </div>
         <div className='hidden lg:flex'>
@@ -71,10 +72,11 @@ const Navbar = ({ currentUser }) => {
               />
 
               {dropdown && (
-                <div className="absolute top-20 right-2 mt-3 w-48 bg-[#eeeeee] dark:bg-[#333333] text-[#333333] dark:text-[#eeeeee] rounded-xl shadow-lg border z-50">
-                  <ul className="flex flex-col py-2">              
+                <div className="absolute top-20 right-2 mt-3 w-48  bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) rounded-xl shadow-lg border z-50">
+                  <ul className="flex flex-col py-2">  
+                    <Darkmode />            
                     {currentUser?.isAdmin && (
-                      <li onClick={() => navigate("/dashboard")} className="flex items-center gap-2 px-4 py-2 text-orange-600 hover:bg-gray-100 cursor-pointer"><RiDashboard2Line />Dashboard</li>
+                      <li onClick={() => navigate("/dashboard")} className="flex items-center gap-2 px-4 py-2 text-orange-600 hover:bg-gray-100 cursor-pointer"><FaUserPlus />Dashboard</li>
                     )}
 
                     <li
@@ -83,6 +85,7 @@ const Navbar = ({ currentUser }) => {
                     >
                       <RiLogoutBoxLine /> Logout
                     </li>
+
                   </ul>
                 </div>
               )}
@@ -95,7 +98,7 @@ const Navbar = ({ currentUser }) => {
         <button
           onClick={handleOpen}
           aria-label="Toggle menu"
-          className="relative w-10 h-10 lg:hidden flex items-center justify-center text-3xl text-[#333333] dark:text-[#eeeeee] cursor-pointer"
+          className="relative w-10 h-10 lg:hidden flex items-center justify-center text-3xl text-(--text-color) dark:text-(--text-color)cursor-pointer"
         >
           {/* Menu icon */}
           <FiMenu
@@ -111,7 +114,7 @@ const Navbar = ({ currentUser }) => {
       </div>
 
 
-      <div onClick={handleOpen} className={`lg:hidden fixed top-30 px-6 left-0 z-40 h-full w-[60%] bg-[#eeeeee] dark:bg-[#333333] text-[#333333] dark:text-[#eeeeee] opacity-90 custom-scrollbar shadow-md transform transition-all duration-1000 ease-in-out ${open ? "translate-x-0 opacity-100" : "-translate-x-full opacity-0"
+      <div onClick={handleOpen} className={`lg:hidden fixed top-30 px-6 left-0 z-40 h-full w-[60%] bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) opacity-90 custom-scrollbar shadow-md transform transition-all duration-1000 ease-in-out ${open ? "translate-x-0 opacity-100" : "-translate-x-full opacity-0"
         }`}>
         <div className='p-6 flex flex-col gap-8 '>
           {navItems.map((item, idx) => (
@@ -119,6 +122,8 @@ const Navbar = ({ currentUser }) => {
               {item.id}
             </a>
           ))}
+
+          <Darkmode />
 
           {!currentUser ? (
             <a
@@ -150,7 +155,7 @@ const Navbar = ({ currentUser }) => {
               {currentUser?.isAdmin && (
                 <button
                   onClick={() => navigate("/dashboard")}
-                  className="px-4 py-2 bg-[#eeeeee] dark:bg-[#333333] rounded-md active:scale-90 hover:bg-gray-200 dark:hover:bg-gray-700"
+                  className="px-4 py-2 bg-(--bg-color) dark:bg-(--bg-color)  rounded-md active:scale-90 hover:bg-gray-200 dark:hover:bg-gray-400"
                 >
                   Dashboard
                 </button>
@@ -167,7 +172,7 @@ const Navbar = ({ currentUser }) => {
 
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 bg-[#eeeeee] dark:bg-[#333333] text-red-600 rounded-md active:scale-90 hover:bg-red-200"
+                className="px-4 py-2 bg-(--bg-color) dark:bg-(--bg-color) text-red-600 rounded-md active:scale-90 hover:bg-red-200"
               >
                 Logout
               </button>

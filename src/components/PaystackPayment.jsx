@@ -86,7 +86,7 @@ const PaystackPayment = ({ events, ticket, currentUser, guestEmail, guestName, g
       {!success ? (
         <button
           onClick={payWithPaystack}
-          className="bg-orange-500 p-2 rounded-lg text-white active:scale-90 hover:bg-orange-600"
+          className="bg-orange-500 p-2 rounded-lg text-(--text-color) dark:text-(--text-color) active:scale-90 hover:bg-orange-600"
         >
           Pay for {ticket.label} – {ticket.currency}
           {Number(finalAmount).toLocaleString()}
@@ -94,7 +94,7 @@ const PaystackPayment = ({ events, ticket, currentUser, guestEmail, guestName, g
       ) : (
         <div className="flex flex-col items-center justify-center w-full min-h-screen text-center px-4">
           <FaCheckCircle className="text-green-500 text-6xl mb-4" />
-          <h1 className="font-semibold text-gray-700 text-2xl mb-2">
+          <h1 className="font-semibold text-gray-600 text-2xl mb-2">
             Transaction Successful 🎉
           </h1>
           <p className="text-gray-600 text-lg">

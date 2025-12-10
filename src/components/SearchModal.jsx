@@ -64,9 +64,9 @@ const SearchModal = ({selectedEvent, setSelectedEvent }) => {
             className="relative p-4 w-full max-w-md"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="relative bg-[#eeeeee] custom-scrollbar w-full p-3 rounded-md shadow-lg">
+            <div className="relative bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) custom-scrollbar w-full p-3 rounded-md shadow-lg">
               <div className="flex items-center justify-between p-4 border-b border-gray-200">
-                <h3 className="text-xl font-semibold text-gray-700">Search Events</h3>
+                <h3 className="text-xl font-semibold ">Search Events</h3>
                 <button
                   onClick={closeModal}
                   className="text-gray-400 hover:bg-[#f8882c4d] hover:text-orange-600 rounded-lg w-8 h-8 flex items-center justify-center "
@@ -102,7 +102,7 @@ const SearchModal = ({selectedEvent, setSelectedEvent }) => {
                         closeModal();
                         navigate(`/event/${event.slug}`);
                       }}
-                      className="flex items-center gap-3 bg-[#eeeeee] rounded-lg p-2 cursor-pointer border border-[#ffffff20] hover:bg-orange-500/10 transition duration-200"
+                      className="flex items-center gap-3 bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) rounded-lg p-2 cursor-pointer border border-[#ffffff20] hover:bg-orange-500/10 transition duration-200"
                     >
                       <img
                         src={event.photoURL || event.image}
@@ -110,8 +110,8 @@ const SearchModal = ({selectedEvent, setSelectedEvent }) => {
                         className="w-20 h-20 object-contain"
                       />
                       <span>
-                        <h2 className="text-lg text-gray-700 font-semibold">{event.name}</h2>
-                        <p className="text-xs text-gray-600">
+                        <h2 className="text-lg  font-semibold">{event.name}</h2>
+                        <p className="text-xs ">
                           📍 {event.location}
                         </p>
                         <p className="text-xs text-gray-500">

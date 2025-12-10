@@ -112,7 +112,7 @@ const App = () => {
       {/* Login route */}
       <Route
         path="/Login"
-        element={currentUser ? <Navigate to="/dashboard" replace /> : <Login />}
+        element={currentUser ? <Navigate to="/dashboard" replace /> : <Layout currentUser={currentUser}><Login /></Layout>}
       />
 
       {/* Register route */}
@@ -122,7 +122,9 @@ const App = () => {
           currentUser ? (
             <Navigate to="/" replace />
           ) : (
-            <Register step={step} setStep={setStep} />
+            <Layout currentUser={currentUser}>
+             <Register step={step} setStep={setStep} />
+            </Layout>
           )
         }
       />

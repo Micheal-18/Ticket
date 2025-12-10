@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import Layout from '../layout/Layout';
 
 const LoadingScreen = ({ onComplete }) => {
     const [text, setText] = useState("");
@@ -25,9 +26,10 @@ const LoadingScreen = ({ onComplete }) => {
             return () => clearInterval(interval);
         }, [onComplete])
 
-    return (
+    return (<>
+        <Layout />
 
-        <div className='fixed inset-0 z-50  text-orange-500 flex flex-col items-center justify-center'>
+        <div className='fixed inset-0 z-50  bg-(--bg-color) dark:bg-(--bg-color)  text-orange-500 flex flex-col items-center justify-center'>
             <div className='mb-4 text-center text-4xl font-mono font-bold'>
                 {text} <span className='animate-blink ml-1'>|</span>
             </div>
@@ -39,6 +41,7 @@ const LoadingScreen = ({ onComplete }) => {
 
 
         </div>
+        </>
     )
 }
 

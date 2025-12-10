@@ -184,7 +184,7 @@ const Event = ({ currentUser, events, setEvents }) => {
       {/* EVENT LIST */}
       <div className="flex flex-col space-y-3 p-4">
         <div className="space-y-6">
-          <p className="font-regular text-sm  adaptive-text">All Events:</p>
+          <p className="font-regular text-sm ">All Events:</p>
           <div className="flex items-center space-x-4">
             <h1 className="font-bold text-2xl md:text-4xl">
               Find Events:
@@ -255,7 +255,7 @@ const Event = ({ currentUser, events, setEvents }) => {
             </div>
           )}
           <p className="fonts-bold text-2xl">Events</p>
-          <p className="text-gray-200 adaptive-text">
+          <p className="text-gray-500 ">
             Showing <span className="font-semibold">{filteredEvents.length}</span>{" "}
             of {events.length} events
           </p>

@@ -187,7 +187,7 @@ const Register = ({ step, setStep }) => {
 
 
   return (
-    <section data-aos="fade-out" className='relative w-full grid grid-cols-1 md:grid-cols-2 h-screen '>
+    <section data-aos="fade-out" className='relative w-full bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) grid grid-cols-1 md:grid-cols-2 h-screen '>
       <div className='flex flex-col flex-1  custom-scrollbar space-y-10 px-10 py-6 '>
         <a className='text-lg font-semibold '>Airticks<span className='text-orange-500'>.events</span></a>
         {/* Progress Indicator */}

@@ -7,22 +7,22 @@ const Guide = () => {
     <>
       <section
         data-aos="fade-out"
-        className="min-h-screen bg-gray-50 flex justify-center items-center py-16 px-4"
+        className="min-h-screenbg-(--bg-color) dark:bg-(--bg-color) flex justify-center items-center py-16 px-4"
       >
-        <div className="max-w-3xl w-full bg-white shadow-2xl rounded-3xl p-8 md:p-12 space-y-10">
-          <h1 className="text-3xl md:text-4xl font-extrabold text-center text-gray-900">
+        <div className="max-w-3xl w-full bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) shadow-2xl rounded-3xl p-8 md:p-12 space-y-10">
+          <h1 className="text-3xl md:text-4xl font-extrabold text-center ">
             🎟 AirTicks<span className="text-orange-500">Events</span> Guide
           </h1>
-          <p className="text-center text-gray-600 text-sm md:text-base">
+          <p className="text-center text-gray-500 text-sm md:text-base">
             Learn how to buy tickets, receive confirmations, and attend your events with ease.
           </p>
 
           {/* Section 1 */}
           <section data-aos="fade-up" data-aos-delay="100">
-            <h2 className="text-xl font-semibold text-[#333333] mb-3">
+            <h2 className="text-xl font-semibold  mb-3">
               1️⃣ Buying a Ticket
             </h2>
-            <ol className="list-decimal list-inside space-y-2 text-gray-700 leading-relaxed">
+            <ol className="list-decimal list-inside space-y-2 text-gray-500 leading-relaxed">
               <li>Visit the <strong>AirTicks Events</strong> website.</li>
               <li>Select your desired <strong>event</strong>.</li>
               <li>
@@ -41,15 +41,15 @@ const Guide = () => {
 
           {/* Section 2 */}
           <section data-aos="fade-up" data-aos-delay="200">
-            <h2 className="text-xl font-semibold text-[#333333] mb-3">
+            <h2 className="text-xl font-semibold  mb-3">
               2️⃣ Receiving Your Ticket
             </h2>
-            <p className="text-gray-700">Your confirmation email includes:</p>
-            <ul className="list-disc list-inside ml-6 space-y-1 text-gray-700">
+            <p className="text-gray-500">Your confirmation email includes:</p>
+            <ul className="list-disc list-inside ml-6 space-y-1 text-gray-500">
               <li>✅ Ticket details (type, price, reference number)</li>
               <li>✅ A <strong>QR code</strong> — your entry pass</li>
             </ul>
-            <p className="mt-3 font-medium text-gray-800">
+            <p className="mt-3 font-medium text-gray-600">
               👉 Keep this email safe — no need to log in again.
             </p>
           </section>
@@ -59,7 +59,7 @@ const Guide = () => {
             <h2 className="text-xl font-semibold text-[#333333] mb-3">
               3️⃣ At the Event
             </h2>
-            <ol className="list-decimal list-inside space-y-2 text-gray-700 leading-relaxed">
+            <ol className="list-decimal list-inside space-y-2 text-gray-500 leading-relaxed">
               <li>Present your QR code (on phone or printed).</li>
               <li>Event staff will scan your QR code.</li>
               <li>
@@ -75,10 +75,10 @@ const Guide = () => {
 
           {/* Section 4 */}
           <section data-aos="fade-up" data-aos-delay="400">
-            <h2 className="text-xl font-semibold text-[#333333] mb-3">
+            <h2 className="text-xl font-semibold  mb-3">
               4️⃣ Important Notes
             </h2>
-            <ul className="list-disc list-inside ml-6 space-y-2 text-gray-700 leading-relaxed">
+            <ul className="list-disc list-inside ml-6 space-y-2 text-gray-500 leading-relaxed">
               <li>Ticket creation is for users; AirTicks takes <strong>10%</strong> of paid tickets 🤝🏾.</li>
               <li>Each ticket can only be used <strong>once</strong>.</li>
               <li>Sharing or reusing a QR code will mark it as <strong>already used</strong>.</li>
@@ -88,10 +88,10 @@ const Guide = () => {
 
           {/* Section 5 */}
           <section data-aos="fade-up" data-aos-delay="500">
-            <h2 className="text-xl font-semibold text-[#333333] mb-3">
+            <h2 className="text-xl font-semibold  mb-3">
               5️⃣ Need Help?
             </h2>
-            <p className="text-gray-700">
+            <p className="text-gray-500">
               If you have any issues, reach our support team at{" "}
               <a
                 href='/contact' 
@@ -115,7 +115,7 @@ const Guide = () => {
           <div className="flex justify-center">
             <a
               href="/event"
-              className="bg-orange-500 text-white font-semibold px-6 py-3 rounded-xl shadow hover:bg-orange-600 transition-transform transform hover:scale-105 active:scale-95"
+              className="bg-orange-500  font-semibold px-6 py-3 rounded-xl shadow hover:bg-orange-600 transition-transform transform hover:scale-105 active:scale-95"
             >
               🔙 Explore Events
             </a>

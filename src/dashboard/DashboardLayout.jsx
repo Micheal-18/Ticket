@@ -84,9 +84,9 @@ const DashboardLayout = ({ currentUser }) => {
 
 
     return (
-        <section className="relative flex  lg:space-y-0 space-y-2">
+        <section className="relative flex">
             {/* Sidebar */}
-            <div className=" fixed bg-[#eeeeee] dark:bg-[#333333]  left-0 bottom-0 text-[#333333] dark:text-[#eeeeee] z-50 space-y-2 w-full h-20 border-t border-gray-800 p-3 flex justify-center items-center lg:static lg:w-50 lg:h-full lg:border-t-0 lg:border-r lg:border-gray-800 lg:p-6 flex-col lg:items-start">
+            <div className=" fixed bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) bottom-0 left-0 z-50 space-y-2 w-full h-20 border-t border-gray-800 p-3 flex justify-center items-center lg:static lg:w-50 lg:h-full lg:border-t-0 lg:border-r lg:border-gray-800 lg:p-6 flex-col lg:items-start">
                 <Link to='/'>
                     <h1 className="text-2xl text-left font-bold mb-2">
                         Airticks<span className="text-orange-600">Events</span>
@@ -98,7 +98,7 @@ const DashboardLayout = ({ currentUser }) => {
                         <li className="mb-4">
                             <Link
                                 to="/dashboard"
-                                className="flex flex-col lg:flex-row space-x-2 justify-center items-center hover:scale-150 transition ease-in-out duration-800"
+                                className="flex flex-col lg:flex-row space-x-2 justify-center items-center hover:scale-105 transition ease-in-out duration-800"
                             >
                                 <RiHome2Line className="text-orange-500 hover:text-orange-700 text-xl" />
                                 <span className="hover:underline">Home</span>
@@ -108,7 +108,7 @@ const DashboardLayout = ({ currentUser }) => {
                         <li className="mb-4">
                             <Link
                                 to="/dashboard/events"
-                                className="flex flex-col lg:flex-row space-x-2 justify-center items-center hover:scale-150 transition ease-in-out duration-900"
+                                className="flex flex-col lg:flex-row space-x-2 justify-center items-center hover:scale-105 transition ease-in-out duration-900"
                             >
                                 <RiTicket2Line className="hover:text-orange-500 text-xl" />
                                 <span className=" hover:text-orange-500">Events</span>
@@ -118,7 +118,7 @@ const DashboardLayout = ({ currentUser }) => {
                         <li className="mb-4">
                             <Link
                                 to="/dashboard/scanner"
-                                className="flex flex-col lg:flex-row space-x-2 justify-center items-center hover:scale-150 transition ease-in-out duration-1000"
+                                className="flex flex-col lg:flex-row space-x-2 justify-center items-center hover:scale-105 transition ease-in-out duration-1000"
                             >
                                 <RiQrScanLine className="hover:text-orange-500 text-xl" />
                                 <span className="  hover:text-orange-500">QR Scanner</span>
@@ -128,7 +128,7 @@ const DashboardLayout = ({ currentUser }) => {
                         <li className="mb-4">
                             <Link
                                 to="/dashboard/tracking"
-                                className="flex flex-col lg:flex-row space-x-2 justify-center items-center hover:scale-150 transition ease-in-out duration-1200"
+                                className="flex flex-col lg:flex-row space-x-2 justify-center items-center hover:scale-105 transition ease-in-out duration-1200"
                             >
                                 <FaMoneyBillTrendUp className="hover:text-orange-500 text-xl" />
                                 <span className=" hover:text-orange-500">Analytics</span>
@@ -161,7 +161,7 @@ const DashboardLayout = ({ currentUser }) => {
                     <button
                         onClick={toggleOpen}
                         aria-label="Toggle menu"
-                        className="relative w-10 h-10 lg:hidden flex items-center justify-center text-3xl text-[#333333] dark:text-[#eeeeee] cursor-pointer"
+                        className="relative w-10 h-10 lg:hidden flex items-center justify-center text-3xl text-(--text-color) dark:text-(--text-color) cursor-pointer"
                     >
                         {/* Menu icon */}
                         <FiMenu
@@ -176,7 +176,7 @@ const DashboardLayout = ({ currentUser }) => {
                     </button>
 
                     {open && (
-                        <div className="absolute top-16 right-4 w-full justify-evenly  p-4 rounded-lg shadow-lg flex  items-center gap-4 lg:hidden z-50">
+                        <div className="absolute top-16 left-0 w-full justify-evenly  p-4 rounded-lg shadow-lg flex  items-center  gap-4 lg:hidden z-50 transition-all duration-300 ">
                             <SearchModal />
                             <Link onClick={() => {
                                 setOpen(false)
@@ -189,7 +189,7 @@ const DashboardLayout = ({ currentUser }) => {
                                 <FaBell size={22} className="cursor-pointer " />
                                 <span className="absolute -top-2 -right-2 bg-red-600 text-xs text-[#333333] dark:text-[#eeeeee] rounded-full w-5 h-5 flex items-center justify-center">{recentActivities.length}</span>
                             </div>
-                            <button onClick={() => { handleLogout(); setOpen(false) }} className="bg-gray-700 hover:bg-gray-600 text-[#333333] dark:text-[#eeeeee] px-4 py-2 rounded-lg">
+                            <button onClick={() => { handleLogout(); setOpen(false) }} className="bg-gray-400 dark:bg-gray-700 hover:bg-gray-600 text-[#333333] dark:text-[#eeeeee] px-4 py-2 rounded-lg">
                                 Logout
                             </button>
                         </div>
