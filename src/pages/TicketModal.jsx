@@ -75,7 +75,7 @@ const TicketModal = ({ currentUser }) => {
   return (
     <div className="fixed left-0 top-0 w-full h-full backdrop-blur-xs flex justify-center items-center z-[9999] custom-scrollbar">
       <div className="relative w-full flex justify-center items-center">
-        <div className="flex flex-col bg-[#eeeeee] text-[#333333] space-y-4 p-6 rounded-lg shadow-lg w-[90%] max-h-[90vh] overflow-y-auto custom-scrollbar">
+        <div className="flex flex-col  bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) space-y-4 p-6 rounded-lg shadow-lg w-[90%] max-h-[90vh] overflow-y-auto custom-scrollbar">
           {/* Close Button */}
           <div
             className="text-2xl absolute top-4 right-12 cursor-pointer hover:scale-105"
@@ -102,33 +102,33 @@ const TicketModal = ({ currentUser }) => {
             {/* Description */}
             <div className="border-b space-y-2 border-gray-300 w-full">
               <h1 className="uppercase font-semibold text-xl">Description</h1>
-              <p className="text-gray-700 mb-2">{selectedEvent?.description}</p>
+              <p className="text-gray-400 mb-2">{selectedEvent?.description}</p>
             </div>
 
 
             {/* Category */}
             <div className="border-b space-y-2 border-gray-300 w-full">
               <h1 className="uppercase font-semibold text-xl">Category</h1>
-              <p className="text-gray-700 mb-2">{selectedEvent?.category}</p>
+              <p className="text-gray-400 mb-2">{selectedEvent?.category}</p>
             </div>
 
             {/* Location */}
             <div className="border-b space-y-2 border-gray-300 w-full">
               <h1 className="uppercase font-semibold text-xl">Location</h1>
-              <p className="text-gray-700 mb-2">{selectedEvent?.location}</p>
+              <p className="text-gray-400 mb-2">{selectedEvent?.location}</p>
             </div>
 
             {/* Oranganizes */}
 
             <div className="border-b space-y-2 border-gray-300 w-full">
               <h1 className="uppercase font-semibold text-xl">Organized by</h1>
-              <p className="text-gray-700 mb-2">{selectedEvent?.organizer}</p>
+              <p className="text-gray-400 mb-2">{selectedEvent?.organizer}</p>
             </div>
 
             {/* Date & Time */}
             <div>
               <h1 className="uppercase font-semibold text-xl">Date & Time</h1>
-              <p className="text-gray-700">
+              <p className="text-gray-400">
                 {formatDate(selectedEvent.date)} |{" "}
                 {formatEventStatus(selectedEvent.startTime)} →{" "}
                 {formatEventStatus(selectedEvent.endTime)}
@@ -163,7 +163,7 @@ const TicketModal = ({ currentUser }) => {
 
                       <button
                         onClick={() => setSelectedTicket(ticket)}
-                        className="flex-1 flex space-x-4 text-left p-2 border rounded-lg hover:bg-orange-100 active:scale-95 transition"
+                        className="flex-1 flex lg:flex-row flex-col space-x-4 text-left p-2 border rounded-lg  active:scale-95 transition"
                       >
                         {ticket.label}: {ticket.currency}
                         {ticket.amount} × {ticket.num || 0} ={" "}
@@ -183,7 +183,7 @@ const TicketModal = ({ currentUser }) => {
                     {!currentUser && (
                       <>
                       <div className="flex space-x-2 items-center">
-                      <label className="font-bold text-gray-600">Name:</label>
+                      <label className="font-bold text-gray-400">Name:</label>
                       <input
                         placeholder="Name"
                         type="text"
@@ -196,7 +196,7 @@ const TicketModal = ({ currentUser }) => {
 
                     {/* Email user */}
                     <div className="flex space-x-2 items-center">
-                      <label className="font-bold text-gray-600">Email:</label>
+                      <label className="font-bold text-gray-400">Email:</label>
                       <input
                         placeholder="Email"
                         type="email"
@@ -208,7 +208,7 @@ const TicketModal = ({ currentUser }) => {
                     </div>
 
                     <div className="flex space-x-2 items-center">
-                      <label className="font-bold text-gray-600">Number:</label>
+                      <label className="font-bold text-gray-400">Number:</label>
                       <input
                         placeholder="Phone"
                         type="number"
@@ -223,7 +223,7 @@ const TicketModal = ({ currentUser }) => {
                   </div>
                 ))
               ) : (
-                <p className="text-gray-500 text-sm">No tickets available</p>
+                <p className="text-gray-400 text-sm">No tickets available</p>
               )}
 
             </div>
