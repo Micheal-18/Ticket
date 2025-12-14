@@ -7,6 +7,7 @@ import { db } from "../firebase/firebase";
 import { useNavigate } from "react-router-dom";
 import Spinner from "../components/Spinner";
 
+
 const Verify = ({ email }) => {
   const [status, setStatus] = useState({ type: "", message: "" });
   const [loading, setLoading] = useState(false);
@@ -143,8 +144,8 @@ const Verify = ({ email }) => {
   };
 
   return (<>
-    <Layout />
-    <div className="max-w-md mx-auto mt-10 bg-gray-200 rounded-2xl shadow-lg p-8 text-center">
+   
+    <div className="max-w-md mx-auto mt-10 rounded-2xl shadow-lg p-8 text-center">
       {/* Step Progress */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex-1 h-2 bg-green-500 rounded-l-full"></div>

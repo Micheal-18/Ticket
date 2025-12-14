@@ -123,18 +123,18 @@ const App = () => {
             <Navigate to="/" replace />
           ) : (
             <Layout currentUser={currentUser}>
-             <Register step={step} setStep={setStep} />
+              <Register step={step} setStep={setStep} />
             </Layout>
           )
         }
       />
 
-      <Route path="/verify" element={<Verify email={currentUser?.email} step="verify"
+      <Route path="/verify" element={<Layout currentUser={currentUser}><Verify email={currentUser?.email} step="verify"
         setStep={() => { }}
         error={""}
         setError={() => { }}
         resendMessage={""}
-        setResendMessage={() => { }} />}
+        setResendMessage={() => { }} /></Layout>}
       />
       {/* Verify route — force unverified users here */}
       {/* <Route
@@ -204,16 +204,16 @@ const App = () => {
         </Layout>
       } />
 
-<Route
-  path="/dashboard"
-  element={
-    currentUser === null
-      ? <LoadingScreen />
-      : currentUser.isAdmin
-        ? <DashboardLayout currentUser={currentUser} />
-        : <Navigate to="/" replace />
-  }
->
+      <Route
+        path="/dashboard"
+        element={
+          currentUser === null
+            ? <LoadingScreen />
+            : currentUser.isAdmin
+              ? <DashboardLayout currentUser={currentUser} />
+              : <Navigate to="/" replace />
+        }
+      >
 
         <Route index element={<DashboardHome currentUser={currentUser} />} />
 
@@ -221,13 +221,13 @@ const App = () => {
         <Route path="create" element={<CreateEvent currentUser={currentUser} />} />
 
         {/* Scanner */}
-        <Route path="scanner" element={<TicketScanner currentUser={currentUser}/>} />
+        <Route path="scanner" element={<TicketScanner currentUser={currentUser} />} />
 
         {/* Analytics/Tracking */}
-        <Route path="tracking" element={<Tracking currentUser={currentUser}/>} />
+        <Route path="tracking" element={<Tracking currentUser={currentUser} />} />
 
         {/*Event in dashboard */}
-        <Route path="events" element={<Dashevents events={events} setEvents={setEvents} currentUser={currentUser}/>} />
+        <Route path="events" element={<Dashevents events={events} setEvents={setEvents} currentUser={currentUser} />} />
       </Route>
 
 
