@@ -47,18 +47,17 @@ const DashboardLayout = ({ currentUser }) => {
                     })),
                     ...usersData.flatMap((u) => {
                         const acts = [];
-                        if (u.registeredEventName)
+                        if (u.fullName)
                             acts.push({
-                                type: "registration",
-                                user: u.name,
-                                name: u.registeredEventName,
+                                type: "users",
+                                name: u.fullName,
                                 date: u.registeredAt || u.createdAt,
                             });
                         if (u.tickets)
                             u.tickets.forEach((t) =>
                                 acts.push({
                                     type: "ticket",
-                                    user: u.name,
+                                    user: u.fullName,
                                     name: t.eventName,
                                     date: t.purchasedAt || t.createdAt,
                                 })
@@ -142,7 +141,10 @@ const DashboardLayout = ({ currentUser }) => {
             <div className="flex-1  flex flex-col">
                 {/* Header */}
                 <header className="w-full p-4 border-b border-gray-800 flex justify-between items-center">
-                    <div className="text-xl font-semibold">Welcome, {currentUser?.fullName}</div>
+                    <div className="flex flex-col">
+                        <span className="text-xl font-semibold">Welcome, {currentUser?.fullName}</span>
+                    <span className="text-sm">Followers: {currentUser?.followersCount}</span>
+                    </div>
 
                     <div className="lg:flex hidden items-center gap-4">
                         <SearchModal />

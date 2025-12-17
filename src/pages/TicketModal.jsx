@@ -6,6 +6,7 @@ import { FiX } from "react-icons/fi";
 import PaystackPayment from "../components/PaystackPayment";
 import { formatEventStatus } from "../utils/formatEventRange";
 import OptimizedImage from "../components/OptimizedImage";
+import FollowButton from "../components/FolllowButton";
 
 const TicketModal = ({ currentUser }) => {
   const { slug } = useParams();
@@ -120,9 +121,18 @@ const TicketModal = ({ currentUser }) => {
 
             {/* Oranganizes */}
 
-            <div className="border-b space-y-2 border-gray-300 w-full">
-              <h1 className="uppercase font-semibold text-xl">Organized by</h1>
+            <div className="flex justify-between items-center border-b space-y-2 border-gray-300 w-full">
+              <div>
+                <h1 className="uppercase font-semibold text-xl">Organized by</h1>
               <p className="text-gray-400 mb-2">{selectedEvent?.organizer}</p>
+              </div>
+              {currentUser?.uid !== selectedEvent?.ownerId && (
+                <FollowButton
+                  currentUser={currentUser}
+                  currentUserId={selectedEvent?.currentUserId}
+                  ownerId={selectedEvent?.ownerId}
+                />
+              )}
             </div>
 
             {/* Date & Time */}
@@ -165,12 +175,14 @@ const TicketModal = ({ currentUser }) => {
                         onClick={() => setSelectedTicket(ticket)}
                         className="flex-1 flex lg:flex-row flex-col space-x-4 text-left p-2 border rounded-lg  active:scale-95 transition"
                       >
-                        {ticket.label}: {ticket.currency}
+                        <span>
+                          {ticket.label}: {ticket.currency}
                         {ticket.amount} × {ticket.num || 0} ={" "}
                         <strong>
                           {ticket.currency}
                           {ticket.amount * (ticket.num || 0) + ((1.5 / 100) * ticket.amount * (ticket.num || 0) + 100 * (ticket.num || 0))}
                         </strong>
+                        </span>
 
                         <p>
                           includes fee of 1.5% + 100 Paystack fee = {ticket.currency}{((1.5 / 100) * ticket.amount * (ticket.num || 0) + 100 * (ticket.num || 0))}
@@ -182,42 +194,42 @@ const TicketModal = ({ currentUser }) => {
 
                     {!currentUser && (
                       <>
-                      <div className="flex space-x-2 items-center">
-                      <label className="font-bold text-gray-400">Name:</label>
-                      <input
-                        placeholder="Name"
-                        type="text"
-                        className="border-2 border-gray-200 lg:w-1/2 w-full rounded-md p-3"
-                        value={guestName}
-                        onChange={(e) => setGuestName(e.target.value)}
-                      />
+                        <div className="flex space-x-2 items-center">
+                          <label className="font-bold text-gray-400">Name:</label>
+                          <input
+                            placeholder="Name"
+                            type="text"
+                            className="border-2 border-gray-200 lg:w-1/2 w-full rounded-md p-3"
+                            value={guestName}
+                            onChange={(e) => setGuestName(e.target.value)}
+                          />
 
-                    </div>
+                        </div>
 
-                    {/* Email user */}
-                    <div className="flex space-x-2 items-center">
-                      <label className="font-bold text-gray-400">Email:</label>
-                      <input
-                        placeholder="Email"
-                        type="email"
-                        className="lg:w-1/2 w-full border-2 border-gray-200 rounded-md p-3"
-                        value={guestEmail}
-                        onChange={(e) => setGuestEmail(e.target.value)}
-                      />
+                        {/* Email user */}
+                        <div className="flex space-x-2 items-center">
+                          <label className="font-bold text-gray-400">Email:</label>
+                          <input
+                            placeholder="Email"
+                            type="email"
+                            className="lg:w-1/2 w-full border-2 border-gray-200 rounded-md p-3"
+                            value={guestEmail}
+                            onChange={(e) => setGuestEmail(e.target.value)}
+                          />
 
-                    </div>
+                        </div>
 
-                    <div className="flex space-x-2 items-center">
-                      <label className="font-bold text-gray-400">Number:</label>
-                      <input
-                        placeholder="Phone"
-                        type="number"
-                        className="border-2 border-gray-200 lg:w-1/2 w-full rounded-md p-3"
-                        value={guestNumber}
-                        onChange={(e) => setGuestNumber(e.target.value.trim())}
-                      />
+                        <div className="flex space-x-2 items-center">
+                          <label className="font-bold text-gray-400">Number:</label>
+                          <input
+                            placeholder="Phone"
+                            type="number"
+                            className="border-2 border-gray-200 lg:w-1/2 w-full rounded-md p-3"
+                            value={guestNumber}
+                            onChange={(e) => setGuestNumber(e.target.value.trim())}
+                          />
 
-                    </div>
+                        </div>
                       </>
                     )}
                   </div>

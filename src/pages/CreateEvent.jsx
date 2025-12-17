@@ -132,6 +132,7 @@ const CreateEvent = () => {
         ownerId: user.uid,
         slug,
         ticketSold: 0,
+        followersCount: 0, 
         createdAt: new Date().toISOString(),
       });
 

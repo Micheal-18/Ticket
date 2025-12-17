@@ -1,6 +1,6 @@
 import React from "react";
 import { useOutletContext } from "react-router-dom";
-import { FaCalendarPlus, FaShoppingCart, FaTicketAlt } from "react-icons/fa";
+import { FaAnchor, FaCalendarPlus, FaShoppingCart, FaTicketAlt, FaUserAlt } from "react-icons/fa";
 
 import {
   BarChart,
@@ -82,11 +82,11 @@ const DashboardHome = () => {
                 {/* Recent Activities Section */}
                 <div className="lg:px-4 px-0 py-6  rounded-2xl shadow mb-8">
                   <h2 className="text-xl font-semibold mb-4">Recent Activities</h2>
-                  <div className="space-y-4 max-h-96 overflow-y-auto">
+                  <div className="space-y-4 max-h-96 custom-scrollbar overflow-y-auto">
                     {recentActivities.map((activity, index) => (
                       <div key={index} className="flex items-start gap-3 border-b border-gray-700 pb-4">
                         <div className="text-orange-500 mt-1">
-                          {activity.type === "event" ? <FaCalendarPlus /> : activity.type === "registration" ? <FaTicketAlt /> : <FaShoppingCart />}
+                          {activity.type === "event" ? <FaCalendarPlus /> : activity.type === "ticket" ? <FaTicketAlt /> : activity.type === "users" ? <FaUserAlt /> : <FaAnchor />}
                         </div>
     
                         <div>
@@ -96,9 +96,9 @@ const DashboardHome = () => {
                               <p className="text-gray-400">{new Date(activity.date).toLocaleString()}</p>
                             </>
                           )}
-                          {activity.type === "registration" && (
+                          {activity.type === "users" && (
                             <>
-                              <h3 className="text-lg font-semibold">{activity.user} registered for {activity.name}</h3>
+                              <h3 className="text-lg font-semibold">{activity.users} registered for {activity.name}</h3>
                               <p className="text-gray-400">{new Date(activity.date).toLocaleString()}</p>
                             </>
                           )}
