@@ -77,10 +77,10 @@ const TicketModal = ({ currentUser }) => {
   return (
     <div className="fixed left-0 top-0 w-full h-full backdrop-blur-xs flex justify-center items-center z-[9999] custom-scrollbar">
       <div className="relative w-full flex justify-center items-center">
-        <div className="flex flex-col  bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) space-y-4 p-6 rounded-lg shadow-lg w-[90%] max-h-[90vh] overflow-y-auto custom-scrollbar">
+        <div className="flex flex-col  bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) space-y-4 p-6 rounded-lg shadow-lg lg:w-[70%] w-[80%] max-h-[90vh] overflow-y-auto custom-scrollbar">
           {/* Close Button */}
           <div
-            className="text-2xl absolute top-4 right-12 cursor-pointer hover:scale-105"
+            className="text-2xl absolute top-4 lg:right-1/6 right-12 cursor-pointer hover:scale-105"
             onClick={() => window.history.back()}
           >
             <FiX />

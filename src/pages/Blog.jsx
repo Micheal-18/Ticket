@@ -55,7 +55,7 @@ const Blog = ({ blog, setBlog, currentUser }) => {
                 Write a Blog
               </Link>
               <Link
-                to="/dashboard/blogs"
+                to="/dashboard/blog"
                 className="bg-green-500 hover:bg-green-600 active:scale-90 text-white px-6 py-3 rounded-md font-medium transition"
               >
                 Manage Blogs
