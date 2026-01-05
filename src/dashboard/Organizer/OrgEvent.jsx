@@ -62,7 +62,7 @@ const OrgEvent = () => {
                         onClick={() => setStatus(tab)}
                         className={`px-4 py-2 rounded-lg text-sm capitalize ${status === tab
                             ? "bg-orange-600 text-white"
-                            : "bg-gray-200 dark:bg-zinc-800"
+                            : "bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color)"
                             }`}
                     >
                         {tab}

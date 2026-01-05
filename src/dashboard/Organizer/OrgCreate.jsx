@@ -115,7 +115,7 @@ const CreateEvent = () => {
         status: "pending", // ✅ Pending admin approval
         ticketSold: 0,
         accountNumber,
-        adminFee: 800,
+        adminFee: 8,
         bankName,
         bankCode,
         createdAt: new Date().toISOString(),

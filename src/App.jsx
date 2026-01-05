@@ -32,6 +32,7 @@ import OrgCreate from "./dashboard/Organizer/OrgCreate";
 import OrgWallet from "./dashboard/Organizer/OrgWallet";
 import OrgEvent from "./dashboard/Organizer/OrgEvent";
 import Dashblog from "./dashboard/Admin/Dashblog";
+import AdminWallet from "./dashboard/Admin/AdminWallet";
 
 
 
@@ -243,6 +244,8 @@ const App = () => {
 
         {/* Analytics/Tracking */}
         <Route path="tracking" element={<Tracking currentUser={currentUser} />} />
+
+        <Route path="wallet" element={<AdminWallet currentUser={currentUser} />} />
 
         {/*Event in dashboard */}
         <Route path="events" element={<Dashevents events={events} setEvents={setEvents} currentUser={currentUser} />} />

@@ -2,6 +2,7 @@ import { collection, getDocs, updateDoc, doc } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { db } from "../firebase/firebase";
 import { FaEllipsisV } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const Tracking = () => {
   const [events, setEvents] = useState([]);
@@ -62,7 +63,10 @@ const Tracking = () => {
   };
 
   return (
-    <div className="flex items-center justify-center w-full">
+    <div className="flex flex-col items-center justify-center w-full">
+      <div className="flex justify-end w-full max-w-6xl px-4">
+        <Link to="/dashboard/wallet" className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg">Wallet</Link>
+      </div>
       <div className="flex flex-col items-center justify-center w-full lg:w-2/3 p-4   rounded-lg shadow">
         <h1 className="text-2xl  font-bold mb-6">
           📊 Event Analytics

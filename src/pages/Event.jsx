@@ -449,7 +449,7 @@ const Event = ({ currentUser, events, setEvents }) => {
                       <p key={index}>
                         <span className="text-orange-500 text-lg font-semibold">
                           {priceOption.currency} {" "}
-                          {Number(priceOption.amount) + ((1.5 / 100) * Number(priceOption.amount) + 100)}
+                          {Number(priceOption.amount)}
                         </span>
                       </p>
                     ))
