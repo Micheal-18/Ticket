@@ -3,19 +3,15 @@ import { db } from "../firebase/firebase";
 import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
 import { FaCalendar, FaCaretDown, FaCaretUp, FaCircle, FaClock, FaLocationArrow } from "react-icons/fa6";
 import { useAdmin } from "../hooks/useAdmin";
-import { FiX } from "react-icons/fi";
 import walkGif from "../assets/dog.gif";
-import TicketModal from "./TicketModal";
 import EditModal from "../components/EditModal";
 import DeleteModal from "../components/DeleteModal";
 import { formatEventStatus } from "../utils/formatEventRange";
 import naijaStateLocalGov from "naija-state-local-government";
-import { FaSearch } from 'react-icons/fa';
 import SearchModal from "../components/SearchModal";
 import { Link } from "react-router-dom";
 import OptimizedImage from "../components/OptimizedImage";
 import DatePicker from "react-datepicker";
-import { FaEllipsisV } from 'react-icons/fa'
 import { RiStarFill } from "react-icons/ri";
 
 
@@ -63,7 +59,10 @@ const Event = ({ currentUser, events, setEvents }) => {
   };
 
 
-  const highlightedEvents = events.filter(e => e.highlighted);
+  const highlightedEvents = events.filter(
+    e => e.highlighted && e.status === "approved"
+  );
+
 
 
   const states = naijaStateLocalGov.states();
@@ -77,7 +76,15 @@ const Event = ({ currentUser, events, setEvents }) => {
           id: doc.id,
           ...doc.data(),
         }));
-        setEvents(eventsData);
+
+        const isAdmin = currentUser?.isAdmin === true;
+
+        const visibleEvents = isAdmin
+          ? eventsData
+          : eventsData.filter(event => event.status === "approved");
+
+        setEvents(visibleEvents);
+
       } catch (error) {
         console.error("Error fetching events:", error);
       }
@@ -189,9 +196,9 @@ const Event = ({ currentUser, events, setEvents }) => {
             <h1 className="font-bold text-2xl md:text-4xl">
               Find Events:
             </h1>
-            <SearchModal 
-            selectedEvent={selectedEvent}
-            setSelectedEvent={setSelectedEvent}
+            <SearchModal
+              selectedEvent={selectedEvent}
+              setSelectedEvent={setSelectedEvent}
             />
           </div>
         </div>

@@ -4,20 +4,21 @@ import create from "../assets/create.png"
 import event from "../assets/event.png"
 import { FaCalendar, FaLocationArrow } from 'react-icons/fa6'
 import walkGif from "../assets/dog.gif"
-import { collection, getDocs } from 'firebase/firestore'
+import { collection, getDocs, query, where, orderBy, } from "firebase/firestore";
+
 import { db } from '../firebase/firebase'
 import { FaEllipsisV } from 'react-icons/fa'
 import OptimizedImage from '../components/OptimizedImage'
 import Spinner from '../components/Spinner'
 import { Link } from 'react-router-dom'
 
-const Home = () => {
+const Home = ({currentUser}) => {
   const [events, setEvents] = useState([]);
   const [blog, setBlog] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
 
-  const categories = [ "Arts",
-    "Business", "Education", "Entertainment", "Food", "Health", "Music", "Networking", "Sports", "Technology", 
+  const categories = ["Arts",
+    "Business", "Education", "Entertainment", "Food", "Health", "Music", "Networking", "Sports", "Technology",
     "Workshops"
   ];
 
@@ -30,19 +31,33 @@ const Home = () => {
           id: doc.id,
           ...doc.data(),
         }));
-        setEvents(eventsData);
+
+        const isAdmin = currentUser?.isAdmin === true;
+
+        const visibleEvents = isAdmin
+          ? eventsData
+          : eventsData.filter(event => event.status === "approved");
+
+        setEvents(visibleEvents);
+
       } catch (error) {
         console.error("Error fetching events:", error);
       }
     };
     fetchEvents();
-  }, []);
+  }, [setEvents]);
 
   // ✅ Fetch Blogs
   useEffect(() => {
-    const fetchBlog = async () => {
+    const fetchBlogs = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, "blogs"));
+        // Fetch only approved blogs
+        const q = query(
+          collection(db, "blogs"),
+          where("status", "==", "approved"),
+          orderBy("createdAt", "desc")
+        );
+        const querySnapshot = await getDocs(q);
         const blogsData = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
@@ -52,8 +67,8 @@ const Home = () => {
         console.error("Error fetching blogs:", error);
       }
     };
-    fetchBlog();
-  }, []);
+    fetchBlogs();
+  }, [setBlog]);
 
   // ✅ Category Filtering (safe)
   const filteredEvents =
@@ -61,10 +76,10 @@ const Home = () => {
       ? events
       : events.filter((event) => event?.category === selectedCategory);
 
- const filteredBlogs =
-  selectedCategory === "All"
-    ? blog
-    : blog.filter(
+  const filteredBlogs =
+    selectedCategory === "All"
+      ? blog
+      : blog.filter(
         (b) =>
           b?.content?.toLowerCase().includes(selectedCategory.toLowerCase()) ||
           b?.title?.toLowerCase().includes(selectedCategory.toLowerCase()) ||
@@ -113,8 +128,8 @@ const Home = () => {
             <button
               onClick={() => setSelectedCategory("All")}
               className={`p-4 uppercase rounded-full ${selectedCategory === "All"
-                  ? 'bg-[#333333] text-[#eeeeee]'
-                  : 'bg-[#eeeeee] text-[#333333]'
+                ? 'bg-[#333333] text-[#eeeeee]'
+                : 'bg-[#eeeeee] text-[#333333]'
                 }`}
             >
               All
@@ -124,8 +139,8 @@ const Home = () => {
                 key={cate}
                 onClick={() => setSelectedCategory(cate)}
                 className={`p-4 flex items-center uppercase rounded-full ${selectedCategory === cate
-                    ? 'bg-[#333333] text-[#eeeeee]'
-                    : 'bg-[#eeeeee] text-[#333333]'
+                  ? 'bg-[#333333] text-[#eeeeee]'
+                  : 'bg-[#eeeeee] text-[#333333]'
                   }`}
               >
                 {cate}
@@ -154,10 +169,13 @@ const Home = () => {
                   <div className='space-y-2 mt-2'>
                     <h1 className='font-bold text-gray-700 uppercase text-2xl w-[100px] truncate lg:w-[250px] '>{event.name || "Untitled Event"}</h1>
                     <p className='text-xs text-gray-500 flex items-center gap-2'>
-                      <FaCalendar />
-                      {event?.date?.seconds
-                        ? new Date(event.date.seconds * 1000).toLocaleDateString()
-                        : 'Date TBA'}
+                      <FaCalendar />{" "}
+                      {new Date(event.date).toLocaleDateString("en-US", {
+                        weekday: "short",
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
                     </p>
                     <p className='line-clamp-2 text-sm text-gray-600 flex items-center gap-2'>
                       <FaLocationArrow /> {event.location || "No location"}
@@ -213,40 +231,40 @@ const Home = () => {
         </div>
       </section>
 
-      <section  className='relative w-full min-h-screen bg-yellow-400  p-4 z-40'>
+      <section className='relative w-full min-h-screen bg-yellow-400  p-4 z-40'>
         <h1 className='uppercase md:text-6xl  text-5xl font-bold p-4'>Steps</h1>
-        <div data-aos="fade-out"  className='flex flex-col space-y-6 justify-center items-center mx-auto w-full max-w-6xl px-4'>
-            <div data-aos="fade-up"  className='flex lg:flex-row flex-col  lg:justify-between items-center w-full  bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) flex-1 gap-10 relative py-10 px-8   rounded-3xl'>
-              <div className='space-y-4 flex flex-col justify-center items-center'>
-                <h1 className='uppercase text-center  md:text-6xl text-4xl font-bold mt-4'>Register</h1>
+        <div data-aos="fade-out" className='flex flex-col space-y-6 justify-center items-center mx-auto w-full max-w-6xl px-4'>
+          <div data-aos="fade-up" className='flex lg:flex-row flex-col  lg:justify-between items-center w-full  bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) flex-1 gap-10 relative py-10 px-8   rounded-3xl'>
+            <div className='space-y-4 flex flex-col justify-center items-center'>
+              <h1 className='uppercase text-center  md:text-6xl text-4xl font-bold mt-4'>Register</h1>
               <p className='md:text-lg text-sm text-center max-w-2xl mt-2'>Join airticks.event today and unlock a world of unforgettable experiences. Create your account now to discover, book, and attend the best events around you!</p>
-              </div>
-
-              <div className='rounded-xl overflow-hidden'>
-                <img src={register} className='object-cover h-50 w-80 hover:scale-105 duration-500 rounded-2xl' />
-              </div>
             </div>
-            <div data-aos="fade-up"  className='flex lg:flex-row flex-col  lg:justify-between items-center w-full  bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) flex-1 gap-10 relative py-10 px-8   rounded-3xl'>
-              <div className='space-y-4 flex flex-col justify-center items-center'>
-                <h1 className='uppercase text-center  md:text-6xl text-4xl font-bold mt-4'>Create Events</h1>
+
+            <div className='rounded-xl overflow-hidden'>
+              <img src={register} className='object-cover h-50 w-80 hover:scale-105 duration-500 rounded-2xl' />
+            </div>
+          </div>
+          <div data-aos="fade-up" className='flex lg:flex-row flex-col  lg:justify-between items-center w-full  bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) flex-1 gap-10 relative py-10 px-8   rounded-3xl'>
+            <div className='space-y-4 flex flex-col justify-center items-center'>
+              <h1 className='uppercase text-center  md:text-6xl text-4xl font-bold mt-4'>Create Events</h1>
               <p className=' md:text-lg text-sm text-center max-w-2xl mt-2'>Are you an event organizer? Create and manage your events effortlessly with our user-friendly platform. Reach a wider audience and boost your event's success!</p>
-              </div>
-
-              <div className='rounded-xl overflow-hidden'>
-                <img src={create} className='object-cover h-50 w-80 hover:scale-105 duration-500 rounded-2xl' />
-              </div>
             </div>
-            <div data-aos="fade-up"  className='flex lg:flex-row flex-col  lg:justify-between items-center w-full  bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) flex-1 gap-10 relative py-10 px-8   rounded-3xl'>
-              <div className='space-y-4 flex flex-col justify-center items-center'>
-                <h1 className='uppercase text-center   md:text-6xl text-4xl font-bold mt-4'>Upcoming Events</h1>
+
+            <div className='rounded-xl overflow-hidden'>
+              <img src={create} className='object-cover h-50 w-80 hover:scale-105 duration-500 rounded-2xl' />
+            </div>
+          </div>
+          <div data-aos="fade-up" className='flex lg:flex-row flex-col  lg:justify-between items-center w-full  bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) flex-1 gap-10 relative py-10 px-8   rounded-3xl'>
+            <div className='space-y-4 flex flex-col justify-center items-center'>
+              <h1 className='uppercase text-center   md:text-6xl text-4xl font-bold mt-4'>Upcoming Events</h1>
               <p className=' md:text-lg text-sm text-center max-w-2xl mt-2'>Explore our curated selection of upcoming events, from electrifying concerts to inspiring workshops. Find your next unforgettable experience here!</p>
-              </div>
-
-              <div className='rounded-xl overflow-hidden'>
-                <img src={event} className='object-cover h-50 w-80 hover:scale-105 duration-500 rounded-2xl' />
-              </div>
             </div>
-            
+
+            <div className='rounded-xl overflow-hidden'>
+              <img src={event} className='object-cover h-50 w-80 hover:scale-105 duration-500 rounded-2xl' />
+            </div>
+          </div>
+
         </div>
       </section>
 

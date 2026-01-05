@@ -5,13 +5,13 @@ import { db } from '../firebase/firebase';
 import LoadingScreen from '../components/LoadingScreen';
 
 const BlogDetail = () => {
-  const { id } = useParams(); // get the blog ID from the route
+  const { log } = useParams(); // get the blog log from the route
   const [blog, setBlog] = useState(null);
 
   useEffect(() => {
     const fetchBlog = async () => {
       try {
-        const docRef = doc(db, "blogs", id);
+        const docRef = doc(db, "blogs", log);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           setBlog(docSnap.data());
@@ -23,7 +23,7 @@ const BlogDetail = () => {
       }
     };
     fetchBlog();
-  }, [id]);
+  }, [log]);
 
   if (!blog) {
     return <LoadingScreen />;

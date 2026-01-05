@@ -16,6 +16,7 @@ const TicketModal = ({ currentUser }) => {
   const [guestName, setGuestName] = useState("");
   const [guestNumber, setGuestNumber] = useState();
   const [loading, setLoading] = useState(true);
+  const [ticketQty, setTicketQty] = useState({});
 
   // 🧭 Fetch event data
   const number = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
@@ -124,7 +125,7 @@ const TicketModal = ({ currentUser }) => {
             <div className="flex justify-between items-center border-b space-y-2 border-gray-300 w-full">
               <div>
                 <h1 className="uppercase font-semibold text-xl">Organized by</h1>
-              <p className="text-gray-400 mb-2">{selectedEvent?.organizer}</p>
+                <p className="text-gray-400 mb-2">{selectedEvent?.organizer}</p>
               </div>
               {currentUser?.uid !== selectedEvent?.ownerId && (
                 <FollowButton
@@ -154,14 +155,14 @@ const TicketModal = ({ currentUser }) => {
                   <div key={index} className="flex flex-col gap-2 mb-4">
                     <div className="flex items-center gap-2">
                       <select
-                        value={ticket.num || 0}
-                        onChange={(e) => {
-                          const newNum = Number(e.target.value);
-                          const updatedPrices = selectedEvent.price.map((t, i) =>
-                            i === index ? { ...t, num: newNum } : t
-                          );
-                          setSelectedEvent({ ...selectedEvent, price: updatedPrices });
-                        }}
+                        value={ticketQty[ticket.label] || 0}
+                        onChange={(e) =>
+                          setTicketQty({
+                            ...ticketQty,
+                            [ticket.label]: Number(e.target.value),
+                          })
+                        }
+
                         className="p-2 border rounded-lg"
                       >
                         {number.map((number, num) => (
@@ -172,21 +173,25 @@ const TicketModal = ({ currentUser }) => {
                       </select>
 
                       <button
-                        onClick={() => setSelectedTicket(ticket)}
+                        onClick={() =>
+                          setSelectedTicket({
+                            ...ticket,
+                            num: ticketQty[ticket.label] || 0,
+                          })
+                        }
                         className="flex-1 flex lg:flex-row flex-col space-x-4 text-left p-2 border rounded-lg  active:scale-95 transition"
                       >
                         <span>
                           {ticket.label}: {ticket.currency}
-                        {ticket.amount} × {ticket.num || 0} ={" "}
-                        <strong>
-                          {ticket.currency}
-                          {ticket.amount * (ticket.num || 0) + ((1.5 / 100) * ticket.amount * (ticket.num || 0) + 100 * (ticket.num || 0))}
-                        </strong>
+                          {ticket.amount} × {ticketQty[ticket.label] || 0} ={" "}
+                          <strong>
+                            {ticket.currency}
+                            {Number(ticket.amount) * Number(ticketQty[ticket.label] || 0)}
+
+                          </strong>
                         </span>
 
-                        <p>
-                          includes fee of 1.5% + 100 Paystack fee = {ticket.currency}{((1.5 / 100) * ticket.amount * (ticket.num || 0) + 100 * (ticket.num || 0))}
-                        </p>
+
                       </button>
 
 

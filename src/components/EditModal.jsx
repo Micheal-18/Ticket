@@ -139,9 +139,9 @@ const EditModal = ({ currentUser, editEvent, setEditEvent, setIsEditing, events,
 
   // --- JSX --------------------------------------------------------------------
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-[9999]">
+    <div className="fixed left-0 lg:left-20 lg:top-8 top-0 mb-10  w-full h-full bg-black/40 backdrop-blur-sm flex justify-center items-center z-[9999]">
       <div
-        className="relative flex flex-col bg-[#eeeeee] text-[#333333] space-y-4 p-6 rounded-lg shadow-lg w-[90%] md:w-[70%] max-h-[90vh] overflow-y-auto"
+        className="relative flex flex-col bg-[#eeeeee] text-[#333333] space-y-4 p-6 rounded-lg shadow-lg w-[70%] md:w-[50%] max-h-[70vh] custom-scrollbar overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <button

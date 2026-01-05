@@ -23,9 +23,15 @@ import WriteBlog from "./pages/WriteBlog";
 import BlogDetail from "./pages/BlogDetail";
 import Trending from "./pages/Trending";
 import TicketModal from "./pages/TicketModal";
-import DashboardLayout from "./dashboard/DashboardLayout";
-import DashboardHome from "./dashboard/DashboardHome";
-import Dashevents from "./pages/Dashevents";
+import DashboardLayout from "./dashboard/Admin/DashboardLayout";
+import DashboardHome from "./dashboard/Admin/DashboardHome";
+import Dashevents from "./dashboard/Admin/Dashevents";
+import OrganizationLayout from "./dashboard/Organizer/OrganizationLayout";
+import Organization from "./dashboard/Organizer/Organization";
+import OrgCreate from "./dashboard/Organizer/OrgCreate";
+import OrgWallet from "./dashboard/Organizer/OrgWallet";
+import OrgEvent from "./dashboard/Organizer/OrgEvent";
+import Dashblog from "./dashboard/Admin/Dashblog";
 
 
 
@@ -102,7 +108,7 @@ const App = () => {
           ) : (
 
             <Layout currentUser={currentUser}>
-              <Home />
+              <Home currentUser={currentUser}/>
             </Layout>
 
           )
@@ -116,18 +122,28 @@ const App = () => {
       />
 
       {/* Register route */}
-      <Route
-        path="/register"
-        element={
-          currentUser ? (
-            <Navigate to="/" replace />
-          ) : (
-            <Layout currentUser={currentUser}>
-              <Register step={step} setStep={setStep} />
-            </Layout>
-          )
-        }
-      />
+      {/* Register route */}
+<Route
+  path="/register"
+  element={
+    // If user is logged in
+    currentUser ? (
+      // Organizer -> redirect to org dashboard
+      currentUser.accountType === "organization" ? (
+        <Navigate to="/dashboard/organization" replace />
+      ) : (
+        // Regular user -> redirect to homepage
+        <Navigate to="/" replace />
+      )
+    ) : (
+      // Not logged in -> show Register page
+      <Layout currentUser={currentUser}>
+        <Register step={step} setStep={setStep} />
+      </Layout>
+    )
+  }
+/>
+
 
       <Route path="/verify" element={<Layout currentUser={currentUser}><Verify email={currentUser?.email} step="verify"
         setStep={() => { }}
@@ -193,7 +209,7 @@ const App = () => {
           <WriteBlog />
         </Layout>
       } />
-      <Route path="/blogs/:id" element={
+      <Route path="/blogs/:log" element={
         <Layout currentUser={currentUser}>
           <BlogDetail />
         </Layout>
@@ -217,6 +233,8 @@ const App = () => {
 
         <Route index element={<DashboardHome currentUser={currentUser} />} />
 
+        <Route path="blog" element={<Dashblog currentUser={currentUser} />} />
+
         {/* Create Event */}
         <Route path="create" element={<CreateEvent currentUser={currentUser} />} />
 
@@ -228,6 +246,19 @@ const App = () => {
 
         {/*Event in dashboard */}
         <Route path="events" element={<Dashevents events={events} setEvents={setEvents} currentUser={currentUser} />} />
+      </Route>
+
+      {/* Organization Dashboard */}
+      <Route path="/dashboard/organization" element={<OrganizationLayout currentUser={currentUser} />}> 
+
+      <Route index element={<Organization currentUser={currentUser} />} />   
+        
+      <Route path="create" element={<OrgCreate currentUser={currentUser} />} />
+      <Route path="wallet" element={<OrgWallet currentUser={currentUser} />} />
+      <Route path="scanner" element={<TicketScanner currentUser={currentUser} />} />
+      <Route path="events" element={<OrgEvent currentUser={currentUser} />} />
+      <Route path="event/:slug" element={<TicketModal currentUser={currentUser} /> } />
+      <Route path="blog" element={<WriteBlog />} />
       </Route>
 
 

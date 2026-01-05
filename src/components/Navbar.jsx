@@ -79,6 +79,10 @@ const Navbar = ({ currentUser }) => {
                       <li onClick={() => navigate("/dashboard")} className="flex items-center gap-2 px-4 py-2 text-orange-600 hover:bg-gray-100 cursor-pointer"><FaUserPlus />Dashboard</li>
                     )}
 
+                    {currentUser?.accountType === "organization" && (
+                      <li onClick={() => navigate("/dashboard/organization")} className="flex items-center gap-2 px-4 py-2 text-orange-600 hover:bg-gray-100 cursor-pointer"><RiDashboard2Line />Dashboard</li>
+                    )}
+
                     <li
                       onClick={handleLogout}
                       className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-gray-100 cursor-pointer"
@@ -114,7 +118,7 @@ const Navbar = ({ currentUser }) => {
       </div>
 
 
-      <div onClick={handleOpen} className={`lg:hidden fixed top-30 px-6 left-0 z-40 h-full w-[60%] bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) opacity-90 custom-scrollbar shadow-md transform transition-all duration-1000 ease-in-out ${open ? "translate-x-0 opacity-100" : "-translate-x-full opacity-0"
+      <div onClick={handleOpen} className={`lg:hidden fixed backdrop-lg top-24 px-6 left-0 z-40 h-full w-[60%] bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) opacity-90 custom-scrollbar shadow-md transform transition-all duration-1000 ease-in-out ${open ? "translate-x-0 opacity-90" : "-translate-x-full opacity-0"
         }`}>
         <div className='p-6 flex flex-col gap-8 '>
           {navItems.map((item, idx) => (
@@ -124,7 +128,6 @@ const Navbar = ({ currentUser }) => {
           ))}
 
           <Darkmode />
-
           {!currentUser ? (
             <a
               href="/Register"
@@ -158,6 +161,15 @@ const Navbar = ({ currentUser }) => {
                   className="px-4 py-2 bg-(--bg-color) dark:bg-(--bg-color)  rounded-md active:scale-90 hover:bg-gray-200 dark:hover:bg-gray-400"
                 >
                   Dashboard
+                </button>
+              )}
+
+              {currentUser?.accountType === "organization" && (
+                <button
+                  onClick={() => navigate("/dashboard/organization")}
+                  className="px-4 py-2 bg-(--bg-color) dark:bg-(--bg-color)  rounded-md active:scale-90 hover:bg-gray-200 dark:hover:bg-gray-400"
+                >
+                 Dashboard
                 </button>
               )}
 

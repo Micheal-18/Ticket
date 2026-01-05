@@ -73,7 +73,7 @@ const Trending = ({ currentUser, events, setEvents }) => {
                                         />
                                     </div>
                                     <div className="absolute p-4 top-1/2 flex-1 flex flex-col">
-                                        <h3 className="text-3xl adaptive-text text-gray-600 font-bold line-clamp-2 mb-2">{event.name}</h3>
+                                        <h3 className="text-3xl adaptive-text text-gray-600 font-bold line-clamp-2 mb-2">{event.namezz}</h3>
                                         <p className="text-gray-600 adaptive-text text-sm line-clamp-2 mb-3">{event.description}</p>
                                         <p className="text-sm adaptive-text text-gray-400 mb-4">{event.location}</p>
                                     </div>

@@ -1,126 +1,114 @@
 import React, { useRef, useState } from "react";
-import { addDoc, collection, doc, serverTimestamp, setDoc } from "firebase/firestore";
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import { db, auth } from "../firebase/firebase";
 import { uploadToCloudinary } from "../utils/cloudinaryUpload";
 
-
 const WriteBlog = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [content, setContent] = useState("");
-  const [image, setImage] = useState("");
-    const [photo, setPhoto] = useState(null);
-     const fileInputRef = useRef(null);
-
+  const [photo, setPhoto] = useState(null);
   const [author, setAuthor] = useState("");
+  const fileInputRef = useRef(null);
+  const quillRef = useRef(null);
   const navigate = useNavigate();
 
-   const handlePhotoUpload = (e) => {
-    setPhoto(e.target.files[0]);
-  };
+  // Handle image selection for blog cover photo
+  const handlePhotoUpload = (e) => setPhoto(e.target.files[0]);
 
+  // Quill image handler
   const imageHandler = () => {
-  const input = document.createElement("input");
-  input.setAttribute("type", "file");
-  input.setAttribute("accept", "image/*");
-  input.click();
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.click();
 
-  input.onchange = async () => {
-    const file = input.files[0];
-    if (file) {
-      try {
-        // Upload to Cloudinary
-        const url = await uploadToCloudinary(file);
-
-        // Insert uploaded image URL into the editor
-        const quill = quillRef.current.getEditor();
-        const range = quill.getSelection();
-        quill.insertEmbed(range.index, "image", url);
-      } catch (err) {
-        console.error("Image upload failed:", err);
-        alert("Image upload failed. Try again.");
+    input.onchange = async () => {
+      const file = input.files[0];
+      if (file) {
+        try {
+          const url = await uploadToCloudinary(file);
+          const quill = quillRef.current.getEditor();
+          const range = quill.getSelection();
+          quill.insertEmbed(range.index, "image", url);
+        } catch (err) {
+          console.error("Image upload failed:", err);
+          alert("Image upload failed. Try again.");
+        }
       }
-    }
+    };
   };
-};
-  const quillRef = useRef(null);
 
   const modules = {
     toolbar: {
-    container: [
-      [{ header: [1, 2, false] }],
-      ["bold", "italic", "underline", "strike"],
-      [{ list: "ordered" }, { list: "bullet" }],
-      ["link", "image"], // image button stays
-      ["clean"],
-    ],
-    handlers: {
-      image: imageHandler, // override default image behavior
+      container: [
+        [{ header: [1, 2, false] }],
+        ["bold", "italic", "underline", "strike"],
+        [{ list: "ordered" }, { list: "bullet" }],
+        ["link", "image"],
+        ["clean"],
+      ],
+      handlers: { image: imageHandler },
     },
-  },
   };
 
   const formats = [
-  "header",
-  "bold", "italic", "underline", "strike",
-  "list",
-  "link", "image"
-];
-
-
-
+    "header", "bold", "italic", "underline", "strike",
+    "list", "link", "image"
+  ];
 
   const handleSubmit = async (e) => {
-    const user = auth.currentUser;
-        if (!user) {
-          alert("You must be logged in to create an event.");
-          return;
-        }
     e.preventDefault();
+    const user = auth.currentUser;
+    if (!user) {
+      alert("You must be logged in to create a blog.");
+      return;
+    }
     if (!title.trim() || !description.trim() || !content.trim() || !author.trim()) {
       alert("Please fill all fields");
       return;
     }
-  
-     const blogId = `${Date.now()}_${user.uid}`;
-          const blogRef = doc(db, "blogs", blogId);
 
+    const blogId = `${Date.now()}_${user.uid}`;
+    const blogRef = doc(db, "blogs", blogId);
     let photoURL = "";
-    
-          // If photo is uploaded
-          if (photo) {
-            try {
-              photoURL = await uploadToCloudinary(photo);
-            } catch (err) {
-              alert("Photo upload failed. Please try again.");
-              return;
-            }
-          }
+
+    if (photo) {
+      try { photoURL = await uploadToCloudinary(photo); } 
+      catch { alert("Photo upload failed. Please try again."); return; }
+    }
+
+    const log = `${title.toLowerCase().trim().replace(/\s+/g, "-").replace(/[^\w-]+/g, "")}-${Date.now()}`;
 
     try {
+      // Save blog as pending (admin approval required)
       await setDoc(blogRef, {
         title,
         description,
         content,
         photoURL,
-        published: `By ${author} • ${new Date().toDateString()}`,
+        author,
+        log,
+        userId: user.uid,
         createdAt: serverTimestamp(),
-        userId: user.uid, 
+        status: "pending",   // pending approval
+        approved: false,
+        publishedAt: null,
       });
-      alert("Blog posted successfully!");
-      setPhoto(null);
-      setTitle("");
-      setDescription("");
-      setContent("");
-      setImage("");
-      setAuthor("");
+
+      alert("Blog submitted! It will be published once approved by an admin.");
+      
+      // Reset form
+      setTitle(""); setDescription(""); setContent(""); setPhoto(null); setAuthor("");
       if (fileInputRef.current) fileInputRef.current.value = "";
-      navigate("/"); // redirect back to blog list
-    } catch (error) {
-      console.error("Error adding blog: ", error);
+      navigate("/"); // redirect to home or blog list
+
+    } catch (err) {
+      console.error("Error creating blog:", err);
+      alert("Failed to submit blog. Try again.");
     }
   };
 
@@ -135,7 +123,6 @@ const WriteBlog = () => {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
-
         <input
           type="text"
           placeholder="Short Description"
@@ -143,17 +130,13 @@ const WriteBlog = () => {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
-
-        {/* <input
-          type="text"
-          placeholder="Image URL"
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          onChange={handlePhotoUpload}
           className="w-full p-3 border rounded-lg"
-          value={image}
-          onChange={(e) => setImage(e.target.value)}
-        /> */}   
-         
-          <input ref={fileInputRef} onChange={handlePhotoUpload} type='file' name='photo' accept='image/*' className='border w-[100%] p-3 rounded-lg' />
-
+        />
         <input
           type="text"
           placeholder="Author Name"
@@ -161,24 +144,21 @@ const WriteBlog = () => {
           value={author}
           onChange={(e) => setAuthor(e.target.value)}
         />
-
         <ReactQuill
-        ref={quillRef}
+          ref={quillRef}
           theme="snow"
           value={content}
           onChange={setContent}
           modules={modules}
           formats={formats}
           placeholder="Write your full blog content here..."
-          className="rounded-lg "
+          className="rounded-lg"
         />
-        
-
         <button
           type="submit"
-          className="w-full bg-orange-500 cursor-pointer active:scale-90 text-white py-3 rounded-lg hover:bg-orange-600"
+          className="w-full bg-orange-500 text-white py-3 rounded-lg active:scale-90 hover:bg-orange-600"
         >
-          Publish Blog
+          Submit for Approval
         </button>
       </form>
     </section>

@@ -165,6 +165,8 @@ const Register = ({ step, setStep }) => {
         country,
         phone,
         orgName: selected === "organization" ? orgName : null,
+        followersCount: 0,
+        following: [],
         verified: step === "verify",
         createdAt: new Date().toISOString(),
       }).catch((error) => {
@@ -334,7 +336,7 @@ const Register = ({ step, setStep }) => {
             />
 
             {/* Country dropdown */}
-            <select name='country' className='p-3 border bg-[#333333] rounded-lg' required>
+            <select name='country' className='p-3 border rounded-lg' required>
               <option value="">Select Country</option>
               {countries.map((c) => (
                 <option key={c.code} value={c.name}>

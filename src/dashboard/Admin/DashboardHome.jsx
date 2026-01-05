@@ -31,9 +31,25 @@ const DashboardHome = () => {
     });
     return monthOrder.map(m => ({ name: m, registrations: counts[m] }));
   })();
+  console.table(recentActivities);
+
+    /* ---------------- FOLLOWERS (READ-ONLY) ---------------- */
+  const followersMap = {};
+  recentActivities
+    .filter(a => a.type === "ticket" && a.user)
+    .forEach(a => {
+      followersMap[a.user] = {
+        name: a.user,
+        lastActivity: a.date,
+      };
+    });
+
+  const followers = Object.values(followersMap);
+
+
     
   return (
-    <main className="flex-1 py-4 overflow-y-auto">
+    <main className="flex-1 py-4 custom-scrollbar">
               {/* Summary Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 md:gap-4 gap-2 mb-8">
                 <div className=" p-4 rounded-2xl shadow">
@@ -41,9 +57,9 @@ const DashboardHome = () => {
                   <p className="text-3xl font-semibold mt-2">{events.length}</p>
                 </div>
                 <div className=" p-4 rounded-2xl shadow">
-                  <h2 className="text-gray-400">Upcoming Events</h2>
+                  <h2 className="text-gray-400">Followers</h2>
                   <span className="text-3xl font-semibold mt-2">
-                    {events.filter((e) => new Date(e.date) > new Date()).length}
+                    {followers.length}
                   </span>
                 </div>
                 {currentUser?.isAdmin && (
@@ -82,7 +98,7 @@ const DashboardHome = () => {
                 {/* Recent Activities Section */}
                 <div className="lg:px-4 px-0 py-6  rounded-2xl shadow mb-8">
                   <h2 className="text-xl font-semibold mb-4">Recent Activities</h2>
-                  <div className="space-y-4 max-h-96 custom-scrollbar overflow-y-auto">
+                  <div className="space-y-4 max-h-96 custom-scrollbar">
                     {recentActivities.map((activity, index) => (
                       <div key={index} className="flex items-start gap-3 border-b border-gray-700 pb-4">
                         <div className="text-orange-500 mt-1">
@@ -92,19 +108,19 @@ const DashboardHome = () => {
                         <div>
                           {activity.type === "event" && (
                             <>
-                              <h3 className="text-lg font-semibold">{activity.name} event added</h3>
-                              <p className="text-gray-400">{new Date(activity.date).toLocaleString()}</p>
+                              <h3 className="text-lg font-semibold">{activity?.name} event added</h3>
+                              <p className="text-gray-400">{new Date(activity?.date).toLocaleString()}</p>
                             </>
                           )}
                           {activity.type === "users" && (
                             <>
-                              <h3 className="text-lg font-semibold">{activity.users} registered for {activity.name}</h3>
-                              <p className="text-gray-400">{new Date(activity.date).toLocaleString()}</p>
+                              <h3 className="text-lg font-semibold">{activity?.name || "Unknown User"} registered for {activity?.account}</h3>
+                              <p className="text-gray-400">{new Date(activity?.date).toLocaleString()}</p>
                             </>
                           )}
                           {activity.type === "ticket" && (
                             <>
-                              <h3 className="text-lg font-semibold">{activity.user} bought ticket for {activity.name}</h3>
+                              <h3 className="text-lg font-semibold">{activity?.user} bought ticket for {activity?.ticket} for {activity?.name} events</h3>
                               <p className="text-gray-400">{new Date(activity.date).toLocaleString()}</p>
                             </>
                           )}
@@ -119,7 +135,7 @@ const DashboardHome = () => {
               {/*Upcoming Events Section */}
               <div className="lg:px-4 px-0 py-6 rounded-2xl shadow mb-8">
                 <h2 className="text-xl font-semibold mb-4">Upcoming Events</h2>
-                <div className="space-y-4 max-h-96 overflow-y-auto">
+                <div className="space-y-4 max-h-96 custom-scrollbar ">
                   {events
                     .filter((e) => new Date(e.date) > new Date())
                     .sort((a, b) => new Date(a.date) - new Date(b.date)).map((event) => (

@@ -11,43 +11,43 @@ const FollowButton = ({ currentUser, ownerId }) => {
     setIsFollowing(currentUser.following?.includes(ownerId));
   }, [currentUser, ownerId]);
 
-  const toggleFollow = async () => {
-    if (!currentUser) return;
-    setLoading(true);
-    console.log({
-  currentUser: currentUser.uid,
-  ownerId,
-  isFollowing
-});
+const toggleFollow = async () => {
+  if (!currentUser || currentUser.uid === ownerId) return;
 
+  setLoading(true);
 
-    const userRef = doc(db, "users", currentUser.uid);
-    const organizerRef = doc(db, "users", ownerId);
+  const userRef = doc(db, "users", currentUser.uid);
+  const organizerRef = doc(db, "users", ownerId);
 
-    try {
-      if (isFollowing) {
-        await updateDoc(userRef, {
-          following: arrayRemove(ownerId),
-        });
-        await updateDoc(organizerRef, {
-          followersCount: increment(-1),
-        });
-        setIsFollowing(false);
-      } else {
-        await updateDoc(userRef, {
-          following: arrayUnion(ownerId),
-        });
-        await updateDoc(organizerRef, {
-          followersCount: increment(1),
-        });
-        setIsFollowing(true);
-      }
-    } catch (err) {
-      console.error("Follow error:", err);
-    } finally {
-      setLoading(false);
+  try {
+    if (isFollowing) {
+      await updateDoc(userRef, {
+        following: arrayRemove(ownerId),
+      });
+      await updateDoc(organizerRef, {
+        followersCount: increment(-1),
+      });
+      setIsFollowing(false);
+    } else {
+      await updateDoc(userRef, {
+        following: arrayUnion(ownerId),
+      });
+      await updateDoc(organizerRef, {
+        followersCount: increment(1),
+      });
+      setIsFollowing(true);
     }
-  };
+    console.log(
+      isFollowing,
+    );
+    
+  } catch (err) {
+    console.error("Follow error:", err);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <button

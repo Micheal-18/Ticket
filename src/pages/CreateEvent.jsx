@@ -143,7 +143,7 @@ const CreateEvent = () => {
       setDescription("");
       setLocation("");
       setOrganizer("");
-      setPrice("");
+      setPrice([]);
       setPhoto(null);
       setDate(new Date());
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -157,7 +157,7 @@ const CreateEvent = () => {
 
   return (
     <section className='w-full h-screen py-4 flex flex-col space-y-6 custom-scrollbar'>
-      <div className=' border-b p-4 border-gray-600 flex space-x-4'>
+      <div className=' flex space-x-4'>
         <RiArrowLeftFill onClick={() => navigate("/dashboard")} className='cursor-pointer text-xl text-orange-600'/>
         <h1 className='uppercase font-semibold lg:text-5xl text-2xl'>What are you creating</h1>
       </div>
@@ -332,7 +332,7 @@ const CreateEvent = () => {
               <select
                 value={p.currency}
                 onChange={(e) => handlePriceChange(p.id, "currency", e.target.value)}
-                className="p-2 border bg-gray-700 rounded-lg"
+                className="p-2 border  rounded-lg"
               >
                 {currencies.map((cur, idx) => (
                   <option key={idx} value={cur}>
