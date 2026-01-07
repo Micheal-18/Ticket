@@ -7,13 +7,42 @@ import {
   orderBy
 } from "firebase/firestore";
 import { FaWallet, FaMoneyBillWave, FaArrowDown } from "react-icons/fa";
-import { db } from "../../firebase/firebase";
+import { auth, db } from "../../firebase/firebase";
+import AdminRevenueChart from "./component/AdminRevenueChart";
+import AdminWithdraw from "./component/AdminWithdraw";
+import WithdrawalHistory from "./component/WithdrawalHistory";
 
 const AdminWallet = () => {
   const [wallet, setWallet] = useState(null);
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [withdrawAmount, setWithdrawAmount] = useState(false);
+
+  const handleWithdraw = () => {
+    setWithdrawAmount(!withdrawAmount);
+  };
+
+  const refundTicket = async (reference) => {
+  if (!window.confirm("Refund this ticket?")) return;
+
+  const token = await auth.currentUser.getIdToken();
+
+  const res = await fetch("/api/admin/refund", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ reference }),
+  });
+
+  const data = await res.json();
+  if (!res.ok) return alert(data.error);
+
+  alert("Refund successful");
+};
+
 
   useEffect(() => {
     setLoading(true);
@@ -83,15 +112,28 @@ return (
           color="bg-blue-500"
         />
         <WalletCard
+          onClick={handleWithdraw}
           title="Cashout"
           value="Withdraw Funds"
           icon={<FaArrowDown />}
-          color="bg-orange-500"
+          color="bg-orange-500 cursor-pointer hover:bg-orange-600 transition-colors"
         />
       </div>
 
+      {withdrawAmount && (<AdminWithdraw balance={wallet.balance || 0} />)}
+
+      <AdminRevenueChart transactions={transactions} />
+
+      {/* <button
+  onClick={() => refundTicket(tx.reference)}
+  className=" bg-red-600 p-4 text-xs hover:underline"
+>
+  Refund
+</button> */}
+
+
       {/* TRANSACTIONS SECTION */}
-      <div className="bg-white dark:bg-zinc-900 rounded-xl shadow overflow-hidden">
+      <div className=" rounded-xl shadow overflow-hidden">
         <div className="p-4 border-b border-gray-100 dark:border-zinc-800">
           <h2 className="text-lg font-medium">Recent Transactions</h2>
         </div>
@@ -101,7 +143,7 @@ return (
         ) : (
           <>
             {/* MOBILE VIEW: Shown on small screens, hidden on md and up */}
-            <div className="block md:hidden divide-y divide-gray-100 dark:divide-zinc-800">
+            <div className="block md:hidden divide-y ">
               {transactions.map((tx) => (
                 <div key={tx.id} className="p-4 flex flex-col gap-2">
                   <div className="flex justify-between items-start">
@@ -121,6 +163,15 @@ return (
                       {tx.createdAt?.toDate ? tx.createdAt.toDate().toLocaleString() : ""}
                     </span>
                   </div>
+
+                  <div className="flex justify-end mt-2">
+  <button
+    onClick={() => refundTicket(tx.reference)}
+    className="text-red-600 text-xs font-semibold"
+  >
+    Refund
+  </button>
+</div>
                 </div>
               ))}
             </div>
@@ -128,17 +179,18 @@ return (
             {/* DESKTOP VIEW: Hidden on mobile, shown on md and up */}
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-gray-50 dark:bg-zinc-800/50 text-gray-500 text-xs uppercase">
+                <thead className=" text-gray-500 text-xs uppercase">
                   <tr>
                     <th className="py-3 px-4 text-left font-semibold">Organizer</th>
                     <th className="py-3 px-4 text-left font-semibold">Event</th>
                     <th className="py-3 px-4 text-right font-semibold">Platform Fee</th>
                     <th className="py-3 px-4 text-right font-semibold">Date</th>
+                    <th className="py-3 px-4 text-right font-semibold">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100 dark:divide-zinc-800">
+                <tbody className="divide-y ">
                   {transactions.map((tx) => (
-                    <tr key={tx.id} className="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors">
+                    <tr key={tx.id} className=" transition-colors">
                       <td className="py-4 px-4 max-w-[200px] truncate">{tx.orgName || tx.organizerId}</td>
                       <td className="py-4 px-4 max-w-[200px] truncate">{tx.eventName || tx.eventId}</td>
                       <td className="py-4 px-4 text-right font-semibold text-green-600">
@@ -147,6 +199,16 @@ return (
                       <td className="py-4 px-4 text-right text-xs text-gray-400">
                         {tx.createdAt?.toDate ? tx.createdAt.toDate().toLocaleDateString() : ""}
                       </td>
+
+                      <td className="py-4 px-4 text-right">
+  <button
+    onClick={() => refundTicket(tx.reference)}
+    className="text-red-600 text-xs font-semibold hover:underline"
+  >
+    Refund
+  </button>
+</td>
+
                     </tr>
                   ))}
                 </tbody>
@@ -155,6 +217,8 @@ return (
           </>
         )}
       </div>
+
+      <WithdrawalHistory />
     </div>
   );
 };
@@ -162,9 +226,12 @@ return (
 /* =========================
    WALLET CARD
 ========================= */
-const WalletCard = ({ title, value, icon, color }) => (
+const WalletCard = ({ title, value, icon, color, onClick }) => (
   <div
-    className={`${color} text-white rounded-xl p-4 sm:p-6 flex items-center justify-between shadow-md`}
+  onClick={onClick}
+    className={`${color} text-white rounded-xl p-4 sm:p-6 flex items-center justify-between shadow-md ${
+      onClick ? "cursor-pointer hover:opacity-90" : ""
+    }`}
   >
     <div className="flex-1 min-w-0">
       <p className="text-sm opacity-90 truncate">{title}</p>
