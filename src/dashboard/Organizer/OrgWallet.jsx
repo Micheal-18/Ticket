@@ -15,7 +15,7 @@ import OrgWithdrawHistory from "./component/OrgWithdrawHistory";
 
 // Components
 
-const OrgWallet = ({ currentUser }) => {
+const OrgWallet = ({ currentUser, events }) => {
   const [wallet, setWallet] = useState(null);
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -108,7 +108,7 @@ const OrgWallet = ({ currentUser }) => {
       {/* WITHDRAW FORM (TOGGLE) */}
       {showWithdraw && (
         <div className="animate-in fade-in slide-in-from-top-4 duration-300">
-          <OrgWithdraw balance={wallet?.balance || 0} />
+          <OrgWithdraw balance={wallet?.balance || 0} events={events} />
         </div>
       )}
 

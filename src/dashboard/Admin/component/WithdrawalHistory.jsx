@@ -5,30 +5,44 @@ const WithdrawalHistory = () => {
     const [history, setHistory] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchHistory = async () => {
-            const token = await auth.currentUser.getIdToken();
-            const res = await fetch("/api/withdrawals", {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            const data = await res.json();
-            setHistory(data);
-            setLoading(false);
-        };
-        fetchHistory();
-    }, []);
+useEffect(() => {
+  const fetchHistory = async () => {
+    try {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const token = await user.getIdToken();
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/withdrawals`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      const data = await res.json();
+      setHistory(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Failed to load withdrawal history", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchHistory();
+}, []);
+
 
     if (loading) return <p className="text-gray-500">Loading history...</p>;
 
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className=" rounded-xl shadow overflow-hidden">
             <div className="p-4 border-b border-gray-50">
-                <h3 className="font-semibold text-gray-700">Withdrawal History</h3>
+                <h3 className="font-semibold ">Withdrawal History</h3>
             </div>
             <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                     <thead>
-                        <tr className="bg-gray-50 text-xs uppercase text-gray-500 font-medium">
+                        <tr className="b text-xs uppercase text-gray-400 font-medium">
                             <th className="p-4">Date</th>
                             <th className="p-4">Amount</th>
                             <th className="p-4">Reference</th>

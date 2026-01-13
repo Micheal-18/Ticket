@@ -11,6 +11,7 @@ import { auth, db } from "../../firebase/firebase";
 import AdminRevenueChart from "./component/AdminRevenueChart";
 import AdminWithdraw from "./component/AdminWithdraw";
 import WithdrawalHistory from "./component/WithdrawalHistory";
+import AdminRequest from "./component/AdminRequest";
 
 const AdminWallet = () => {
   const [wallet, setWallet] = useState(null);
@@ -94,7 +95,7 @@ const AdminWallet = () => {
     return <p className="text-center mt-10 text-gray-500">Wallet not initialized yet.</p>;
 
 return (
-    <div className="w-full max-w-6xl mx-auto px-4 py-8">
+    <div className="w-full max-w-6xl mx-auto px-4 py-8 space-y-4">
       <h1 className="text-2xl font-semibold mb-6 text-center md:text-left">Admin Wallet</h1>
 
       {/* WALLET CARDS */}
@@ -121,6 +122,13 @@ return (
       </div>
 
       {withdrawAmount && (<AdminWithdraw balance={wallet.balance || 0} />)}
+        <div className="mt-8 rounded-xl shadow p-5 bg-white">
+            <h2 className="text-lg font-semibold mb-4">
+              Organizer Withdrawal Requests
+            </h2>
+         <AdminRequest />
+        </div>
+
 
       <AdminRevenueChart transactions={transactions} />
 
