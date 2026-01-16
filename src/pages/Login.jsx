@@ -6,71 +6,73 @@ import walkGif from "../assets/dog.gif"
 import { auth, db } from '../firebase/firebase';
 import { FaEye, FaEyeSlash } from 'react-icons/fa6';
 import { useNavigate } from "react-router-dom";
-import WelcomeBack from '../components/WelcomeBack'; // import at top
 
 const Login = () => {
     const [rememberMe, setRememberMe] = useState(false);
     const [error, setError] = useState("");
     const [loginLoading, setLoginLoading] = useState(false);
     const [click, setClick] = useState(false);
-    const [showWelcome, setShowWelcome] = useState(false); // new
-    const [userData, setUserData] = useState(null); // new
-    const [redirectTo, setRedirectTo] = useState("/dashboard"); // new
     const navigate = useNavigate();
 
     const handleClick = () => setClick(!click);
 
-    const handleLogin = async (e) => {
-        e.preventDefault();
-        const formData = new FormData(e.target);
-        const email = formData.get("email");
-        const password = formData.get("password");
-        setLoginLoading(true);
+ const handleLogin = async (e) => {
+    e.preventDefault();
 
-        try {
-            await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
-            const userCredential = await signInWithEmailAndPassword(auth, email, password);
-            const user = userCredential.user;
+    const formData = new FormData(e.target);
+    const email = formData.get("email");
+    const password = formData.get("password");
 
-            if (!user.emailVerified) {
-                await signOut(auth);
-                setError("⚠️ Please verify your email before logging in.");
-                return;
-            }
+    setLoginLoading(true);
 
-            const userRef = doc(db, "users", user.uid);
-            const userSnap = await getDoc(userRef);
+    try {
+      await setPersistence(
+        auth,
+        rememberMe ? browserLocalPersistence : browserSessionPersistence
+      );
 
-            if (userSnap.exists()) {
-                const data = userSnap.data();
-                setUserData(data); // save for WelcomeBack
-                if (data.isAdmin === true) {
-                    navigate("/dashboard");
-                } else if (data.accountType === "organization") {
-                    navigate("/dashboard/organization");
-                } else {
-                    navigate("/");
-                }
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
 
-                console.log(setRedirectTo);
-                console.log();
-                
-                setShowWelcome(true); // show welcome back screen
-            } else {
-                setError("User profile not found.");
-            }
+      const user = userCredential.user;
 
-        } catch (error) {
-            setError(getErrorMessage(error.code));
-        } finally {
-            setLoginLoading(false);
-        }
-    };
+      if (!user.emailVerified) {
+        await signOut(auth);
+        setError("⚠️ Please verify your email before logging in.");
+        return;
+      }
 
-    // If welcome screen is active, render it
-    if (showWelcome) {
-        return <WelcomeBack userData={userData} redirectTo={redirectTo} />;
+      const userSnap = await getDoc(doc(db, "users", user.uid));
+
+      if (!userSnap.exists()) {
+        setError("User profile not found.");
+        return;
+      }
+
+      const data = userSnap.data();
+
+      let redirect = "/";
+      if (data.isAdmin) redirect = "/dashboard";
+      else if (data.accountType === "organization")
+        redirect = "/dashboard/organization";
+
+      // ✅ ONLY navigation that should happen
+      navigate("/welcome", {
+        state: {
+          userData: data,
+          redirectTo: redirect,
+        },
+        replace: true,
+      });
+    } catch (error) {
+      setError(getErrorMessage(error.code));
+    } finally {
+      setLoginLoading(false);
     }
+  };
 
     return (
         <section data-aos="fade-out" className='w-full min-h-screen bg-(--bg-color) dark:bg-(--bg-color) flex justify-center items-center'>

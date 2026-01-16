@@ -33,6 +33,7 @@ import OrgWallet from "./dashboard/Organizer/OrgWallet";
 import OrgEvent from "./dashboard/Organizer/OrgEvent";
 import Dashblog from "./dashboard/Admin/Dashblog";
 import AdminWallet from "./dashboard/Admin/AdminWallet";
+import WelcomeBack from "./components/WelcomeBack";
 
 
 
@@ -109,7 +110,7 @@ const App = () => {
           ) : (
 
             <Layout currentUser={currentUser}>
-              <Home currentUser={currentUser}/>
+              <Home currentUser={currentUser} />
             </Layout>
 
           )
@@ -122,28 +123,28 @@ const App = () => {
         element={currentUser ? <Navigate to="/dashboard" replace /> : <Layout currentUser={currentUser}><Login /></Layout>}
       />
 
-      {/* Register route */}
-      {/* Register route */}
-<Route
-  path="/register"
-  element={
-    // If user is logged in
-    currentUser ? (
-      // Organizer -> redirect to org dashboard
-      currentUser.accountType === "organization" ? (
-        <Navigate to="/dashboard/organization" replace />
-      ) : (
-        // Regular user -> redirect to homepage
-        <Navigate to="/" replace />
-      )
-    ) : (
-      // Not logged in -> show Register page
-      <Layout currentUser={currentUser}>
-        <Register step={step} setStep={setStep} />
-      </Layout>
-    )
-  }
-/>
+      <Route path="/welcome" element={<WelcomeBack />} />
+
+      <Route
+        path="/register"
+        element={
+          // If user is logged in
+          currentUser ? (
+            // Organizer -> redirect to org dashboard
+            currentUser.accountType === "organization" ? (
+              <Navigate to="/dashboard/organization" replace />
+            ) : (
+              // Regular user -> redirect to homepage
+              <Navigate to="/" replace />
+            )
+          ) : (
+            // Not logged in -> show Register page
+            <Layout currentUser={currentUser}>
+              <Register step={step} setStep={setStep} />
+            </Layout>
+          )
+        }
+      />
 
 
       <Route path="/verify" element={<Layout currentUser={currentUser}><Verify email={currentUser?.email} step="verify"
@@ -252,16 +253,16 @@ const App = () => {
       </Route>
 
       {/* Organization Dashboard */}
-      <Route path="/dashboard/organization" element={<OrganizationLayout currentUser={currentUser} />}> 
+      <Route path="/dashboard/organization" element={<OrganizationLayout currentUser={currentUser} />}>
 
-      <Route index element={<Organization currentUser={currentUser} />} />   
-        
-      <Route path="create" element={<OrgCreate currentUser={currentUser} />} />
-      <Route path="wallet" element={<OrgWallet currentUser={currentUser} />} />
-      <Route path="scanner" element={<TicketScanner currentUser={currentUser} />} />
-      <Route path="events" element={<OrgEvent currentUser={currentUser} />} />
-      <Route path="event/:slug" element={<TicketModal currentUser={currentUser} /> } />
-      <Route path="blog" element={<WriteBlog />} />
+        <Route index element={<Organization currentUser={currentUser} />} />
+
+        <Route path="create" element={<OrgCreate currentUser={currentUser} />} />
+        <Route path="wallet" element={<OrgWallet currentUser={currentUser} />} />
+        <Route path="scanner" element={<TicketScanner currentUser={currentUser} />} />
+        <Route path="events" element={<OrgEvent currentUser={currentUser} />} />
+        <Route path="event/:slug" element={<TicketModal currentUser={currentUser} />} />
+        <Route path="blog" element={<WriteBlog />} />
       </Route>
 
 
