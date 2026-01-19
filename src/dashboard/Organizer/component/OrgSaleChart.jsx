@@ -1,88 +1,83 @@
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  CartesianGrid,
-  ResponsiveContainer,
-} from "recharts";
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 
 const OrgSalesChart = ({ transactions = [] }) => {
   const data = aggregateOrgDaily(transactions);
 
   return (
-    <div className=" p-6 rounded-xl shadow-sm  mb-8">
-      <div className="mb-6">
-        <h2 className="text-lg font-bold ">Your Sales Performance</h2>
-        <p className="text-sm text-gray-500">Daily ticket revenue (after platform fees)</p>
+    <div className="p-6 rounded-3xl shadow-sm border border-gray-100 mb-8">
+      <div className="flex justify-between items-end mb-6">
+        <div>
+          <h2 className="text-xl font-bold text-gray-900">Revenue Flow</h2>
+          <p className="text-sm text-gray-500">Net earnings after platform split</p>
+        </div>
+        <div className="text-right">
+          <span className="text-xs font-medium text-green-600 bg-green-50 px-3 py-1 rounded-full">
+            Live Updates
+          </span>
+        </div>
       </div>
 
-      <div className="w-full h-[300px]">
+      <div className="w-full h-[320px]">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} /> {/* Removed stroke color */}
-            <XAxis
-              dataKey="date"
-              tick={{ fontSize: 12 }} // Removed fill color
+          <AreaChart data={data}>
+            <defs>
+              <linearGradient id="sineGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#4F46E5" stopOpacity={0.3}/>
+                <stop offset="95%" stopColor="#4F46E5" stopOpacity={0}/>
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" vertical={false}  />
+            <XAxis 
+              dataKey="date" 
+              axisLine={false} 
+              tickLine={false} 
+              tick={{fill: '#9ca3af', fontSize: 12}} 
               dy={10}
-              axisLine={false}
             />
-            <YAxis
-              tick={{ fontSize: 12 }} // Removed fill color
-              tickFormatter={(val) => `₦${val.toLocaleString()}`}
-              axisLine={false}
-            />
-            <Tooltip
+            <YAxis hide domain={['auto', 'auto']} />
+            <Tooltip 
+              cursor={{ stroke: '#4F46E5', strokeWidth: 2 }}
+              contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }}
               formatter={(val) => [`₦${val.toLocaleString()}`, "Earnings"]}
-              contentStyle={{ borderRadius: '10px', border: 'none', boxShadow: '0 4px 15px rgba(0,0,0,0.1)' }}
             />
-            <Line
+            <Area
               type="monotone"
               dataKey="revenue"
-              strokeWidth={3} // Optional: keep width but no color
-              dot={{ r: 4, strokeWidth: 2 }} // Removed fill and stroke
-              activeDot={{ r: 6 }}
+              stroke="#4F46E5"
+              strokeWidth={4}
+              fillOpacity={1}
+              fill="url(#sineGradient)"
+              animationDuration={2000}
+              animationEasing="ease-in-out"
             />
-          </LineChart>
+          </AreaChart>
         </ResponsiveContainer>
-
       </div>
     </div>
   );
 };
 
-/* ===== Helper for Organizers ===== */
+
+/* ===== Enhanced Helper for Continuous Flow ===== */
 function aggregateOrgDaily(transactions) {
   if (!transactions || transactions.length === 0) return [];
 
   const map = {};
+  const allDates = [];
 
+  // 1. Map existing sales
   transactions.forEach((tx) => {
-    // Check for organizerAmount specifically
-    if (!tx.createdAt || !tx.organizerAmount) return;
-
-    let dateObj;
-    if (tx.createdAt?.toDate) {
-      dateObj = tx.createdAt.toDate();
-    } else if (tx.createdAt?._seconds) {
-      dateObj = new Date(tx.createdAt._seconds * 1000);
-    } else {
-      dateObj = new Date(tx.createdAt);
-    }
-
-    if (isNaN(dateObj.getTime())) return;
-
+    if (!tx.createdAt || tx.type !== "ticket_sale") return;
+    const dateObj = tx.createdAt?.toDate ? tx.createdAt.toDate() : new Date(tx.createdAt);
     const dateStr = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-
-    // We aggregate organizerAmount instead of platformFee
-    map[dateStr] = (map[dateStr] || 0) + tx.organizerAmount;
+    
+    map[dateStr] = (map[dateStr] || 0) + (tx.organizerAmount || 0);
   });
 
-  return Object.entries(map).map(([date, revenue]) => ({
-    date,
-    revenue,
-  }));
+  // 2. Convert to Array and Sort by Time
+  return Object.entries(map)
+    .map(([date, revenue]) => ({ date, revenue, timestamp: new Date(date).getTime() }))
+    .sort((a, b) => a.timestamp - b.timestamp);
 }
 
 export default OrgSalesChart;

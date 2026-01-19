@@ -21,37 +21,44 @@ const TicketScanner = () => {
     oscillator.stop(ctx.currentTime + 0.2);
   };
 
-  const handleScan = async (resultText) => {
+const handleScan = async (resultText) => {
     if (!resultText || isProcessing.current) return;
 
-    isProcessing.current = true; // lock
+    isProcessing.current = true;
     try {
-      const ticketRef = doc(db, "tickets", resultText);
-      const ticketSnap = await getDoc(ticketRef);
+      // 1. Call your Backend instead of Firestore directly
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/tickets/verify`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          // Assuming you have the user's Firebase token
+          "Authorization": `Bearer ${await auth.currentUser.getIdToken()}`
+        },
+        body: JSON.stringify({ ticketId: resultText }),
+      });
 
-      if (!ticketSnap.exists()) {
-        setStatus({ type: "error", msg: "❌ Invalid Ticket" });
+      const data = await response.json();
+
+      if (!response.ok) {
+        // This handles "Already Used" or "Invalid" from your backend
+        setStatus({ type: "error", msg: data.error || "❌ Verification Failed" });
         playBeep();
       } else {
-        const ticket = ticketSnap.data();
-        if (ticket.used) {
-          setStatus({ type: "warning", msg: "⚠️ Ticket already used!" });
-          playBeep();
-        } else {
-          await updateDoc(ticketRef, { used: true });
-          setStatus({ type: "success", msg: `✅ Ticket Valid: ${resultText}` });
-          playBeep();
-        }
+        // Success!
+        setStatus({ 
+            type: "success", 
+            msg: `✅ ${data.buyerName} Verified for ${data.eventName}` 
+        });
+        playBeep();
       }
     } catch (err) {
-      console.error("Verification error:", err);
-      setStatus({ type: "error", msg: "Server error, try again." });
+      console.error("Network error:", err);
+      setStatus({ type: "error", msg: "Connection error, try again." });
       playBeep();
     } finally {
-      // unlock after 2 seconds so message stays visible
       setTimeout(() => {
         isProcessing.current = false;
-      }, 2000);
+      }, 3000); // 3 seconds gives the operator time to read the name
     }
   };
 

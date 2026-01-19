@@ -84,33 +84,35 @@ const OrgWallet = ({ currentUser, events }) => {
 
       {/* WALLET CARDS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-        <WalletCard
-          title="Available Balance"
-          value={`₦${wallet?.balance?.toLocaleString() || 0}`}
-          icon={<FaWallet />}
-          color="bg-slate-800"
-        />
-        <WalletCard
-          title="Total Earned"
-          value={`₦${wallet?.totalEarned?.toLocaleString() || 0}`}
-          icon={<FaMoneyBillWave />}
-          color="bg-blue-600"
-        />
-        <WalletCard
-          title="Payout"
-          value="Withdraw Funds"
-          icon={<FaArrowDown />}
-          color="bg-orange-500 cursor-pointer hover:bg-orange-600 transition-all"
-          onClick={toggleWithdraw}
-        />
+<WalletCard
+  title="Pending Balance"
+  value={`₦${wallet.pendingBalance?.toLocaleString() || 0}`}
+  icon={<FaWallet />}
+  color="bg-orange-600"
+/>
+
+<WalletCard
+  title="Paid Out"
+  value={`₦${wallet.settledBalance?.toLocaleString() || 0}`}
+  icon={<FaMoneyBillWave />}
+  color="bg-green-600"
+/>
+
+<WalletCard
+  title="Payout"
+  value="Automatic after event"
+  icon={<FaArrowDown />}
+  color="bg-gray-600"
+/>
+
       </div>
 
       {/* WITHDRAW FORM (TOGGLE) */}
-      {showWithdraw && (
+      {/* {showWithdraw && (
         <div className="animate-in fade-in slide-in-from-top-4 duration-300">
           <OrgWithdraw balance={wallet?.balance || 0} events={events} />
         </div>
-      )}
+      )} */}
 
       {/* ANALYTICS CHART */}
       <OrgSalesChart transactions={transactions} />
@@ -164,7 +166,7 @@ const OrgWallet = ({ currentUser, events }) => {
       </div>
 
       {/* PAYOUT HISTORY */}
-      <OrgWithdrawHistory themeColor="blue" />
+      {/* <OrgWithdrawHistory themeColor="blue" /> */}
     </div>
   );
 };

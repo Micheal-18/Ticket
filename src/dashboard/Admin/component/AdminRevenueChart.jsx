@@ -9,10 +9,16 @@ import {
 } from "recharts";
 
 const AdminRevenueChart = ({ transactions }) => {
-  const data = aggregateDaily(transactions);
+  const revenueData = aggregateDaily(transactions);
+
+  // Add sine wave overlay (same length as revenueData)
+  const data = revenueData.map((d, i) => ({
+    ...d,
+    sine: Math.sin(i * 0.5), // sine wave scaled
+  }));
 
   return (
-    <div className=" p-4 rounded-xl shadow mb-8">
+    <div className="p-4 rounded-xl shadow mb-8">
       <h2 className="text-lg font-semibold mb-4">Platform Revenue</h2>
 
       <ResponsiveContainer width="100%" height={300}>
@@ -21,11 +27,20 @@ const AdminRevenueChart = ({ transactions }) => {
           <XAxis dataKey="date" />
           <YAxis />
           <Tooltip />
+          {/* Real revenue */}
           <Line
             type="monotone"
             dataKey="revenue"
             stroke="#22c55e"
             strokeWidth={2}
+          />
+          {/* Sine wave overlay */}
+          <Line
+            type="monotone"
+            dataKey="sine"
+            stroke="#f59e0b"
+            strokeWidth={2}
+            dot={false}
           />
         </LineChart>
       </ResponsiveContainer>

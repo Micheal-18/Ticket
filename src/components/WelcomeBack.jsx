@@ -21,7 +21,7 @@ useEffect(() => {
 
   return (
     <div className="h-screen flex flex-col items-center justify-center">
-      <h1 className="text-4xl font-bold">
+      <h1 className="text-lg md:text-4xl font-bold italic">
         Welcome back, {state?.userData?.fullName}
       </h1>
       <p className="opacity-70 mt-2">Preparing your dashboard…</p>

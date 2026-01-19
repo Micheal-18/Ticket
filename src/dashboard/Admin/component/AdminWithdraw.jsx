@@ -25,7 +25,7 @@ const AdminWithdraw = ({ balance }) => {
         try {
             const token = await auth.currentUser.getIdToken();
 
-            const res = await fetch("/api/admin/withdraw", {
+            const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/admin/withdraw`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -39,6 +39,8 @@ const AdminWithdraw = ({ balance }) => {
 
             alert("Withdrawal successful");
             setAmount("");
+            if (onSuccess) onSuccess(); // Tell parent to refresh the balance!
+        alert("Success!");
         } catch (err) {
             alert(err.message);
         } finally {
