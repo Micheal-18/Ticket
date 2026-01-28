@@ -90,7 +90,7 @@ const OrgWallet = ({ currentUser, events }) => {
         />
         <WalletCard
           title="Paid Out"
-          value={`₦${wallet.settledBalance?.toLocaleString() || 0}`}
+          value={`₦${wallet.totalEarned?.toLocaleString() || 0}`}
           icon={<FaMoneyBillWave />}
           color="bg-green-600"
         />

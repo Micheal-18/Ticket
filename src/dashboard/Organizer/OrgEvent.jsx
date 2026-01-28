@@ -78,16 +78,16 @@ const OrgEvent = () => {
                     No {status} events.
                 </p>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 custom-scrollbar ">
+                <div className="grid grid-cols-1 md:grid-cols-3  w-full custom-scrollbar ">
                     {events.map((event) => {
                         const ticket = event.price?.[0];
                         return (
                             <div
                                 key={event.id}
-                                className="flex justify-between p-5 rounded-xl shadow"
+                                className="flex items-center justify-between flex-1  relative px-2 w-full py-4 shadow rounded-3xl cursor-default "
                             >
-                                <div className="space-y-2">
-                                    <h1 className="font-bold uppercase text-2xl w-[150px] truncate lg:w-[250px]">
+                                <div className="space-y-1.5">
+                                    <h1 className="font-bold uppercase text-2xl w-[150px] truncate lg:w-[200px]">
                                         {event.name}
                                     </h1>
                                     <p className="md:text-md text-sm font-regular text-gray-500 flex gap-2 items-center">
