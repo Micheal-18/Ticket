@@ -151,7 +151,7 @@ const Register = ({ step, setStep }) => {
         url: `${window.location.origin}/`, // change if you want a specific page
         handleCodeInApp: false,
       };
-      await sendEmailVerification(user, actionCodeSettings);
+      await sendEmailVerification(user);
 
       // 3) Move UI to "verify" screen immediately
       setStep("verify");

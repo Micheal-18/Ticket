@@ -1,113 +1,125 @@
-import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
-import { setPersistence, browserLocalPersistence, browserSessionPersistence } from "firebase/auth";
-import { doc, getDoc } from 'firebase/firestore';
-import React, { useState } from 'react'
-import walkGif from "../assets/dog.gif"
-import { auth, db } from '../firebase/firebase';
-import { FaEye, FaEyeSlash } from 'react-icons/fa6';
+// src/pages/Verify.jsx
+import React, { useEffect, useState } from "react";
+import { auth } from "../firebase/firebase";
+import { sendEmailVerification } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import Spinner from "../components/Spinner";
 
-const Login = () => {
-    const [rememberMe, setRememberMe] = useState(false);
-    const [error, setError] = useState("");
-    const [loginLoading, setLoginLoading] = useState(false);
-    const [click, setClick] = useState(false);
-    const navigate = useNavigate();
+const Verify = ({ email }) => {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
+  const [status, setStatus] = useState({ type: "", message: "" });
 
-    const handleClick = () => setClick(!click);
+  // ⏳ Cooldown timer
+  useEffect(() => {
+    if (cooldown > 0) {
+      const t = setTimeout(() => setCooldown((c) => c - 1), 1000);
+      return () => clearTimeout(t);
+    }
+  }, [cooldown]);
 
- const handleLogin = async (e) => {
-    e.preventDefault();
+  // 🔄 Auto-redirect if already verified
+  useEffect(() => {
+    const checkVerified = async () => {
+      const user = auth.currentUser;
+      if (!user) return;
 
-    const formData = new FormData(e.target);
-    const email = formData.get("email");
-    const password = formData.get("password");
+      await user.reload();
+      if (user.emailVerified) {
+        navigate("/");
+      }
+    };
 
-    setLoginLoading(true);
+    checkVerified();
+  }, [navigate]);
+
+  // 📩 Resend verification email
+  const resendVerificationEmail = async () => {
+    if (cooldown > 0) return;
 
     try {
-      await setPersistence(
-        auth,
-        rememberMe ? browserLocalPersistence : browserSessionPersistence
-      );
-
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-
-      const user = userCredential.user;
-
-      if (!user.emailVerified) {
-        await signOut(auth);
-        setError("⚠️ Please verify your email before logging in.");
+      const user = auth.currentUser;
+      if (!user) {
+        navigate("/login");
         return;
       }
 
-      const userSnap = await getDoc(doc(db, "users", user.uid));
+      setLoading(true);
+      await sendEmailVerification(user);
 
-      if (!userSnap.exists()) {
-        setError("User profile not found.");
-        return;
-      }
-
-      const data = userSnap.data();
-
-      let redirect = "/";
-      if (data.isAdmin) redirect = "/dashboard";
-      else if (data.accountType === "organization")
-        redirect = "/dashboard/organization";
-
-      // ✅ ONLY navigation that should happen
-      navigate("/welcome", {
-        state: {
-          userData: data,
-          redirectTo: redirect,
-        },
-        replace: true,
+      setStatus({
+        type: "success",
+        message: "📩 Verification email sent. Check your inbox.",
       });
-    } catch (error) {
-      setError(getErrorMessage(error.code));
+      setCooldown(30);
+    } catch (err) {
+      console.error(err);
+      setStatus({
+        type: "error",
+        message: "❌ Failed to resend verification email.",
+      });
     } finally {
-      setLoginLoading(false);
+      setLoading(false);
     }
   };
 
-    return (
-        <section data-aos="fade-out" className='w-full min-h-screen bg-(--bg-color) dark:bg-(--bg-color) flex justify-center items-center'>
-            <button onClick={() => navigate("/")} className='absolute top-5 left-5 bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 active:scale-90'>Go Back</button>
-            <form onSubmit={handleLogin} className="flex flex-col space-y-4 w-full max-w-lg mx-6 lg:mx-0">
-                <h1 className="font-bold text-5xl ">Login</h1>
-                {error && <div className="bg-orange-100 text-red-600 p-2 rounded mb-4">{error}</div>}
-                <input name="email" type="email" placeholder="Email Address" required className="border p-3 rounded-lg" />
-                <div className="relative w-full">
-                    <input name="password" type={click ? "text" : "password"} placeholder="Password" required className="border w-full p-3 rounded-lg" />
-                    {click ? (
-                        <FaEye onClick={handleClick} color="gray" className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"/>
-                    ) : (
-                        <FaEyeSlash onClick={handleClick} color="gray" className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"/>
-                    )}
-                </div>
-                <div className='flex gap-3'>
-                    <input type="checkbox" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} />
-                    <p>Remember Me</p>
-                </div>
-                <button type="submit" className="w-full flex items-center justify-center bg-orange-500 text-white rounded-xl py-3 active:scale-90 hover:bg-orange-600 hover:scale-105">
-                    {loginLoading ? <><div className='loading'></div><p className='ml-2'>Logging In...</p></> : "Login"}
-                </button>
-                <p className="text-sm">
-                    Don’t have an account?{" "}
-                    <button type="button" onClick={() => navigate("/Register")} className="text-orange-500 cursor-pointer underline">
-                        Register
-                    </button>
-                </p>
-                <footer className='mt-10'>
-                    <img src={walkGif} alt='walking gif' className='w-20 h-20 animation-walk' />
-                </footer>
-            </form>
-        </section>
-    )
-}
+  return (
+    <div className="max-w-md mx-auto mt-10 rounded-2xl shadow-lg p-8 text-center">
+      {/* Progress */}
+      <div className="flex mb-6">
+        <div className="flex-1 h-2 bg-green-500 rounded-l-full" />
+        <div className="flex-1 h-2 bg-green-500" />
+        <div className="flex-1 h-2 bg-gray-300 rounded-r-full" />
+      </div>
 
-export default Login;
+      <h2 className="text-2xl font-bold text-green-600 mb-4">
+        Verify your email
+      </h2>
+
+      <p className="mb-6 text-sm">
+        We sent a verification link to <br />
+        <span className="font-semibold">{email}</span>
+        <br />
+        Check your inbox or spam folder.
+      </p>
+
+      {loading && <Spinner />}
+
+      {status.message && (
+        <div
+          className={`p-2 rounded mb-4 ${
+            status.type === "error"
+              ? "bg-red-100 text-red-600"
+              : "bg-green-100 text-green-600"
+          }`}
+        >
+          {status.message}
+        </div>
+      )}
+
+      <div className="flex flex-col gap-2">
+        <button
+          onClick={resendVerificationEmail}
+          disabled={cooldown > 0 || loading}
+          className={`w-full py-2 rounded-xl transition ${
+            cooldown > 0 || loading
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-orange-500 hover:bg-orange-600"
+          }`}
+        >
+          {cooldown > 0 ? `Wait ${cooldown}s ⏳` : "📩 Resend email"}
+        </button>
+
+        <button
+          onClick={() => navigate("/login")}
+          className="underline text-sm font-bold mt-2"
+        >
+          Go to login
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default Verify;

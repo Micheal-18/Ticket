@@ -183,7 +183,7 @@ const OrganizationLayout = ({ currentUser }) => {
                 'Earnings'
               )}
               {navItem(
-                '/dashboard/organization/blogs',
+                '/dashboard/organization/blog',
                 <FaBlog size={22} />,
                 'Blogs'
               )}
