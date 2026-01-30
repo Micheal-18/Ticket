@@ -151,7 +151,7 @@ const continueAuth = async () => {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 rounded-2xl shadow-lg p-8 text-center bg-white dark:bg-gray-800">
+    <div className="max-w-md mx-auto mt-10 rounded-2xl shadow-lg p-8 text-center ">
       <div className="flex items-center justify-between mb-6">
         <div className="flex-1 h-2 bg-green-500 rounded-l-full"></div>
         <div className="flex-1 h-2 bg-green-500"></div>
@@ -201,14 +201,14 @@ const continueAuth = async () => {
           <button
             onClick={iVerifiedAlready}
             disabled={loading}
-            className="w-full bg-gray-700 text-white rounded-xl py-3 hover:bg-green-600 transition font-semibold"
+            className="w-full rounded-xl py-3 hover:bg-green-600 transition font-semibold"
           >
             I verified already ✅
           </button>
 
           <button
             onClick={() => navigate("/Login")}
-            className="text-sm underline text-gray-500 hover:text-orange-500"
+            className="text-sm underline text-gray-400 hover:text-orange-500"
           >
             Back to login
           </button>
