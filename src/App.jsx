@@ -114,7 +114,7 @@ useEffect(() => {
         path="/register"
         element={
           // If user is logged in
-          currentUser ? (
+          currentUser && currentUser?.verified === true ? (
             // Organizer -> redirect to org dashboard
             currentUser.accountType === "organization" ? (
               <Navigate to="/dashboard/organization" replace />

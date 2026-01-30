@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { auth, db } from "../firebase/firebase";
 import { sendEmailVerification, applyActionCode } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import Spinner from "../components/Spinner";
 
@@ -31,29 +31,43 @@ const Verify = ({ email, currentUser }) => {
     }
   }, []);
 
-  const continueAuth = async () =>{
-    setLoading(true);
-    try {
-      const user = auth.currentUser;
-      if (user) {
-        // Fetch the profile we just created/updated
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        const userData = userDoc.data();
+const continueAuth = async () => {
+  setLoading(true);
+  setStatus({ type: "", message: "" }); // Clear previous errors
 
-        if (userData?.isAdmin) {
-          navigate("/dashboard");
-        } else if (userData?.accountType === "organization") {
-          navigate("/dashboard/organization");
-        } else {
-          navigate("/");
-        }
-      }
-    } catch (e) {
-      setStatus({ type: "error", message: "Error redirecting. Please try logging in." });
-    } finally {
-      setLoading(false);
+  try {
+    const user = auth.currentUser;
+    if (!user) {
+      setStatus({ type: "error", message: "Session expired. Please log in again." });
+      return;
     }
+
+    // 1. Fetch fresh data from Firestore
+    const userRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userRef);
+
+    if (userSnap.exists()) {
+      const userData = userSnap.data();
+
+      // 2. Routing Logic
+      if (userData.isAdmin === true) {
+        navigate("/dashboard");
+      } else if (userData.accountType === "organization") {
+        navigate("/dashboard/organization");
+      } else {
+        navigate("/");
+      }
+    } else {
+      // If doc doesn't exist yet, they might need to wait a second or re-login
+      setStatus({ type: "error", message: "Profile not found. Try logging in again." });
+    }
+  } catch (e) {
+    console.error("Redirect Error:", e);
+    setStatus({ type: "error", message: "Error redirecting. Please try logging in." });
+  } finally {
+    setLoading(false);
   }
+};
 
   const handleEmailLink = async (oobCode) => {
     setLoading(true);
