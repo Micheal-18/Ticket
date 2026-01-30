@@ -57,42 +57,27 @@ const App = () => {
     AOS.refresh();
   }, []);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        //reload to keep emailVerified fresh
-        await user.reload();
+useEffect(() => {
+  const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    setLoading(true);
+    if (user) {
+      // Get the document, but DON'T try to fix/update it here
+      const docRef = doc(db, "users", user.uid);
+      const docSnap = await getDoc(docRef);
 
-        // ref to Firestore doc
-        const docRef = doc(db, "users", user.uid);
-        const docSnap = await getDoc(docRef);
-
-        let userData = { ...user };
-
-        if (docSnap.exists()) {
-          userData = { ...user, ...docSnap.data() }; // merge Firestore data
-        }
-
-        // sync Firestore verified field
-        if (!user.verified) {
-          await setDoc(
-            doc(db, "users", user.uid),
-            { verified: true },
-            { merge: true }
-          );
-          userData.verified = true
-        }
-        setCurrentUser(userData);
+      if (docSnap.exists()) {
+        setCurrentUser({ ...user, ...docSnap.data() });
       } else {
-        setCurrentUser(null);
+        setCurrentUser(user);
       }
-      setLoading(false);
-    });
+    } else {
+      setCurrentUser(null);
+    }
+    setLoading(false);
+  });
 
-
-    return () => unsubscribe();
-  }, []);
-
+  return () => unsubscribe();
+}, []);
 
 
   if (loading) {
@@ -147,7 +132,7 @@ const App = () => {
       />
 
 
-      <Route path="/verify" element={<Layout currentUser={currentUser}><Verify email={currentUser?.email} step="verify"
+      <Route path="/verify" element={<Layout currentUser={currentUser}><Verify email={currentUser?.email} currentUser={currentUser} step="verify"
         setStep={() => { }}
         error={""}
         setError={() => { }}
