@@ -231,7 +231,7 @@ const Home = ({currentUser}) => {
         </div>
       </section>
 
-      <section className='relative w-full min-h-screen bg-[#e0d9d9] p-4 z-40'>
+      <section className='relative w-full min-h-screen bg-(--step) dark:bg-(--step) p-4 z-40'>
         <h1 className='uppercase md:text-6xl  text-5xl font-bold p-4'>Steps</h1>
         <div data-aos="fade-out" className='flex flex-col space-y-6 justify-center items-center mx-auto w-full max-w-6xl px-4'>
           <div data-aos="fade-up" className='flex lg:flex-row flex-col  lg:justify-between items-center w-full  bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) flex-1 gap-10 relative py-10 px-8   rounded-3xl'>
