@@ -105,7 +105,7 @@ useEffect(() => {
       {/* Login route */}
       <Route
         path="/Login"
-        element={currentUser ? <Navigate to="/dashboard" replace /> : <Layout currentUser={currentUser}><Login /></Layout>}
+        element={<Layout currentUser={currentUser}><Login /></Layout>}
       />
 
       <Route path="/welcome" element={<WelcomeBack />} />
