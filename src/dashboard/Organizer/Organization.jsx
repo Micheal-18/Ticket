@@ -22,17 +22,17 @@ const Organization = () => {
   );
 
   /* ---------------- CALCULATIONS ---------------- */
-  const totalRevenue = orgEvents.reduce(
-    (sum, e) => sum + Number(e.revenue || 0),
+  const totalRevenue = events.reduce(
+    (sum, e) => sum + Number(e.organizerRevenue || 0),
     0
   );
 
-  const totalTicketsSold = orgEvents.reduce(
+  const totalTicketsSold = events.reduce(
     (sum, e) => sum + Number(e.ticketSold || 0),
     0
   );
 
-  const currency = orgEvents[0]?.currency || "₦";
+  const currency = events[0]?.currency || "₦";
 
   /* ---------------- CHART DATA ---------------- */
   const chartData = (() => {

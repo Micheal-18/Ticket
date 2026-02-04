@@ -121,6 +121,17 @@ const CreateEvent = () => {
         createdAt: new Date().toISOString(),
       })
 
+      await setDoc(doc(db, "notifications", `${Date.now()}_${eventId}`), {
+        type: "event_submission",
+        title: "📢 New Event Submission",
+        message: `Your event "${name}" has been submitted for approval.`,
+        userId: user.uid,
+        link: "/event/" + slug,
+        status: "pending",
+        read: false,
+        createdAt: new Date().toISOString()
+      })
+
       alert("✅ Event submitted for approval. Admin will review it.")
       navigate("/dashboard/organization")
     } catch (err) {

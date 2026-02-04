@@ -34,6 +34,7 @@ import OrgEvent from "./dashboard/Organizer/OrgEvent";
 import Dashblog from "./dashboard/Admin/Dashblog";
 import AdminWallet from "./dashboard/Admin/AdminWallet";
 import WelcomeBack from "./components/WelcomeBack";
+import { Toaster } from "react-hot-toast";
 
 
 
@@ -84,7 +85,8 @@ useEffect(() => {
     return <LoadingScreen onComplete={() => setIsLoaded(true)} />;
   }
 
-  return (
+  return (<>
+    <Toaster position="bottom-right" />
     <Routes>
       {/* Home route — redirect unverified users to /verify */}
       <Route
@@ -252,6 +254,7 @@ useEffect(() => {
 
 
     </Routes>
+    </>
   );
 };
 

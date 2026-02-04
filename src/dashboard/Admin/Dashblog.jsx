@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { collection, getDocs, doc, updateDoc, deleteDoc, serverTimestamp, orderBy } from "firebase/firestore";
+import { collection, getDocs, doc, updateDoc, deleteDoc, serverTimestamp, orderBy, addDoc } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import { uploadToCloudinary } from "../../utils/cloudinaryUpload";
 import OptimizedImage from "../../components/OptimizedImage";
@@ -101,6 +101,13 @@ const Dashblog = () => {
         approved: false,
         rejectionReason: "",
         reviewedAt: serverTimestamp(),
+      });
+
+      await addDoc(collection(db, "notifications"), {
+        type: "blog_resubmitted",
+        title: "📝 Blog Resubmitted",
+        userId: blog.userId,
+        createdAt: serverTimestamp(),
       });
 
       setBlogs(prev => prev.map(b => b.id === blogId ? { ...b, status: "pending", photoURL, approved: false, rejectionReason: "" } : b));

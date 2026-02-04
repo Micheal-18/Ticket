@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { collection, getDocs, updateDoc, doc } from 'firebase/firestore';
+import { collection, getDocs, updateDoc, doc, addDoc } from 'firebase/firestore';
 import { db } from '../../firebase/firebase';
 import OptimizedImage from '../../components/OptimizedImage';
 import { FaEllipsisV, FaCalendar, FaClock, FaLocationArrow } from 'react-icons/fa';
@@ -9,6 +9,7 @@ import DeleteModal from '../../components/DeleteModal';
 import EditModal from '../../components/EditModal';
 import { formatEventStatus } from '../../utils/formatEventRange';
 import { Link } from 'react-router-dom';
+import { add } from 'date-fns';
 
 const Dashevents = ({ currentUser, events, setEvents }) => {
   const isAdmin = useAdmin();
@@ -88,6 +89,16 @@ const Dashevents = ({ currentUser, events, setEvents }) => {
       await updateDoc(eventRef, {
         status: "approved",
         subaccountCode: subaccountData.subaccount_code,
+      });
+
+      await addDoc(collection(db, "notifications"), {
+        type: "event_approved",
+        title: "✅ Event Approved",
+        message: `Your event "${event.name}" has been approved!`,
+        userId: event.ownerId,
+        link: `/event/${event.id}`,
+        read: false,
+        createdAt: new Date(),
       });
 
       // Update UI

@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { Outlet, NavLink, useNavigate, Link } from 'react-router-dom'
-import { collection, getDocs, query, where } from 'firebase/firestore'
+import {
+  collection,
+  query,
+  where,
+  orderBy,
+  onSnapshot,
+  doc,
+  getDocs
+} from 'firebase/firestore'
 import { db, auth } from '../../firebase/firebase'
 import { FaBell, FaBlog, FaMoneyBillTrendUp } from 'react-icons/fa6'
 import { RiDashboard2Line, RiQrScanLine, RiTicket2Line } from 'react-icons/ri'
@@ -8,12 +16,20 @@ import { FiMenu, FiX } from 'react-icons/fi'
 import { signOut } from 'firebase/auth'
 import Darkmode from '../../components/DarkMode'
 import { FaSignOutAlt } from 'react-icons/fa'
+import NotificationPanel from '../../components/NotificationPanel'
+import toast from "react-hot-toast";
+import { useRef } from "react";
 
 const OrganizationLayout = ({ currentUser }) => {
   const [events, setEvents] = useState([])
   const [recentActivities, setRecentActivities] = useState([])
   const [loading, setLoading] = useState(true)
   const [slide, setSlide] = useState(false)
+  const [showNotif, setShowNotif] = useState(false)
+  const [notifications, setNotifications] = useState([])
+  const initialized = useRef(false);
+
+  const unreadCount = notifications.filter(n => !n.read).length
 
   const slideMovement = () => setSlide(!slide)
 
@@ -23,6 +39,55 @@ const OrganizationLayout = ({ currentUser }) => {
     await signOut(auth)
     navigate('/')
   }
+
+  useEffect(() => {
+    if (!currentUser) return
+
+    const q = query(
+      collection(db, 'notifications'),
+      where('userId', '==', currentUser.uid),
+      orderBy('createdAt', 'desc')
+    )
+
+  const unsub = onSnapshot(q, (snap) => {
+    const docs = snap.docs.map(d => ({
+      id: d.id,
+      ...d.data(),
+    }));
+
+    // 🚫 Skip first load
+    if (!initialized.current) {
+      initialized.current = true;
+      setNotifications(docs);
+      return;
+    }
+
+    // ✅ Detect newly added notifications
+    snap
+      .docChanges()
+      .filter(c => c.type === "added")
+      .forEach(c => {
+        const n = c.doc.data();
+
+        toast.custom((t) => (
+          <div
+            onClick={() => {
+              toast.dismiss(t.id);
+              if (n.link) navigate(n.link);
+            }}
+            className="cursor-pointer bg-white dark:bg-zinc-900 shadow-lg rounded-xl p-4 w-80 border-l-4 border-orange-500"
+          >
+            <p className="font-semibold text-sm">{n.title}</p>
+            <p className="text-xs text-gray-500 mt-1">{n.message}</p>
+          </div>
+        ), { duration: 6000 });
+      });
+
+    setNotifications(docs);
+  });
+
+    return () => unsub()
+  }, [currentUser])
 
   // Fetch organizer's data
   useEffect(() => {
@@ -204,10 +269,31 @@ const OrganizationLayout = ({ currentUser }) => {
             <Darkmode />
 
             <div className='relative'>
-              <FaBell size={16} />
-              <span className='absolute -top-2 -right-2 bg-red-600 text-xs rounded-full w-5 h-5 flex items-center justify-center'>
-                {recentActivities.length > 9 ? '9+' : recentActivities.length}
-              </span>
+              <button onClick={() => setShowNotif(!showNotif)}>
+                <FaBell size={16} />
+                {unreadCount > 0 && (
+                  <span className='absolute -top-2 -right-2 bg-red-600 text-xs rounded-full w-5 h-5 flex items-center justify-center'>
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+              </button>
+
+              {showNotif && (
+                <div className='absolute right-0 mt-3 w-80 bg-(--bg-color) shadow-xl rounded-xl p-3 z-50'>
+                  <h4 className='font-semibold mb-2 text-sm'>Notifications</h4>
+
+                  <NotificationPanel
+                    notifications={notifications}
+                    onRead={async notif => {
+                      if (notif.read) return
+
+                      await updateDoc(doc(db, 'notifications', notif.id), {
+                        read: true
+                      })
+                    }}
+                  />
+                </div>
+              )}
             </div>
 
             <button
