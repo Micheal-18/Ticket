@@ -218,7 +218,7 @@ const OrganizationLayout = ({ currentUser }) => {
               {navItem(
                 '/dashboard/organization/events',
                 <RiTicket2Line size={22} />,
-                'My Events'
+                'Events'
               )}
               {navItem(
                 '/dashboard/organization/scanner',
@@ -279,7 +279,7 @@ const OrganizationLayout = ({ currentUser }) => {
               </button>
 
               {showNotif && (
-                <div className='absolute right-0 mt-3 w-80 bg-(--bg-color) shadow-xl rounded-xl p-3 z-50'>
+                <div className='absolute -right-2 lg:right-0 mt-3 w-80 bg-(--bg-color) shadow-xl rounded-xl p-3 z-50'>
                   <h4 className='font-semibold mb-2 text-sm'>Notifications</h4>
 
                   <NotificationPanel
@@ -330,7 +330,7 @@ const OrganizationLayout = ({ currentUser }) => {
           {navItem(
             '/dashboard/organization/events',
             <RiTicket2Line size={22} />,
-            'My Events'
+            'Events'
           )}
           {navItem(
             '/dashboard/organization/scanner',
