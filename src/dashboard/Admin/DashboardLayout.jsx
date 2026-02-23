@@ -226,7 +226,7 @@ const DashboardLayout = ({ currentUser }) => {
           {navItem(
             '/dashboard/events',
             <RiTicket2Line size={22} />,
-            'My Events'
+            'Events'
           )}
           {navItem('/dashboard/scanner', <RiQrScanLine size={22} />, 'Scan')}
           {navItem(

@@ -93,6 +93,7 @@ app.post('/api/create-subaccount', async (req, res) => {
     })
 
     const data = await response.json()
+    console.log("PAYSTACK RESPONSE:", data) 
 
     if (!data.status) {
       return res.status(400).json({ error: data.message })

@@ -31,7 +31,7 @@ const bankCodes = {
   "UNITY BANK": "215",
   "VFD MICROFINANCE BANK": "562",
   "ALAT BY WEMABANK": "035",
-  "OPAY": "035",
+  "OPAY": "999992",
   "KUDA BANK": "50211",
   "MONIEPOINT": "000"
 };

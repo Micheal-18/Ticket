@@ -68,6 +68,7 @@ const Dashevents = ({ currentUser, events, setEvents }) => {
           bank_code: event.bankCode,
           percentage_charge: 8,
           primary_contact_email: event.organizerEmail,
+          organizerId: event.ownerId,
         }),
       });
 
