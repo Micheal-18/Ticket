@@ -11,6 +11,7 @@ import { FaEllipsisV } from 'react-icons/fa'
 import OptimizedImage from '../components/OptimizedImage'
 import Spinner from '../components/Spinner'
 import { Link } from 'react-router-dom'
+import Adsense from '../components/Adsense'
 
 const Home = ({currentUser}) => {
   const [events, setEvents] = useState([]);
@@ -119,6 +120,9 @@ const Home = ({currentUser}) => {
         </header>
       </section>
 
+      <div className="my-10 flex justify-center">
+        <Adsense />
+      </div>
 
       {/* CATEGORY */}
       <section className='relative w-full min-h-screen border-t-2 border-gray-900  p-4 z-40'>
