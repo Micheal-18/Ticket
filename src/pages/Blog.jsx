@@ -34,10 +34,10 @@ const Blog = ({ blog, setBlog, currentUser }) => {
     <>
       {/* Hero Section */}
       <section className="relative flex flex-col min-h-screen w-full items-center justify-center">
-                <div className='overflow-hidden rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300'>
-                      <img src={event} alt="unbox" className='w-full h-full object-cover hover:scale-105 duration-500 absolute top-0 left-0 ' />
-                </div>
-                <div className='bg-black/60 absolute top-0 left-0 w-full h-full '></div>
+            <div className='overflow-hidden rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300'>
+              <img src={event} alt="unbox" className='w-full h-full object-cover hover:scale-105 duration-500 absolute top-0 left-0 ' />
+            </div>
+            <div className='bg-black/60 absolute top-0 left-0 w-full h-full '></div>
         <div className="absolute space-y-6 text-center mx-auto px-6 py-20 text-white">
           <h1 className="font-bold max-w-xl text-4xl md:text-5xl text-[#eeeeee]">
             Find Your Next Unforgettable Experience
