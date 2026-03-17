@@ -7,23 +7,29 @@ const NotificationPanel = ({ notifications, close , onRead}) => {
   const navigate = useNavigate();
   const grouped = groupNotifications(notifications);
 
-  const handleClick = async (notif) => {
-    if (!notif.read) {
-      await updateDoc(doc(db, "notifications", notif.id), {
-        read: true,
-      });
-      onRead?.(notif.id);
-    }
+const handleClick = async (notif) => {
+  const batchUpdates = {};
+  
+  // 1. Handle Read Status
+  if (!notif.read) {
+    batchUpdates.read = true;
+  }
 
-    if(notif.status === "pending") {
-      await updateDoc(doc(db, "notifications", notif.id), {
-        status: "approved",
-      });
-    }
+  // 2. Handle Approval Status (only if it's currently pending)
+  if (notif.status === "pending") {
+    batchUpdates.status = "approved";
+  }
 
-    if (notif.link) navigate(notif.link);
-    close?.();
-  };
+  // Only call Firestore if there is actually something to change
+  if (Object.keys(batchUpdates).length > 0) {
+    await updateDoc(doc(db, "notifications", notif.id), batchUpdates);
+    // Notify parent to update local state if necessary
+    onRead?.(notif.id); 
+  }
+
+  if (notif.link) navigate(notif.link);
+  close?.();
+};
 
   const Section = ({ title, items }) =>
     items.length > 0 && (

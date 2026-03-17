@@ -40,14 +40,14 @@ const OrganizationLayout = ({ currentUser }) => {
     navigate('/')
   }
 
-  useEffect(() => {
-    if (!currentUser) return
+useEffect(() => {
+  if (!currentUser?.uid) return;
 
-    const q = query(
-      collection(db, 'notifications'),
-      where('userId', '==', currentUser.uid),
-      orderBy('createdAt', 'desc')
-    )
+  const q = query(
+    collection(db, 'notifications'),
+    where('userId', '==', currentUser.uid), 
+    orderBy('createdAt', 'desc')
+  );
 
   const unsub = onSnapshot(q, (snap) => {
     const docs = snap.docs.map(d => ({
@@ -55,35 +55,41 @@ const OrganizationLayout = ({ currentUser }) => {
       ...d.data(),
     }));
 
-    // 🚫 Skip first load
-if (!initialized.current) {
-  initialized.current = true;
-} else {
-  snap.docChanges()
-    .filter(c => c.type === "added")
-    .forEach(c => {
-      const n = c.doc.data();
+    if (!initialized.current) {
+      initialized.current = true;
+    } else {
+      snap.docChanges()
+        .filter(c => c.type === "added")
+        .forEach(c => {
+          const n = c.doc.data();
+          // Use your ticket icon for the toast
+          toast.custom((t) => (
+            <div
+              onClick={() => {
+                toast.dismiss(t.id);
+                if (n.link) navigate(n.link);
+              }}
+              className="cursor-pointer bg-white dark:bg-zinc-900 shadow-lg rounded-xl p-4 w-80 border-l-4 border-green-500"
+            >
+              <div className="flex items-center gap-2">
+                <span>{n.type === 'ticket_purchase' ? "🎫" : "🔔"}</span>
+                <p className="font-semibold text-sm">{n.title}</p>
+              </div>
+              <p className="text-xs text-gray-500 mt-1">{n.message}</p>
+            </div>
+          ), { duration: 6000 });
+        });
+    }
 
-      toast.custom((t) => (
-        <div
-          onClick={() => {
-            toast.dismiss(t.id);
-            if (n.link) navigate(n.link);
-          }}
-          className="cursor-pointer bg-white dark:bg-zinc-900 shadow-lg rounded-xl p-4 w-80 border-l-4 border-orange-500"
-        >
-          <p className="font-semibold text-sm">{n.title}</p>
-          <p className="text-xs text-gray-500 mt-1">{n.message}</p>
-        </div>
-      ), { duration: 6000 });
-    });
-}
-
-setNotifications(docs);
+    setNotifications(docs);
+    console.log(q);
+    
+  }, (error) => {
+    console.error("Notification Listener Error:", error);
   });
 
-    return () => unsub()
-  }, [currentUser])
+  return () => unsub();
+}, [currentUser]);
 
   // Fetch organizer's data
   useEffect(() => {
@@ -91,6 +97,7 @@ setNotifications(docs);
 
     const fetchData = async () => {
       setLoading(true)
+      console.log("Fetching for UID:", currentUser.uid);
       try {
         const [eventsSnap, ticketsSnap, usersSnap] = await Promise.all([
           getDocs(
@@ -112,7 +119,7 @@ setNotifications(docs);
             )
           )
         ])
-
+      
         const eventsData = eventsSnap.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
@@ -121,6 +128,7 @@ setNotifications(docs);
           id: doc.id,
           ...doc.data()
         }))
+        console.log("Mapped Tickets Data:", ticketsData); 
         const usersData = usersSnap.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
@@ -134,17 +142,16 @@ setNotifications(docs);
             name: e.name,
             date: e.createdAt?.toDate?.() || new Date(0)
           })),
-          ...ticketsData
-            .filter(t => t.buyerName)
-            .map(t => ({
-              type: 'ticket',
-              title: 'Ticket purchased',
-              name: t.eventName || "Unknown",
-              ticketType: t.ticketType || "Flat",
-              ticketNo: t.ticketNumber || 1,
-              user: t.buyerName || "Unknown",
-              date: t.createdAt?.toDate?.() || new Date(0)
-            })),
+           ...ticketsData
+              .filter(t => t.organizerId === currentUser.uid) // ✅ only tickets for this organizer
+              .map(t => ({
+                type: 'ticket',
+                title: 'Ticket purchased',
+                user: t.buyerName || "Unknown",
+                ticket: t.ticketType || "Flat",
+                name: t.eventName || "Unknown",
+                date: t.createdAt?.toDate?.() || new Date(0)
+              })),
           ...usersData.map(u => ({
             type: 'user',
             title: 'New follower',
@@ -158,7 +165,6 @@ setNotifications(docs);
 
         setEvents(eventsData)
         setRecentActivities(activities)
-        console.log("ALL activities:", activities)
       } catch (err) {
         console.error('Error fetching dashboard data:', err)
       } finally {
@@ -285,10 +291,8 @@ setNotifications(docs);
                   <NotificationPanel
                     notifications={notifications}
                     close={() => setShowNotif(false)}
-                    onRead={async notif => {
-                      if (notif.read) return
-
-                      await updateDoc(doc(db, 'notifications', notif.id), {
+                    onRead={async (notifId) => {
+                      await updateDoc(doc(db, 'notifications', notifId), {
                         read: true
                       })
                     }}
