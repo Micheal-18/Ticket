@@ -145,6 +145,7 @@ const OrganizationLayout = ({ currentUser }) => {
               title: 'Ticket purchased',
               name: t.eventName || "Unknown",
               ticketType: t.ticketType || "Flat",
+              ticketNo: t.ticketNumber || 1,
               user: t.buyerName || "Unknown",
               date: t.createdAt?.toDate?.() || new Date(0)
             })),

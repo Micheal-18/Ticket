@@ -140,7 +140,7 @@ useEffect(() => {
                     {activity.type === "event"
                       ? `${activity?.name} event created` : activity?.type === "users"
                       ? `${activity?.user} followed you`
-                      : `${activity?.user} bought a ticket for ${activity?.name}`}
+                      : `${activity?.user} bought a ${activity?.ticketNo || 1} ${activity?.ticketType || "Flat"} ticket for ${activity?.name}`}
                   </h3>
                   <p className="text-gray-400 text-sm">
                     {new Date(activity.date).toLocaleString()}
