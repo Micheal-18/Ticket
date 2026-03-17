@@ -56,34 +56,30 @@ const OrganizationLayout = ({ currentUser }) => {
     }));
 
     // 🚫 Skip first load
-    if (!initialized.current) {
-      initialized.current = true;
-      setNotifications(docs);
-      return;
-    }
+if (!initialized.current) {
+  initialized.current = true;
+} else {
+  snap.docChanges()
+    .filter(c => c.type === "added")
+    .forEach(c => {
+      const n = c.doc.data();
 
-    // ✅ Detect newly added notifications
-    snap
-      .docChanges()
-      .filter(c => c.type === "added")
-      .forEach(c => {
-        const n = c.doc.data();
+      toast.custom((t) => (
+        <div
+          onClick={() => {
+            toast.dismiss(t.id);
+            if (n.link) navigate(n.link);
+          }}
+          className="cursor-pointer bg-white dark:bg-zinc-900 shadow-lg rounded-xl p-4 w-80 border-l-4 border-orange-500"
+        >
+          <p className="font-semibold text-sm">{n.title}</p>
+          <p className="text-xs text-gray-500 mt-1">{n.message}</p>
+        </div>
+      ), { duration: 6000 });
+    });
+}
 
-        toast.custom((t) => (
-          <div
-            onClick={() => {
-              toast.dismiss(t.id);
-              if (n.link) navigate(n.link);
-            }}
-            className="cursor-pointer bg-white dark:bg-zinc-900 shadow-lg rounded-xl p-4 w-80 border-l-4 border-orange-500"
-          >
-            <p className="font-semibold text-sm">{n.title}</p>
-            <p className="text-xs text-gray-500 mt-1">{n.message}</p>
-          </div>
-        ), { duration: 6000 });
-      });
-
-    setNotifications(docs);
+setNotifications(docs);
   });
 
     return () => unsub()
@@ -136,7 +132,7 @@ const OrganizationLayout = ({ currentUser }) => {
             type: 'event',
             title: 'Event created',
             name: e.name,
-            date: e.createdAt
+            date: e.createdAt?.toDate?.() || new Date(0)
           })),
           ...ticketsData
             .filter(t => t.buyerName)
@@ -156,12 +152,13 @@ const OrganizationLayout = ({ currentUser }) => {
             date: u.createdAt?.toDate?.() || new Date(0)
           }))
         ]
-          .filter(a => a.date) // remove invalid ones
+          .filter(a => a.date instanceof Date && !isNaN(a.date)) // remove invalid ones
           .sort((a, b) => new Date(b.date) - new Date(a.date))
           .slice(0, 10)
 
         setEvents(eventsData)
         setRecentActivities(activities)
+        console.log("ALL activities:", activities)
       } catch (err) {
         console.error('Error fetching dashboard data:', err)
       } finally {
@@ -287,6 +284,7 @@ const OrganizationLayout = ({ currentUser }) => {
 
                   <NotificationPanel
                     notifications={notifications}
+                    close={() => setShowNotif(false)}
                     onRead={async notif => {
                       if (notif.read) return
 

@@ -2,12 +2,11 @@ import { FaTicketAlt, FaUserPlus, FaMoneyBillWave } from "react-icons/fa";
 
 const iconMap = {
   event_submission: "📢",
-  ticket: <FaTicketAlt className="text-green-500" />,
+  ticket_purchase: <FaTicketAlt className="text-green-500" />, // ✅ ADD THIS
   follower: <FaUserPlus className="text-blue-500" />,
   settlement: <FaMoneyBillWave className="text-orange-500" />,
   blog: "📝",
 };
-
 const NotificationItem = ({ notification, onClick }) => {
   return (
     <div
@@ -35,7 +34,9 @@ const NotificationItem = ({ notification, onClick }) => {
         <p className="text-[10px] text-gray-400 mt-1">
           {notification.createdAt?.toDate
             ? notification.createdAt.toDate().toLocaleString()
-            : ""}
+            : notification.createdAt instanceof Date
+            ? notification.createdAt.toLocaleString()
+            : "No date"}
         </p>
       </div>
 

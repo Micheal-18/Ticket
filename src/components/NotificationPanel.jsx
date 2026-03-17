@@ -3,7 +3,7 @@ import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import NotificationItem from "./NotificationItem";
 
-const NotificationPanel = ({ notifications, close }) => {
+const NotificationPanel = ({ notifications, close , onRead}) => {
   const navigate = useNavigate();
   const grouped = groupNotifications(notifications);
 
@@ -12,6 +12,7 @@ const NotificationPanel = ({ notifications, close }) => {
       await updateDoc(doc(db, "notifications", notif.id), {
         read: true,
       });
+      onRead?.(notif.id);
     }
 
     if(notif.status === "pending") {
@@ -71,17 +72,23 @@ function groupNotifications(notifications) {
   const groups = { today: [], yesterday: [], earlier: [] };
 
   notifications.forEach((n) => {
-    if (!n.createdAt?.toDate) {
+    let d;
+
+    if (n.createdAt?.toDate) {
+      d = n.createdAt.toDate();
+    } else if (n.createdAt instanceof Date) {
+      d = n.createdAt;
+    } else {
       groups.earlier.push(n);
       return;
     }
 
-    const d = n.createdAt.toDate();
-    d.setHours(0, 0, 0, 0);
+    const compare = new Date(d);
+    compare.setHours(0, 0, 0, 0);
 
-    if (d.getTime() === today.getTime()) {
+    if (compare.getTime() === today.getTime()) {
       groups.today.push(n);
-    } else if (d.getTime() === yesterday.getTime()) {
+    } else if (compare.getTime() === yesterday.getTime()) {
       groups.yesterday.push(n);
     } else {
       groups.earlier.push(n);
