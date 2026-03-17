@@ -112,16 +112,18 @@ const DashboardHome = () => {
                               <p className="text-gray-400">{new Date(activity?.date).toLocaleString()}</p>
                             </>
                           )}
-                          {activity.type === "users" && (
-                            <>
-                              <h3 className="text-lg font-semibold">{activity?.name || "Unknown User"} registered for {activity?.account}</h3>
-                              <p className="text-gray-400">{new Date(activity?.date).toLocaleString()}</p>
-                            </>
-                          )}
+
                           {activity.type === "ticket" && (
                             <>
                               <h3 className="text-lg font-semibold">{activity?.user} bought ticket for {activity?.ticket} for {activity?.name} events</h3>
                               <p className="text-gray-400">{new Date(activity.date).toLocaleString()}</p>
+                            </>
+                          )}
+
+                           {activity.type === "users" && (
+                            <>
+                              <h3 className="text-lg font-semibold">{activity?.name || "Unknown User"} registered for {activity?.account}</h3>
+                              <p className="text-gray-400">{new Date(activity?.date).toLocaleString()}</p>
                             </>
                           )}
                         </div>

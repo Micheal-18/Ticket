@@ -143,17 +143,19 @@ const OrganizationLayout = ({ currentUser }) => {
             .map(t => ({
               type: 'ticket',
               title: 'Ticket purchased',
-              name: t.eventName,
-              user: t.buyerName,
-              date: t.createdAt
+              name: t.eventName || "Unknown",
+              ticketType: t.ticketType || "Flat",
+              user: t.buyerName || "Unknown",
+              date: t.createdAt?.toDate?.() || new Date(0)
             })),
           ...usersData.map(u => ({
             type: 'user',
             title: 'New follower',
-            user: u.fullName,
-            date: u.createdAt
+            user: u.fullName || "Unknown",
+            date: u.createdAt?.toDate?.() || new Date(0)
           }))
         ]
+          .filter(a => a.date) // remove invalid ones
           .sort((a, b) => new Date(b.date) - new Date(a.date))
           .slice(0, 10)
 

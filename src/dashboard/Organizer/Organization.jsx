@@ -138,8 +138,8 @@ useEffect(() => {
                 <div>
                   <h3 className="font-semibold">
                     {activity.type === "event"
-                      ? `${activity.name} event created` : activity.type === "users"
-                      ? `${activity.user} followed you`
+                      ? `${activity?.name} event created` : activity?.type === "users"
+                      ? `${activity?.user} followed you`
                       : `${activity?.user} bought a ticket for ${activity?.name}`}
                   </h3>
                   <p className="text-gray-400 text-sm">
@@ -170,9 +170,9 @@ useEffect(() => {
                 className="flex justify-between items-center  pb-3"
               >
                 <div>
-                  <p className="font-semibold">{f.fullName}</p>
+                  <p className="font-semibold">{f.fullName || "Unknown"}</p>
                   <p className="text-gray-400 text-sm">
-                    Last activity: {new Date(f.createdAt).toLocaleString()}
+                    Last activity: {new Date(f.createdAt?.toDate?.() || new Date(0)).toLocaleString()}
                   </p>
                 </div>
                 <span className="text-xs bg-orange-500/10 text-orange-400 px-3 py-1 rounded-full">

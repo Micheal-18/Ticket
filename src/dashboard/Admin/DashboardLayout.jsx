@@ -64,17 +64,21 @@ const DashboardLayout = ({ currentUser }) => {
             date: u.createdAt
           })),
           ...ticketsData.map(t => ({
-            type: 'ticket',
-            user: t.buyerName,
-            ticket: t.ticketType,
-            name: t.eventName,
-            date: t.createdAt
+              type: 'ticket',
+              user: t.buyerName || "Unknown",
+              ticket: t.ticketType || "Flat",
+              name: t.eventName || "Unknown",
+              date: t.createdAt?.toDate?.() || new Date(0)
           }))
         ]
+          .filter(a => a.date) // remove invalid ones
           .sort((a, b) => new Date(b.date) - new Date(a.date))
           .slice(0, 10)
 
         setRecentActivities(activities)
+       console.log("Tickets:", ticketsData)
+       console.log("Activities:", activities)
+        
       } catch (error) {
         console.error('Error fetching dashboard data:', error)
       } finally {
