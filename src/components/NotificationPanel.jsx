@@ -51,7 +51,7 @@ const handleClick = async (notif) => {
     );
 
   return (
-    <div className="max-h-[420px] overflow-y-auto space-y-4">
+    <div className="max-h-[420px] custom-scrollbar  space-y-4">
       <Section title="Today" items={grouped.today} />
       <Section title="Yesterday" items={grouped.yesterday} />
       <Section title="Earlier" items={grouped.earlier} />
