@@ -165,7 +165,7 @@ const continueAuth = async () => {
       <p className="adaptive-text mb-6">
         {verified 
           ? "Your account is verified. You can now continue to the app." 
-          : <>We sent a verification link to <span className="font-semibold">{email || "your email"}</span>. Please check your inbox or Spam.
+          : <>We sent a verification link to <span className="font-semibold">{email || "your email"}</span>. Please check your inbox or Spam folder.</>
         }
       </p>
 
