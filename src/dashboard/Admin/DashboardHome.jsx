@@ -31,7 +31,7 @@ const DashboardHome = () => {
     });
     return monthOrder.map(m => ({ name: m, registrations: counts[m] }));
   })();
-  console.table(recentActivities);
+
 
     /* ---------------- FOLLOWERS (READ-ONLY) ---------------- */
   const followersMap = {};

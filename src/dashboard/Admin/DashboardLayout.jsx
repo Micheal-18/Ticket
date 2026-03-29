@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Outlet, NavLink, Link, useNavigate } from 'react-router-dom'
-import { collection, getDocs } from 'firebase/firestore'
+import { collection, getDocs, onSnapshot, orderBy, query, where } from 'firebase/firestore'
 import { db, auth } from '../../firebase/firebase'
 import { FaBell, FaBlog, FaMoneyBillTrendUp } from 'react-icons/fa6'
 import { RiDashboard2Line, RiQrScanLine, RiTicket2Line } from 'react-icons/ri'
@@ -8,6 +8,10 @@ import { FiMenu, FiX } from 'react-icons/fi'
 import { signOut } from 'firebase/auth'
 import Darkmode from '../../components/DarkMode'
 import { FaSignOutAlt } from 'react-icons/fa'
+import NotificationPanel from '../../components/NotificationPanel'
+import logo from '../../assets/Default.png'
+import { toast } from 'react-hot-toast'
+import { updateDoc, doc } from 'firebase/firestore'
 
 const DashboardLayout = ({ currentUser }) => {
   const [events, setEvents] = useState([])
@@ -16,13 +20,71 @@ const DashboardLayout = ({ currentUser }) => {
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
   const [slide, setSlide] = useState(false)
+    const [showNotif, setShowNotif] = useState(false)
+    const [notifications, setNotifications] = useState([])
+    const initialized = useRef(false);
+  
+    const unreadCount = notifications.filter(n => !n.read).length
+  
+    const slideMovement = () => setSlide(!slide)
 
-  const slideMovement = () => setSlide(!slide)
 
   const handleLogout = async () => {
     await signOut(auth)
     navigate('/')
   }
+
+  useEffect(() => {
+    if (!currentUser?.uid) return;
+  
+    const q = query(
+      collection(db, 'notifications'),
+      where('userId', '==', currentUser.uid), 
+      orderBy('createdAt', 'desc')
+    );
+    
+    
+  
+    const unsub = onSnapshot(q, (snap) => {
+      const docs = snap.docs.map(d => ({
+        id: d.id,
+        ...d.data(),
+      }));
+  
+      if (!initialized.current) {
+        initialized.current = true;
+      } else {
+        snap.docChanges()
+          .filter(c => c.type === "added")
+          .forEach(c => {
+            const n = c.doc.data();
+            // Use your ticket icon for the toast
+            toast.custom((t) => (
+              <div
+                onClick={() => {
+                  toast.dismiss(t.id);
+                  if (n.link) navigate(n.link);
+                }}
+                className="cursor-pointer bg-white dark:bg-zinc-900 shadow-lg rounded-xl p-4 w-80 border-l-4 border-green-500"
+              >
+                <div className="flex items-center gap-2">
+                  <span>{n.type === 'ticket_purchase' ? "🎫" : "🔔"}</span>
+                  <p className="font-semibold text-sm">{n.title}</p>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">{n.message}</p>
+              </div>
+            ), { duration: 6000 });
+          });
+      }
+  
+      setNotifications(docs);
+      
+    }, (error) => {
+      console.error("Notification Listener Error:", error);
+    });
+  
+    return () => unsub();
+  }, [currentUser]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -76,8 +138,7 @@ const DashboardLayout = ({ currentUser }) => {
           .slice(0, 10)
 
         setRecentActivities(activities)
-       console.log("Tickets:", ticketsData)
-       console.log("Activities:", activities)
+      
         
       } catch (error) {
         console.error('Error fetching dashboard data:', error)
@@ -183,19 +244,42 @@ const DashboardLayout = ({ currentUser }) => {
           px-4 py-3 shadow flex items-center justify-between
         '
         >
-          <div>
-            <h2 className='font-semibold text-lg'>{currentUser?.fullName}</h2>
-            <p className='text-sm'>Admin Dashboard</p>
+          
+          <div className='flex gap-2 items-center'><img src={logo} alt="logo" className="w-10 h-10 rounded-full" />
+            <div>
+                <h2 className='font-semibold text-lg'>{currentUser?.fullName}</h2>
+                <p className='text-sm'>Admin Dashboard</p>
+            </div>
           </div>
 
           <div className='flex items-center gap-2'>
             <Darkmode />
 
             <div className='relative'>
-              <FaBell size={16} />
-              <span className='absolute -top-2 -right-2 bg-red-600 text-xs rounded-full w-5 h-5 flex items-center justify-center'>
-                {recentActivities.length > 9 ? '9+' : recentActivities.length}
-              </span>
+              <button onClick={() => setShowNotif(!showNotif)}>
+                <FaBell size={16} />
+                {unreadCount > 0 && (
+                  <span className='absolute -top-2 -right-2 bg-red-600 text-xs rounded-full w-5 h-5 flex items-center justify-center'>
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+              </button>
+
+              {showNotif && (
+                <div className='absolute -right-2 lg:right-0 mt-3 w-80 bg-(--bg-color) shadow-xl rounded-xl p-3 z-50'>
+                  <h4 className='font-semibold mb-2 text-sm'>Notifications</h4>
+
+                  <NotificationPanel
+                    notifications={notifications}
+                    close={() => setShowNotif(false)}
+                    onRead={async (notifId) => {
+                      await updateDoc(doc(db, 'notifications', notifId), {
+                        read: true
+                      })
+                    }}
+                  />
+                </div>
+              )}
             </div>
 
             <button

@@ -19,6 +19,7 @@ import { FaSignOutAlt } from 'react-icons/fa'
 import NotificationPanel from '../../components/NotificationPanel'
 import toast from "react-hot-toast";
 import { useRef } from "react";
+import logo from '../../assets/Default.png'
 
 const OrganizationLayout = ({ currentUser }) => {
   const [events, setEvents] = useState([])
@@ -82,7 +83,6 @@ useEffect(() => {
     }
 
     setNotifications(docs);
-    console.log(q);
     
   }, (error) => {
     console.error("Notification Listener Error:", error);
@@ -97,7 +97,6 @@ useEffect(() => {
 
     const fetchData = async () => {
       setLoading(true)
-      console.log("Fetching for UID:", currentUser.uid);
       try {
         const [eventsSnap, ticketsSnap, usersSnap] = await Promise.all([
           getDocs(
@@ -128,7 +127,6 @@ useEffect(() => {
           id: doc.id,
           ...doc.data()
         }))
-        console.log("Mapped Tickets Data:", ticketsData); 
         const usersData = usersSnap.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
@@ -265,11 +263,13 @@ useEffect(() => {
           px-4 py-3 shadow flex items-center justify-between
         '
         >
-          <div>
-            <h2 className='font-semibold text-lg'>{currentUser?.orgName}</h2>
-            <p className='text-sm'>Organizer Dashboard</p>
+          <div className='flex gap-2 items-center'><img src={logo} alt="logo" className="w-10 h-10 rounded-full" />
+            <div>
+                <h2 className='font-semibold text-lg'>{currentUser?.orgName}</h2>
+                <p className='text-sm'>Organizer Dashboard</p>
+            </div>
           </div>
-
+          
           {/* Desktop controls */}
           <div className='flex items-center gap-2'>
             <Darkmode />
