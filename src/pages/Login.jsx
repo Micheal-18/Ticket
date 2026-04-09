@@ -1,11 +1,12 @@
-import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { signInWithEmailAndPassword, signInWithPopup, signOut } from 'firebase/auth';
 import { setPersistence, browserLocalPersistence, browserSessionPersistence } from "firebase/auth";
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import React, { useState } from 'react'
 import walkGif from "../assets/dog.gif"
-import { auth, db } from '../firebase/firebase';
+import { auth, db, googleProvider } from '../firebase/firebase';
 import { FaEye, FaEyeSlash } from 'react-icons/fa6';
 import { useNavigate } from "react-router-dom";
+import GoogleAuth from '../components/GoogleAuth';
 
 const Login = () => {
     const [rememberMe, setRememberMe] = useState(false);
@@ -15,6 +16,35 @@ const Login = () => {
     const navigate = useNavigate();
 
     const handleClick = () => setClick(!click);
+
+    const signInWithGoogle = async () => {
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+
+    const user = result.user;
+
+    // Save user in Firestore
+    await setDoc(
+      doc(db, "users", user.uid),
+      {
+        name: user.displayName,
+        email: user.email,
+        photoURL: user.photoURL,
+        provider: "google",
+        verified: true, // Google emails are already verified
+        createdAt: new Date().toISOString(),
+      },
+      { merge: true }
+    );
+
+    console.log("✅ Logged in:", user);
+
+  } catch (error) {
+    console.error("Google login error:", error);
+  }
+};
+
+
 
  const handleLogin = async (e) => {
     e.preventDefault();
@@ -52,6 +82,8 @@ const Login = () => {
         return;
       }
 
+      
+
       const data = userSnap.data();
 
       let redirect = "/";
@@ -75,8 +107,9 @@ const Login = () => {
   };
 
     return (
-        <section data-aos="fade-out" className='w-full min-h-screen bg-(--bg-color) dark:bg-(--bg-color) flex justify-center items-center'>
+        <section data-aos="fade-out" className='flex-col w-full min-h-screen bg-(--bg-color) dark:bg-(--bg-color) flex justify-center items-center'>
             <button onClick={() => navigate("/")} className='absolute top-5 left-5 bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 active:scale-90'>Go Back</button>
+            <GoogleAuth />
             <form onSubmit={handleLogin} className="flex flex-col space-y-4 w-full max-w-lg mx-6 lg:mx-0">
                 <h1 className="font-bold text-5xl ">Login</h1>
                 {error && <div className="bg-orange-100 text-red-600 p-2 rounded mb-4">{error}</div>}
@@ -102,6 +135,7 @@ const Login = () => {
                         Register
                     </button>
                 </p>
+                
                 <footer className='mt-10'>
                     <img src={walkGif} alt='walking gif' className='w-20 h-20 animation-walk' />
                 </footer>

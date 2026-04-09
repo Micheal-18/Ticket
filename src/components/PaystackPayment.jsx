@@ -18,13 +18,13 @@ const PaystackPayment = ({
   const [ticketData, setTicketData] = useState(null);
 
   const buyerEmail = currentUser?.email || guestEmail;
-  const buyerName = currentUser?.fullName || guestName;
-  const buyerNumber = currentUser?.phone || guestNumber;
+  const buyerName = currentUser?.fullName || currentUser?.name;
+  // const buyerNumber = currentUser?.phone || guestNumber;
 
   const totalAmount = ticket.amount * ticket.num;
 
   const payWithPaystack = async () => {
-    if (!buyerEmail || !buyerName || !buyerNumber) {
+    if (!buyerEmail || !buyerName ) {
       alert("Please login or fill guest details.");
       return;
     }

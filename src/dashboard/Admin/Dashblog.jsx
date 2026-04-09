@@ -133,9 +133,13 @@ const Dashblog = () => {
       <section>
         <h1 className="text-3xl font-bold mb-6">Pending Blog Approvals</h1>
         {pendingBlogs.length === 0 ? <p className="text-gray-500">No pending blogs.</p> : pendingBlogs.map(blog => (
-          <div key={blog.id} className="bg-white dark:bg-zinc-900 rounded-xl shadow p-5 mb-4">
+          <div key={blog.id} className="rounded-xl shadow p-5 mb-4">
             <h2 className="text-xl font-semibold mb-2">{blog.title}</h2>
             <p className="text-gray-500 mb-2">{blog.description}</p>
+            <div
+              className="prose max-w-none"
+              dangerouslySetInnerHTML={{ __html: blog.content }}
+            ></div>
             {blog.photoURL && <img src={blog.photoURL} alt={blog.title} className="mb-4 rounded-lg max-h-64 object-cover" />}
             <div className="flex gap-3">
               <button onClick={() => handleApprove(blog.id)} disabled={actioning} className="bg-green-600 px-4 py-2 rounded-lg text-white">{actioning ? "Processing..." : "Approve"}</button>

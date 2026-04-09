@@ -7,6 +7,7 @@ import PaystackPayment from "../components/PaystackPayment";
 import { formatEventStatus } from "../utils/formatEventRange";
 import OptimizedImage from "../components/OptimizedImage";
 import FollowButton from "../components/FolllowButton";
+import GoogleAuth from "../components/GoogleAuth";
 
 const TicketModal = ({ currentUser }) => {
   const { slug } = useParams();
@@ -46,6 +47,38 @@ const TicketModal = ({ currentUser }) => {
 
     fetchEvent();
   }, [slug]);
+
+  const handleSelectTicket = (ticket) => {
+  const qty = ticketQty[ticket.label] || 0;
+
+  if (qty <= 0) {
+    return alert("Select at least 1 ticket");
+  }
+
+  if (!currentUser) {
+    // ❌ Not logged in → trigger Google login instead
+    return setSelectedTicket({
+      ...ticket,
+      num: qty,
+      requiresAuth: true,
+    });
+  }
+
+  // ✅ Logged in → go straight to payment
+  setSelectedTicket({
+    ...ticket,
+    num: qty,
+  });
+};
+
+useEffect(() => {
+  if (currentUser && selectedTicket?.requiresAuth) {
+    setSelectedTicket((prev) => ({
+      ...prev,
+      requiresAuth: false,
+    }));
+  }
+}, [currentUser]);
 
   // 🕓 Safe date formatting
   const formatDate = (date) => {
@@ -173,12 +206,7 @@ const TicketModal = ({ currentUser }) => {
                       </select>
 
                       <button
-                        onClick={() =>
-                          setSelectedTicket({
-                            ...ticket,
-                            num: ticketQty[ticket.label] || 0,
-                          })
-                        }
+                        onClick={() => handleSelectTicket(ticket)}
                         className="flex-1 flex lg:flex-row flex-col space-x-4 text-left p-2 border rounded-lg  active:scale-95 transition"
                       >
                         <span>
@@ -199,7 +227,7 @@ const TicketModal = ({ currentUser }) => {
 
                     {!currentUser && (
                       <>
-                        <div className="flex space-x-2 items-center">
+                        {/* <div className="flex space-x-2 items-center">
                           <label className="font-bold text-gray-400">Name:</label>
                           <input
                             placeholder="Name"
@@ -211,7 +239,7 @@ const TicketModal = ({ currentUser }) => {
 
                         </div>
 
-                        {/* Email user */}
+                       
                         <div className="flex space-x-2 items-center">
                           <label className="font-bold text-gray-400">Email:</label>
                           <input
@@ -234,7 +262,12 @@ const TicketModal = ({ currentUser }) => {
                             onChange={(e) => setGuestNumber(e.target.value.trim())}
                           />
 
+                        </div> */}
+                        <div className="flex justify-center">
+<GoogleAuth className="w-1/2"/>
                         </div>
+
+                        
                       </>
                     )}
                   </div>
@@ -248,16 +281,15 @@ const TicketModal = ({ currentUser }) => {
 
           </div>
           {/* Paystack Payment */}
-          {selectedTicket && (
-            <PaystackPayment
-              events={selectedEvent}
-              ticket={selectedTicket}
-              currentUser={currentUser}
-              guestEmail={guestEmail}
-              guestName={guestName}
-              guestNumber={guestNumber}
-            />
-          )}
+          {selectedTicket && !selectedTicket.requiresAuth && (
+  <PaystackPayment
+    events={selectedEvent}
+    ticket={selectedTicket}
+    currentUser={currentUser}
+    email={currentUser?.email}
+    name={currentUser?.name || currentUser?.fullName || currentUser?.displayName}
+  />
+)}
         </div>
       </div>
     </div>
