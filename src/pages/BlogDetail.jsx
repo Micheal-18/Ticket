@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { doc, getDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from '../firebase/firebase';
 import LoadingScreen from '../components/LoadingScreen';
 
@@ -9,21 +9,28 @@ const BlogDetail = () => {
   const [blog, setBlog] = useState(null);
 
   useEffect(() => {
-    const fetchBlog = async () => {
-      try {
-        const docRef = doc(db, "blogs", log);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          setBlog(docSnap.data());
-        } else {
-          console.error("No such blog!");
-        }
-      } catch (error) {
-        console.error("Error fetching blog:", error);
+  const fetchBlog = async () => {
+    try {
+      const q = query(
+        collection(db, "blogs"),
+        where("log", "==", log)
+      );
+
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        const blogData = querySnapshot.docs[0].data();
+        setBlog(blogData);
+      } else {
+        console.error("No such blog!");
       }
-    };
-    fetchBlog();
-  }, [log]);
+    } catch (error) {
+      console.error("Error fetching blog:", error);
+    }
+  };
+
+  fetchBlog();
+}, [log]);
 
   if (!blog) {
     return <LoadingScreen />;
@@ -47,6 +54,10 @@ const BlogDetail = () => {
         className="prose max-w-none"
         dangerouslySetInnerHTML={{ __html: blog.content }}
       ></div>
+
+      <div className='text-right'>
+        <p className="text-gray-500">Written by {blog.author}</p>
+      </div>
     </div>
   );
 };

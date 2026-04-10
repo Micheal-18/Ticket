@@ -13,7 +13,7 @@ const Blog = ({ blog, setBlog, currentUser }) => {
         // Fetch only approved blogs
         const q = query(
           collection(db, "blogs"),
-          where("status", "==", "approved"),
+          where("approved", "==", true),
           orderBy("createdAt", "desc")
         );
         const querySnapshot = await getDocs(q);
@@ -45,23 +45,6 @@ const Blog = ({ blog, setBlog, currentUser }) => {
           <p className="text-[#eeeeee] text-md">
             Explore the world of events, from concerts to conferences, all in one place.
           </p>
-
-          {currentUser?.isAdmin && (
-            <div className="flex gap-4 justify-center mt-4">
-              <Link
-                to="/Write"
-                className="bg-orange-500 hover:bg-orange-600 active:scale-90 text-white px-6 py-3 rounded-md font-medium transition"
-              >
-                Write a Blog
-              </Link>
-              <Link
-                to="/dashboard/blog"
-                className="bg-green-500 hover:bg-green-600 active:scale-90 text-white px-6 py-3 rounded-md font-medium transition"
-              >
-                Manage Blogs
-              </Link>
-            </div>
-          )}
         </div>
       </section>
 
