@@ -55,7 +55,7 @@ const Home = ({currentUser}) => {
         // Fetch only approved blogs
         const q = query(
           collection(db, "blogs"),
-          where("status", "==", "approved"),
+          where("approved", "==", true),
           orderBy("createdAt", "desc")
         );
         const querySnapshot = await getDocs(q);
