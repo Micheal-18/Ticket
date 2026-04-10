@@ -57,7 +57,6 @@ const Home = ({currentUser}) => {
         const q = query(
           collection(db, "blogs"),
           where("approved", "==", true),
-           where("log", "==", log),
           orderBy("createdAt", "desc")
         );
         const querySnapshot = await getDocs(q);
@@ -224,7 +223,7 @@ const Home = ({currentUser}) => {
                     {News.description || "No description available"}
                   </p>
                 </div>
-                <Link to={`/blogs/${News.id}`} className='text-orange-500 hover:underline'>
+                <Link to={`/blogs/${News.log}`} className='text-orange-500 hover:underline'>
                   Read More
                 </Link>
               </div>
