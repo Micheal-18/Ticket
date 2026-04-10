@@ -10,10 +10,11 @@ import { db } from '../firebase/firebase'
 import { FaEllipsisV } from 'react-icons/fa'
 import OptimizedImage from '../components/OptimizedImage'
 import Spinner from '../components/Spinner'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import Adsense from '../components/Adsense'
 
 const Home = ({currentUser}) => {
+    const { log } = useParams();
   const [events, setEvents] = useState([]);
   const [blog, setBlog] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -56,6 +57,7 @@ const Home = ({currentUser}) => {
         const q = query(
           collection(db, "blogs"),
           where("approved", "==", true),
+           where("log", "==", log),
           orderBy("createdAt", "desc")
         );
         const querySnapshot = await getDocs(q);
