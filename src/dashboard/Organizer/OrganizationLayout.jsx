@@ -29,6 +29,11 @@ const OrganizationLayout = ({ currentUser }) => {
   const [showNotif, setShowNotif] = useState(false)
   const [notifications, setNotifications] = useState([])
   const initialized = useRef(false);
+    const [profileOpen, setProfileOpen] = useState();
+  
+    const handleOpenProfile = () => {
+      setProfileOpen(true);
+    }
 
   const unreadCount = notifications.filter(n => !n.read).length
 
@@ -263,10 +268,14 @@ useEffect(() => {
           px-4 py-3 shadow flex items-center justify-between
         '
         >
-          <div className='flex gap-2 items-center'><img src={logo} alt="logo" className="w-10 h-10 rounded-full" />
+          <div onClick={handleOpenProfile} className='flex gap-2 items-center'><img
+            src={currentUser?.photoURL || logo}
+            alt="profile"
+            className="w-10 h-10 rounded-full object-cover"
+          />
             <div>
-                <h2 className='font-semibold text-lg'>{currentUser?.orgName}</h2>
-                <p className='text-sm'>Organizer Dashboard</p>
+                <h2 className='font-semibold text-lg'>{currentUser?.fullName}</h2>
+                <p className='text-sm'>{currentUser?.email}</p>
             </div>
           </div>
           
@@ -322,7 +331,7 @@ useEffect(() => {
           {loading ? (
             <p className='text-gray-400'>Loading dashboard...</p>
           ) : (
-            <Outlet context={{ events, recentActivities, currentUser }} />
+            <Outlet context={{ events, recentActivities, currentUser, profileOpen, setProfileOpen}} />
           )}
         </main>
 

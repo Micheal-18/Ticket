@@ -154,7 +154,7 @@ const Dashblog = () => {
       <section>
         <h1 className="text-3xl font-bold mb-6 text-red-600">Rejected Blogs</h1>
         {rejectedBlogs.length === 0 ? <p className="text-gray-500">No rejected blogs yet.</p> : rejectedBlogs.map(blog => (
-          <div key={blog.id} className="bg-white dark:bg-zinc-900 rounded-xl shadow p-5 mb-4 border-l-4 border-red-600">
+          <div key={blog.id} className="bg-(--bg-color) dark:bg-(--bg-color) text-(--text-rounded-xl shadow p-5 mb-4 border-l-4 border-red-600">
             <input type="text" value={blog.title} onChange={(e) => handleChangeField(blog.id, "title", e.target.value)} className="w-full p-2 mb-2 border rounded" placeholder="Blog Title" />
             <textarea value={blog.description} onChange={(e) => handleChangeField(blog.id, "description", e.target.value)} className="w-full p-2 mb-2 border rounded" placeholder="Short description" />
             {blog.photoURL && 

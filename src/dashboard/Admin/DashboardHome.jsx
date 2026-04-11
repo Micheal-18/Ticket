@@ -11,9 +11,10 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import Profile from "./component/Profile";
 
 const DashboardHome = () => {
-  const { events, users, recentActivities, currentUser } = useOutletContext();
+  const { events, users, recentActivities, currentUser, profileOpen, setProfileOpen } = useOutletContext();
 
   const totalRevenue = events.reduce((sum, e) => sum + (e.revenue || 0), 0);
   const totalTicketsSold = events.reduce((sum, e) => sum + (e.ticketSold || 0), 0);
@@ -50,11 +51,17 @@ const DashboardHome = () => {
     
   return (
     <main className="flex-1 py-4 custom-scrollbar">
-              {/* Summary Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 md:gap-4 gap-2 mb-8">
-                <div className=" p-4 rounded-2xl shadow">
-                  <h2 className="text-gray-400">Total Events</h2>
-                  <p className="text-3xl font-semibold mt-2">{events.length}</p>
+      {profileOpen && (
+        <Profile
+          profileOpen={profileOpen}
+          setProfileOpen={setProfileOpen}
+        />
+      )}
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 md:gap-4 gap-2 mb-8">
+        <div className=" p-4 rounded-2xl shadow">
+          <h2 className="text-gray-400">Total Events</h2>
+          <p className="text-3xl font-semibold mt-2">{events.length}</p>
                 </div>
                 <div className=" p-4 rounded-2xl shadow">
                   <h2 className="text-gray-400">Followers</h2>

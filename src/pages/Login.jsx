@@ -107,8 +107,8 @@ const Login = () => {
   };
 
     return (
-        <section data-aos="fade-out" className='flex-col w-full min-h-screen bg-(--bg-color) dark:bg-(--bg-color) flex justify-center items-center'>
-            <GoogleAuth />
+        <section data-aos="fade-out" className='flex-col w-full min-h-screen bg-(--bg-color) dark:bg-(--bg-color) flex justify-center items-center p-4'>
+            <GoogleAuth className="mb-4 hover:scale-105 active:scale-90"/>
             <form onSubmit={handleLogin} className="flex flex-col space-y-4 w-full max-w-lg mx-6 lg:mx-0">
                 <h1 className="font-bold text-5xl ">Login</h1>
                 {error && <div className="bg-orange-100 text-red-600 p-2 rounded mb-4">{error}</div>}

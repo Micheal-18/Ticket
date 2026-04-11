@@ -13,16 +13,21 @@ import logo from '../../assets/Default.png'
 import { toast } from 'react-hot-toast'
 import { updateDoc, doc } from 'firebase/firestore'
 
-const DashboardLayout = ({ currentUser }) => {
+const DashboardLayout = ({ currentUser}) => {
   const [events, setEvents] = useState([])
   const [users, setUsers] = useState([])
   const [recentActivities, setRecentActivities] = useState([])
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
   const [slide, setSlide] = useState(false)
-    const [showNotif, setShowNotif] = useState(false)
-    const [notifications, setNotifications] = useState([])
-    const initialized = useRef(false);
+  const [showNotif, setShowNotif] = useState(false)
+  const [notifications, setNotifications] = useState([])
+  const initialized = useRef(false);
+  const [profileOpen, setProfileOpen] = useState();
+
+  const handleOpenProfile = () => {
+    setProfileOpen(true);
+  }
   
     const unreadCount = notifications.filter(n => !n.read).length
   
@@ -245,10 +250,14 @@ const DashboardLayout = ({ currentUser }) => {
         '
         >
           
-          <div className='flex gap-2 items-center'><img src={logo} alt="logo" className="w-10 h-10 rounded-full" />
+          <div onClick={handleOpenProfile} className='flex gap-2 items-center'><img
+            src={currentUser?.photoURL || logo}
+            alt="profile"
+            className="w-10 h-10 rounded-full object-cover"
+          />
             <div>
                 <h2 className='font-semibold text-lg'>{currentUser?.fullName}</h2>
-                <p className='text-sm'>Admin Dashboard</p>
+                <p className='text-sm'>{currentUser?.email}</p>
             </div>
           </div>
 
@@ -300,11 +309,12 @@ const DashboardLayout = ({ currentUser }) => {
 
         {/* CONTENT */}
         <main className='flex-1 p-4 lg:p-8 pb-24 lg:pb-8'>
+          
           {loading ? (
             <p className='text-gray-400'>Loading dashboard...</p>
           ) : (
             <Outlet
-              context={{ events, users, recentActivities, currentUser }}
+              context={{ events, users, recentActivities, currentUser, profileOpen, setProfileOpen }}
             />
           )}
         </main>

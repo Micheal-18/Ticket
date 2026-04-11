@@ -12,9 +12,10 @@ import {
 } from "recharts";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
+import Profile from "./component/OrgProfile";
 
 const Organization = () => {
-  const { events, recentActivities, currentUser } = useOutletContext();
+  const { events, recentActivities, currentUser, profileOpen, setProfileOpen  } = useOutletContext();
 
   /* ---------------- FILTER EVENTS ---------------- */
   const orgEvents = events.filter(
@@ -80,6 +81,12 @@ useEffect(() => {
 
   return (
     <main className="flex-1 py-4 overflow-y-auto space-y-10">
+            {profileOpen && (
+        <Profile
+          profileOpen={profileOpen}
+          setProfileOpen={setProfileOpen}
+        />
+      )}
 
       {/* ================= SUMMARY CARDS ================= */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
