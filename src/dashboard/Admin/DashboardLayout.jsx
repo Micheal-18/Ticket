@@ -257,7 +257,7 @@ const DashboardLayout = ({ currentUser}) => {
           />
             <div>
                 <h2 className='font-semibold text-lg'>{currentUser?.fullName}</h2>
-                <p className='text-sm'>{currentUser?.email}</p>
+                <p className='text-sm truncate w-30'>{currentUser?.email}</p>
             </div>
           </div>
 

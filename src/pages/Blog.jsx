@@ -59,7 +59,7 @@ const Blog = ({ blog, setBlog, currentUser }) => {
             {blog.map((news) => (
               <div
                 key={news.id}
-                className="relative flex flex-col cursor-pointer group bg-white dark:bg-zinc-900 rounded-2xl shadow-lg overflow-hidden"
+                className="relative flex flex-col cursor-pointer group bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) rounded-2xl shadow-lg overflow-hidden"
               >
                 {/* Options Icon */}
                 {currentUser?.isAdmin && (
