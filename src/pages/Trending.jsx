@@ -14,7 +14,7 @@ const Trending = ({ currentUser, events, setEvents }) => {
         const fetchTrending = async () => {
             try {
                 // Fetch top 5 latest blogs
-                const blogQuery = query(collection(db, "blogs"), orderBy("createdAt", "desc"), limit(5));
+                const blogQuery = query(collection(db, "blogs"), where("approved", "==", true), orderBy("createdAt", "desc"), limit(5));
                 const blogSnap = await getDocs(blogQuery);
                 const blogsData = blogSnap.docs.map((doc) => ({
                     id: doc.id,
@@ -22,7 +22,7 @@ const Trending = ({ currentUser, events, setEvents }) => {
                 }));
 
                 // Fetch top 5 latest events
-                const eventQuery = query(collection(db, "events"), orderBy("highlighted", "desc"), limit(5));
+                const eventQuery = query(collection(db, "events"), where("highlighted", "==", true), orderBy("createdAt", "desc"), limit(5));
                 const eventSnap = await getDocs(eventQuery);
                 const eventsData = eventSnap.docs.map((doc) => ({
                     id: doc.id,
