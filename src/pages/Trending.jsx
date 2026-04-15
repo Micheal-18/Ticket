@@ -72,11 +72,6 @@ const Trending = ({ currentUser, events, setEvents }) => {
                                             className="w-full object-contain hover:scale-105  duration-500"
                                         />
                                     </div>
-                                    <div className="absolute p-4 top-1/2 flex-1 flex flex-col">
-                                        <h3 className="text-3xl adaptive-text text-gray-600 font-bold line-clamp-2 mb-2">{event.namezz}</h3>
-                                        <p className="text-gray-600 adaptive-text text-sm line-clamp-2 mb-3">{event.description}</p>
-                                        <p className="text-sm adaptive-text text-gray-400 mb-4">{event.location}</p>
-                                    </div>
                                 </div>
                             </Link>
                         ))}
@@ -95,7 +90,7 @@ const Trending = ({ currentUser, events, setEvents }) => {
                         {trendingBlogs.map((blog) => (
                             <div
                                 key={blog.id}
-                                className="bg-white shadow-lg rounded-2xl overflow-hidden hover:shadow-xl transition duration-300 flex flex-col"
+                                className="bg-(--bg-color) dark:bg-(--bg-color) shadow-lg rounded-2xl overflow-hidden hover:shadow-xl transition duration-300 flex flex-col"
                             >
                                 <OptimizedImage
                                     src={blog.photoURL}
@@ -104,11 +99,11 @@ const Trending = ({ currentUser, events, setEvents }) => {
                                     className=" w-full object-cover "
                                 />
                                 <div className="p-4 flex-1 flex flex-col">
-                                    <h3 className="text-lg text-gray-500 font-semibold line-clamp-2 mb-2">{blog.title}</h3>
-                                    <p className="text-gray-600 text-sm line-clamp-2 mb-3">{blog.description}</p>
+                                    <h3 className="text-lg text-(--text-color) dark:text-(--text-color) font-semibold line-clamp-2 mb-2">{blog.title}</h3>
+                                    <p className="text-gray-500 text-sm line-clamp-2 mb-3">{blog.description}</p>
                                     <p className="text-xs text-gray-400 mb-4">{blog.published}</p>
                                     <Link
-                                        to={`/blogs/${blog.id}`}
+                                        to={`/blogs/${blog.log}`}
                                         className="text-orange-500 hover:underline mt-auto"
                                     >
                                         Read More →
