@@ -1,6 +1,15 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { Outlet, NavLink, Link, useNavigate } from 'react-router-dom'
-import { collection, getDocs, onSnapshot, orderBy, query, where } from 'firebase/firestore'
+import React, { useEffect, useState, useRef } from 'react'
+import { Outlet, NavLink, useNavigate } from 'react-router-dom'
+import {
+  collection,
+  query,
+  where,
+  orderBy,
+  onSnapshot,
+  doc,
+  getDocs,
+  updateDoc
+} from 'firebase/firestore'
 import { db, auth } from '../../firebase/firebase'
 import { FaBell, FaBlog, FaMoneyBillTrendUp } from 'react-icons/fa6'
 import { RiDashboard2Line, RiQrScanLine, RiTicket2Line } from 'react-icons/ri'
@@ -9,53 +18,55 @@ import { signOut } from 'firebase/auth'
 import Darkmode from '../../components/DarkMode'
 import { FaSignOutAlt } from 'react-icons/fa'
 import NotificationPanel from '../../components/NotificationPanel'
+import toast from "react-hot-toast";
 import logo from '../../assets/Default.png'
-import { toast } from 'react-hot-toast'
-import { updateDoc, doc } from 'firebase/firestore'
 
-const DashboardLayout = ({ currentUser}) => {
+const DashboardLayout = ({ currentUser }) => {
   const [events, setEvents] = useState([])
   const [users, setUsers] = useState([])
   const [recentActivities, setRecentActivities] = useState([])
   const [loading, setLoading] = useState(true)
-  const navigate = useNavigate()
   const [slide, setSlide] = useState(false)
   const [showNotif, setShowNotif] = useState(false)
   const [notifications, setNotifications] = useState([])
   const initialized = useRef(false);
-  const [profileOpen, setProfileOpen] = useState();
-
-  const handleOpenProfile = () => {
-    setProfileOpen(true);
-  }
+  const [profileOpen, setProfileOpen] = useState(false);
   
-    const unreadCount = notifications.filter(n => !n.read).length
-  
-    const slideMovement = () => setSlide(!slide)
-
+  const handleOpenProfile = () => setProfileOpen(true);
+  const unreadCount = notifications.filter(n => !n.read).length
+  const slideMovement = () => setSlide(!slide)
+  const navigate = useNavigate()
 
   const handleLogout = async () => {
     await signOut(auth)
     navigate('/')
   }
 
+  // Live Notification Listener Stream
   useEffect(() => {
     if (!currentUser?.uid) return;
-  
+
+    /* 🛠️ NOTIFICATION ROUTING FIX:
+       If the logged-in user is an admin (e.g., matching your role logic or checking an account field), 
+       we include "admin" in the listener target array so approval alerts stream right in. */
+    const isAdminAccount = currentUser?.role === 'admin' || currentUser?.accountType === 'admin'; 
+    const notificationTargets = [currentUser.uid];
+    
+    // Always append 'admin' channels or conditionally map it if you want global admins to see it
+    notificationTargets.push('admin'); 
+
     const q = query(
       collection(db, 'notifications'),
-      where('userId', '==', currentUser.uid), 
+      where('userId', 'in', notificationTargets), // 👈 Replaced '==' with 'in' condition matrix
       orderBy('createdAt', 'desc')
     );
-    
-    
-  
+
     const unsub = onSnapshot(q, (snap) => {
       const docs = snap.docs.map(d => ({
         id: d.id,
         ...d.data(),
       }));
-  
+
       if (!initialized.current) {
         initialized.current = true;
       } else {
@@ -63,90 +74,76 @@ const DashboardLayout = ({ currentUser}) => {
           .filter(c => c.type === "added")
           .forEach(c => {
             const n = c.doc.data();
-            // Use your ticket icon for the toast
             toast.custom((t) => (
               <div
                 onClick={() => {
                   toast.dismiss(t.id);
                   if (n.link) navigate(n.link);
                 }}
-                className="cursor-pointer bg-white dark:bg-zinc-900 shadow-lg rounded-xl p-4 w-80 border-l-4 border-green-500"
+                className="cursor-pointer bg-white dark:bg-zinc-950 shadow-lg rounded-xl p-4 w-80 border-l-4 border-orange-500 text-black dark:text-white transition-all"
               >
                 <div className="flex items-center gap-2">
-                  <span>{n.type === 'ticket_purchase' ? "🎫" : "🔔"}</span>
+                  <span>{n.type === 'event_submission' ? "📢" : n.type === 'ticket_purchase' ? "🎫" : "🔔"}</span>
                   <p className="font-semibold text-sm">{n.title}</p>
                 </div>
-                <p className="text-xs text-gray-500 mt-1">{n.message}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{n.message}</p>
               </div>
             ), { duration: 6000 });
           });
       }
-  
+
       setNotifications(docs);
-      
     }, (error) => {
       console.error("Notification Listener Error:", error);
     });
-  
-    return () => unsub();
-  }, [currentUser]);
 
+    return () => unsub();
+  }, [currentUser, navigate]);
+
+  // Aggregate Dashboard Metadata Pipelines (Optimized Parallel Requests)
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true)
       try {
-        // Fetch events
-        const eventsSnap = await getDocs(collection(db, 'events'))
-        const eventsData = eventsSnap.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }))
-        setEvents(eventsData)
+        const [eventsSnap, usersSnap, ticketsSnap] = await Promise.all([
+          getDocs(collection(db, 'events')),
+          getDocs(collection(db, 'users')),
+          getDocs(collection(db, 'tickets'))
+        ])
+      
+        const eventsData = eventsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+        const usersData = usersSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+        const ticketsData = ticketsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }))
 
-        // Fetch users
-        const usersSnap = await getDocs(collection(db, 'users'))
-        const usersData = usersSnap.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }))
-        setUsers(usersData)
-
-        // Fetch tickets
-        const ticketsSnap = await getDocs(collection(db, 'tickets'))
-        const ticketsData = ticketsSnap.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }))
-
-        // Build recent activities
         const activities = [
           ...eventsData.map(e => ({
             type: 'event',
             name: e.name,
-            date: e.createdAt || e.date
+            date: e.createdAt?.toDate?.() || (e.date ? new Date(e.date) : new Date(0))
           })),
           ...usersData.map(u => ({
             type: 'users',
             name: u.fullName,
             account: u.accountType,
-            date: u.createdAt
+            date: u.createdAt?.toDate?.() || new Date(0)
           })),
           ...ticketsData.map(t => ({
-              type: 'ticket',
-              user: t.buyerName || "Unknown",
-              ticket: t.ticketType || "Flat",
-              name: t.eventName || "Unknown",
-              date: t.createdAt?.toDate?.() || new Date(0)
+            type: 'ticket',
+            user: t.buyerName || "Unknown",
+            ticket: t.ticketType || "Flat",
+            name: t.eventName || "Unknown",
+            date: t.createdAt?.toDate?.() || new Date(0)
           }))
         ]
-          .filter(a => a.date) // remove invalid ones
-          .sort((a, b) => new Date(b.date) - new Date(a.date))
-          .slice(0, 10)
+        .filter(a => a.date instanceof Date && !isNaN(a.date.getTime()))
+        .sort((a, b) => b.date - a.date)
+        .slice(0, 10);
 
+        setEvents(eventsData)
+        setUsers(usersData)
         setRecentActivities(activities)
-      
-        
-      } catch (error) {
-        console.error('Error fetching dashboard data:', error)
+      } catch (err) {
+        console.error('Error fetching dashboard data:', err)
       } finally {
         setLoading(false)
       }
@@ -155,128 +152,98 @@ const DashboardLayout = ({ currentUser}) => {
     fetchData()
   }, [])
 
-  const navItem = (to, icon, label, count) => (
+  const navItem = (to, icon, label, isMobileFooter = false) => (
     <NavLink
       to={to}
-      onClick={slideMovement}
+      onClick={!isMobileFooter ? slideMovement : undefined}
       className={({ isActive }) =>
-        `flex flex-col lg:flex-row items-center gap-2 px-5 py-4 rounded-lg transition
-       ${
-         isActive
-           ? 'text-orange-500 bg-orange-500/10'
-           : 'hover:text-orange-400 hover:bg-orange-500/10'
-       }`
+        `flex flex-col items-center gap-1.5 transition text-center rounded-lg
+        ${isMobileFooter ? 'py-1 px-3' : 'lg:flex-row lg:text-left px-5 py-4 w-full'}
+        ${isActive ? 'text-orange-500 bg-orange-500/10 font-medium' : 'text-gray-400 hover:text-orange-400 hover:bg-orange-500/5'}`
       }
     >
       {icon}
-      <span className='text-xs lg:text-base relative'>
-        {label}
-        {count !== undefined && (
-          <span className='ml-1 bg-orange-500 text-white text-[10px] font-semibold px-2 py-1 rounded-full absolute -top-2 -right-4'>
-            {count}
-          </span>
-        )}
-      </span>
+      <span className={isMobileFooter ? 'text-[10px]' : 'text-xs lg:text-base'}>{label}</span>
     </NavLink>
   )
 
   return (
-    <section className='flex min-h-screen'>
-      {/* SIDEBAR */}
-      {slide && (
-        <>
-          <aside
-            className={`
-        fixed lg:top-18 bottom-0 left-0 z-50
-        w-full h-20 lg:h-[90vh] lg:w-64
-        bg-(--bg-color) text-(--text-color)
-        shadow ${
-          slide ? 'translate-x-0 opacity-90 ' : '-translate-x-full opacity-0 '
-        } flex lg:flex-col lg:justify-between justify-start
-        items-center lg:items-start transform transition-all duration-1000 ease-in-out custom-scrollbar
-        px-2 py-3 lg:p-6
-      `}
-          >
-
-            <FiX
-              size={18}
-              onClick={slideMovement}
-              className='hidden lg:flex absolute top-2 right-2 cursor-pointer'
-            />
-            <nav className='w-full flex justify-around lg:flex-col lg:gap-2'>
-              {navItem(
-                '/dashboard',
-                <RiDashboard2Line size={22} />,
-                'Overview'
-              )}
-              {navItem(
-                '/dashboard/events',
-                <RiTicket2Line size={22} />,
-                'My Events'
-              )}
-              {navItem(
-                '/dashboard/scanner',
-                <RiQrScanLine size={22} />,
-                'Scan'
-              )}
-              {navItem(
-                '/dashboard/wallet',
-                <FaMoneyBillTrendUp size={22} />,
-                'Earnings'
-              )}
-              {navItem('/dashboard/blog', <FaBlog size={22} />, 'Blogs')}
-            </nav>
-
-            <button
-              onClick={handleLogout}
-              className='w-full lg:flex hidden items-center gap-2 bg-red-100 hover:bg-red-400 text-gray-500 px-4 py-2 rounded-lg'
-            >
-              <FaSignOutAlt />
-              Logout
-            </button>
-          </aside>
-        </>
-      )}
-
-      {/* MAIN */}
-      <div className='flex-1 flex flex-col '>
-        {/* HEADER */}
-        <header
-          className='
-          sticky top-0 z-40
-          bg-(--bg-color) dark:bg-(--bg-color)
-          text-(--text-color) dark:text-(--text-color)
-          px-4 py-3 shadow flex items-center justify-between
-        '
-        >
+    <section className='flex min-h-screen bg-(--bg-color) text-(--text-color) transition-colors duration-300'>
+      
+      {/* DESKTOP SIDEBAR PANEL */}
+      <aside
+        className={`
+          fixed lg:sticky top-0 left-0 z-50
+          w-64 h-screen bg-(--bg-color) border-r border-gray-200/10 shadow-xl
+          flex flex-col justify-between p-6 transform transition-transform duration-300 ease-in-out
+          ${slide ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+          ${slide ? 'block' : 'hidden lg:flex'}
+        `}
+      >
+        <div className="w-full">
+          <div className="flex items-center justify-between mb-8">
+            <span className="font-bold tracking-wider uppercase text-orange-500">Airticks Dashboard</span>
+            <FiX size={20} onClick={slideMovement} className='lg:hidden cursor-pointer hover:text-orange-500' />
+          </div>
           
-          <div onClick={handleOpenProfile} className='flex gap-2 items-center'><img
-            src={currentUser?.photoURL || logo}
-            alt="profile"
-            className="w-10 h-10 rounded-full object-cover"
-          />
-            <div>
-                <h2 className='font-semibold text-lg'>{currentUser?.fullName}</h2>
-                <p className='text-sm truncate w-30'>{currentUser?.email}</p>
+          <nav className='w-full flex flex-col gap-2'>
+            {navItem('/dashboard', <RiDashboard2Line size={22} />, 'Overview')}
+            {navItem('/dashboard/events', <RiTicket2Line size={22} />, 'My Events')}
+            {navItem('/dashboard/scanner', <RiQrScanLine size={22} />, 'Scan')}
+            {navItem('/dashboard/wallet', <FaMoneyBillTrendUp size={22} />, 'Earnings')}
+            {navItem('/dashboard/blog', <FaBlog size={22} />, 'Blogs')}
+          </nav>
+        </div>
+
+        <button
+          onClick={handleLogout}
+          className='w-full flex items-center justify-center gap-2 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white px-4 py-3 rounded-xl font-medium transition-all duration-200'
+        >
+          <FaSignOutAlt />
+          Logout
+        </button>
+      </aside>
+
+      {/* RIGHT SIDE MAIN BASE PANEL CONTAINER */}
+      <div className='flex-1 flex flex-col min-w-0'>
+        
+        {/* HEADER */}
+        <header className='sticky top-0 z-40 bg-(--bg-color) border-b border-gray-200/10 px-4 lg:px-8 py-3 shadow-sm flex items-center justify-between backdrop-blur-md bg-opacity-95'>
+          <div onClick={handleOpenProfile} className='flex gap-3 items-center cursor-pointer group'>
+            <img
+              src={currentUser?.photoURL || logo}
+              alt="profile"
+              className="w-10 h-10 rounded-full object-cover ring-2 ring-transparent group-hover:ring-orange-500 transition-all duration-300"
+            />
+            <div className="leading-tight">
+              <h2 className='font-semibold text-sm lg:text-base group-hover:text-orange-500 transition-colors'>{currentUser?.fullName || "User Account"}</h2>
+              <p className='text-xs text-gray-400 max-w-[180px] lg:max-w-none truncate'>{currentUser?.email}</p>
             </div>
           </div>
+          
+          <div className='flex items-center gap-4'>
+            <div className="lg:hidden block">
+              <FiMenu size={24} onClick={slideMovement} className="cursor-pointer text-gray-400 hover:text-orange-500 transition" />
+            </div>
 
-          <div className='flex items-center gap-2'>
             <Darkmode />
 
             <div className='relative'>
-              <button onClick={() => setShowNotif(!showNotif)}>
-                <FaBell size={16} />
+              <button onClick={() => setShowNotif(!showNotif)} className="relative p-1 text-gray-400 hover:text-orange-500 transition">
+                <FaBell size={18} />
                 {unreadCount > 0 && (
-                  <span className='absolute -top-2 -right-2 bg-red-600 text-xs rounded-full w-5 h-5 flex items-center justify-center'>
+                  <span className='absolute -top-1 -right-1 bg-red-600 text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center text-white'>
                     {unreadCount > 9 ? '9+' : unreadCount}
                   </span>
                 )}
               </button>
 
               {showNotif && (
-                <div className='absolute -right-2 lg:right-0 mt-3 w-80 bg-(--bg-color) shadow-xl rounded-xl p-3 z-50'>
-                  <h4 className='font-semibold mb-2 text-sm'>Notifications</h4>
+                <div className='absolute right-0 mt-3 w-80 bg-zinc-900 border border-gray-800 shadow-2xl rounded-2xl p-4 z-50 animate-in fade-in slide-in-from-top-3 duration-200'>
+                  <div className="flex items-center justify-between mb-3 border-b border-gray-800 pb-2">
+                    <h4 className='font-bold text-sm text-white'>Notifications</h4>
+                    <span className="text-[10px] text-orange-400 bg-orange-400/10 px-2 py-0.5 rounded-full">{unreadCount} New</span>
+                  </div>
 
                   <NotificationPanel
                     notifications={notifications}
@@ -293,46 +260,32 @@ const DashboardLayout = ({ currentUser}) => {
 
             <button
               onClick={handleLogout}
-              className='w-full flex items-center gap-2 px-4 py-2 rounded-lg'
+              className='p-1 text-gray-400 hover:text-red-500 transition hidden lg:block'
+              title="Logout Account"
             >
-              <FaSignOutAlt />
+              <FaSignOutAlt size={18} />
             </button>
           </div>
-
-
-          <FiMenu
-            size={22}
-            onClick={slideMovement}
-            className='lg:flex hidden m-4 absolute top-16 left-0 z-50'
-          />
         </header>
 
-        {/* CONTENT */}
-        <main className='flex-1 p-4 lg:p-8 pb-24 lg:pb-8'>
-          
+        {/* COMPONENT OUTLET TARGET SPACE */}
+        <main className='flex-1 p-4 lg:p-8 pb-28 lg:pb-8 max-w-[1600px] w-full mx-auto'>
           {loading ? (
-            <p className='text-gray-400'>Loading dashboard...</p>
+            <div className="flex items-center justify-center h-48 text-gray-400 font-medium tracking-wide">
+              Loading dashboard overview data...
+            </div>
           ) : (
-            <Outlet
-              context={{ events, users, recentActivities, currentUser, profileOpen, setProfileOpen }}
-            />
+            <Outlet context={{ events, users, recentActivities, currentUser, profileOpen, setProfileOpen }} />
           )}
         </main>
 
-        <footer className='fixed bottom-0 left-0 w-full h-20  bg-(--bg-color)  flex justify-around items-center lg:hidden'>
-          {navItem('/dashboard', <RiDashboard2Line size={22} />, 'Overview')}
-          {navItem(
-            '/dashboard/events',
-            <RiTicket2Line size={22} />,
-            'Events'
-          )}
-          {navItem('/dashboard/scanner', <RiQrScanLine size={22} />, 'Scan')}
-          {navItem(
-            '/dashboard/wallet',
-            <FaMoneyBillTrendUp size={22} />,
-            'Earnings'
-          )}
-          {navItem('/dashboard/blog', <FaBlog size={22} />, 'Blogs')}
+        {/* RESPONSIVE FIXED MOBILE TAB BAR FOOTER */}
+        <footer className='fixed bottom-0 left-0 w-full h-16  border-t border-gray-800 backdrop-blur-lg flex justify-around items-center lg:hidden z-40 px-2'>
+          {navItem('/dashboard', <RiDashboard2Line size={20} />, 'Overview', true)}
+          {navItem('/dashboard/events', <RiTicket2Line size={20} />, 'Events', true)}
+          {navItem('/dashboard/scanner', <RiQrScanLine size={20} />, 'Scan', true)}
+          {navItem('/dashboard/wallet', <FaMoneyBillTrendUp size={20} />, 'Wallet', true)}
+          {navItem('/dashboard/blog', <FaBlog size={20} />, 'Blogs', true)}
         </footer>
       </div>
     </section>

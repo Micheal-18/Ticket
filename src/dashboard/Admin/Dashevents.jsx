@@ -9,7 +9,6 @@ import DeleteModal from '../../components/DeleteModal';
 import EditModal from '../../components/EditModal';
 import { formatEventStatus } from '../../utils/formatEventRange';
 import { Link } from 'react-router-dom';
-import { add } from 'date-fns';
 
 const Dashevents = ({ currentUser, events, setEvents }) => {
   const isAdmin = useAdmin();
@@ -37,6 +36,28 @@ const Dashevents = ({ currentUser, events, setEvents }) => {
     fetchEvents();
   }, [setEvents]);
 
+  // Safe Date string formatter helper function 
+  const displayEventDate = (dateField) => {
+    if (!dateField) return "Date TBD";
+    
+    // If it's our composite saved layout string, split and parse the raw ISO section
+    if (typeof dateField === 'string' && dateField.includes(' at ')) {
+      const isoPart = dateField.split(' at ')[1];
+      const parsed = new Date(isoPart);
+      return isNaN(parsed.getTime()) ? dateField.split(' at ')[0] : parsed.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" });
+    }
+    
+    const parsedDate = new Date(dateField);
+    if (isNaN(parsedDate.getTime())) return "Invalid Date";
+    
+    return parsedDate.toLocaleDateString("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
   // Toggle Highlight
   const toggleHighlight = async (eventId, currentValue) => {
     try {
@@ -57,74 +78,74 @@ const Dashevents = ({ currentUser, events, setEvents }) => {
     setApprovingEventId(event.id);
     try {
       const eventRef = doc(db, "events", event.id);
+      let subaccountCode = "";
 
-      // Call backend to create Paystack subaccount
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/create-subaccount`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          business_name: event.name,
-          account_number: event.accountNumber,
-          bank_code: event.bankCode,
-          percentage_charge: 8,
-          primary_contact_email: event.organizerEmail,
-          organizerId: event.ownerId,
-        }),
-      });
+      /* 🛠️ FREE EVENT BYPASS: Skip Paystack subaccount initialization 
+         completely if the organizer set the ticket tier to Free */
+      if (!event.isFree) {
+        if (!event.accountNumber || !event.bankCode) {
+          throw new Error("Payout banking details are missing from this paid event registration.");
+        }
 
-      console.log({
-  business_name: event.name,
-  account_number: event.accountNumber,
-  bank_code: event.bankCode,
-  percentage_charge: 8,
-  primary_contact_email: event.organizerEmail,
-});
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/create-subaccount`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            business_name: event.name,
+            account_number: event.accountNumber,
+            bank_code: event.bankCode,
+            percentage_charge: 8,
+            primary_contact_email: event.organizerEmail,
+            organizerId: event.ownerId,
+          }),
+        });
 
-
-      const subaccountData = await res.json();
-      if (!res.ok || !subaccountData.subaccount_code) {
-        throw new Error(subaccountData.error || "Failed to create subaccount");
+        const subaccountData = await res.json();
+        if (!res.ok || !subaccountData.subaccount_code) {
+          throw new Error(subaccountData.error || "Failed to generate Paystack merchant split payout handle.");
+        }
+        subaccountCode = subaccountData.subaccount_code;
       }
 
-      // Update Firestore: approve event & save subaccount code
+      // Update Firestore: approve event & save subaccount code if applicable
       await updateDoc(eventRef, {
         status: "approved",
-        subaccountCode: subaccountData.subaccount_code,
+        ...(subaccountCode && { subaccountCode }),
       });
 
       await addDoc(collection(db, "notifications"), {
         type: "event_approved",
         title: "✅ Event Approved",
-        message: `Your event "${event.name}" has been approved!`,
+        message: `Event "${event.name}" has been approved!`,
         userId: event.ownerId,
         link: `/event/${event.id}`,
         read: false,
-        createdAt: new Date(),
+        createdAt: new Date().toISOString(),
       });
 
-      // Update UI
+      // Update UI state securely
       setEvents((prev) =>
         prev.map((ev) =>
           ev.id === event.id
-            ? { ...ev, status: "approved", subaccountCode: subaccountData.subaccount_code }
+            ? { ...ev, status: "approved", ...(subaccountCode && { subaccountCode }) }
             : ev
         )
       );
 
-      alert("✅ Event approved and subaccount created successfully!");
+      alert(event.isFree ? "✅ Free event approved instantly!" : "✅ Paid event approved and subaccount linked successfully!");
     } catch (err) {
-      console.error("Approval error:", err);
+      console.error("Approval flow crash:", err);
       alert("❌ Failed to approve event: " + err.message);
-    } finally {
+    } compression: {
       setApprovingEventId(null);
     }
   };
 
-  // Admin actions
   const handleEdit = (event) => {
     setEditEvent(event);
     setIsEditing(true);
   };
+  
   const handleDelete = (event) => {
     setSelectedEvent(event);
     setIsDeleting(true);
@@ -154,18 +175,18 @@ const Dashevents = ({ currentUser, events, setEvents }) => {
       )}
 
       {/* Event Grid */}
-      <div className="max-w-6xl mx-auto">
-
+      <div className="max-w-6xl mx-auto w-full px-4">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-semibold ">My Events</h1>
+          <h1 className="text-2xl font-semibold">My Events</h1>
           <Link
-              to="/dashboard/create"
-              className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg"
+            to="/dashboard/create"
+            className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
           >
-              Create Event
+            Create Event
           </Link>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 md:gap-10 gap-8 w-full ">
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-10 w-full">
           {events.map((event) => (
             <div
               onClick={(e) => {
@@ -176,63 +197,65 @@ const Dashevents = ({ currentUser, events, setEvents }) => {
                 );
               }}
               key={event.id}
-              className="flex items-center justify-between flex-1 gap-4 relative lg:px-8 px-2 w-full py-4 shadow rounded-3xl cursor-default"
+              className="flex items-center justify-between gap-4 relative lg:px-8 px-4 w-full py-5 shadow rounded-3xl cursor-default transition-all hover:shadow-lg"
             >
-              <span className="space-y-2 flex flex-col">
-                <h1 className="font-bold uppercase text-2xl w-[150px] truncate lg:w-[250px]">
-                  {event.name}
-                </h1>
-                <p className="md:text-md text-sm font-regular text-gray-500 flex gap-2 items-center">
-                  <FaCalendar />{" "}
-                  {new Date(event.date).toLocaleDateString("en-US", {
-                    weekday: "short",
-                    month: "short",
-                    day: "numeric",
-                    year: "numeric",
-                  })}
+              <span className="space-y-2 flex flex-col min-w-0 flex-1">
+                <div className="flex items-center gap-2">
+                  <h1 className="font-bold uppercase text-xl lg:text-2xl truncate">
+                    {event.name}
+                  </h1>
+                  {event.status === "pending" && (
+                    <span className="text-[10px] px-2 py-0.5 font-bold text-yellow-500 bg-yellow-500/10 rounded-full uppercase tracking-wider">
+                      Pending
+                    </span>
+                  )}
+                </div>
+
+                {/* 🛠️ FIXED DATE PARSING FALLBACK CONTAINER */}
+                <p className="text-sm font-normal text-gray-400 flex gap-2 items-center">
+                  <FaCalendar className="text-orange-500 shrink-0" />{" "}
+                  <span className="truncate">{displayEventDate(event.date)}</span>
                 </p>
-                <p className="text-sm w-[150px] lg:w-[250px] text-gray-500 flex items-center gap-2">
-                  <FaClock />
+                
+                <p className="text-sm text-gray-400 flex items-center gap-2">
+                  <FaClock className="text-orange-500 shrink-0" />
                   <span className="truncate">
                     {formatEventStatus(event.startTime, event.endTime)}
                   </span>
                 </p>
-                <p className="md:text-md text-md w-[180px] lg:w-[250px] font-normal text-gray-500 flex gap-2 items-center">
-                  <FaLocationArrow />
+                
+                <p className="text-sm font-normal text-gray-400 flex gap-2 items-center">
+                  <FaLocationArrow className="text-orange-500 shrink-0" />
                   <span className="truncate">{event.location}</span>
                 </p>
 
-                {Array.isArray(event.price)
-                  ? event.price.map((priceOption, index) => (
-                      <p key={index}>
-                        <span className="text-orange-500 text-md font-semibold">
-                          {priceOption.currency}{" "}
-                          {Number(priceOption.amount) +
-                            (1.5 / 100) * Number(priceOption.amount) +
-                            100}
-                        </span>
+                {/* Pricing Rules Wrapper */}
+                <div className="pt-1">
+                  {event.isFree ? (
+                    <span className="text-green-500 text-sm font-bold bg-green-500/10 px-2 py-0.5 rounded-md">🆓 Free Admission</span>
+                  ) : Array.isArray(event.price) ? (
+                    event.price.map((priceOption, index) => (
+                      <p key={index} className="text-sm font-semibold text-orange-500">
+                        {priceOption.label || "Regular"}: {priceOption.currency || "₦"}{" "}
+                        {Number(priceOption.amount || 0).toLocaleString()}
                       </p>
                     ))
-                  : (
-                      <p>
-                        <span className="text-orange-500 text-md font-semibold">
-                          {event.currency}{" "}
-                          {Number(event.price?.amount) +
-                            (1.5 / 100) * Number(event.price?.amount) +
-                            100}
-                        </span>
-                      </p>
-                    )}
+                  ) : (
+                    <p className="text-sm font-semibold text-orange-500">
+                      {event.currency || "₦"} {Number(event.price?.amount || 0).toLocaleString()}
+                    </p>
+                  )}
+                </div>
 
                 {selectedDropdown === event.id && (
-                  <div className="flex flex-wrap gap-2 mt-2">
+                  <div className="flex flex-wrap gap-2 mt-3 pt-2">
                     <button
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
                         handleDelete(event);
                       }}
-                      className="bg-red-500 text-white cursor-pointer px-3 py-1 rounded-lg font-bold mt-2 hover:scale-105"
+                      className="bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all"
                     >
                       Delete
                     </button>
@@ -243,7 +266,7 @@ const Dashevents = ({ currentUser, events, setEvents }) => {
                         e.stopPropagation();
                         handleEdit(event);
                       }}
-                      className="bg-green-500 text-white cursor-pointer px-3 py-1 rounded-lg font-bold mt-2 hover:scale-105"
+                      className="bg-green-500/20 text-green-500 hover:bg-green-500 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all"
                     >
                       Edit
                     </button>
@@ -254,14 +277,13 @@ const Dashevents = ({ currentUser, events, setEvents }) => {
                         e.stopPropagation();
                         toggleHighlight(event.id, event.highlighted);
                       }}
-                      className={`px-3 py-1 rounded-lg cursor-pointer ${
-                        event.highlighted ? "text-yellow-400" : "text-gray-600"
+                      className={`p-2 rounded-lg transition-colors ${
+                        event.highlighted ? "text-yellow-400 bg-yellow-400/10" : "text-gray-500 bg-gray-800"
                       }`}
                     >
-                      <RiStarFill />
+                      <RiStarFill size={14} />
                     </button>
 
-                    {/* Approve button for admins */}
                     {isAdmin && event.status !== "approved" && (
                       <button
                         onClick={(e) => {
@@ -270,7 +292,7 @@ const Dashevents = ({ currentUser, events, setEvents }) => {
                           handleApprove(event);
                         }}
                         disabled={approvingEventId === event.id}
-                        className="bg-blue-500 text-white cursor-pointer px-3 py-1 rounded-lg font-bold mt-2 hover:scale-105"
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm"
                       >
                         {approvingEventId === event.id ? "Approving..." : "Approve"}
                       </button>
@@ -282,7 +304,7 @@ const Dashevents = ({ currentUser, events, setEvents }) => {
               <OptimizedImage
                 src={event.photoURL}
                 alt={event.name}
-                className="object-contain w-[150px] hover:scale-105 duration-500 rounded-2xl"
+                className="object-cover w-28 h-28 lg:w-32 lg:h-32 shrink-0 rounded-2xl shadow-sm border border-gray-700/20"
               />
             </div>
           ))}

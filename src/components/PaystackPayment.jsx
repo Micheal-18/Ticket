@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { collection, onSnapshot, query, where } from "firebase/firestore";
+import { collection, onSnapshot, query, where, limit, doc } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import { FaCheckCircle } from "react-icons/fa";
 
@@ -18,13 +18,13 @@ const PaystackPayment = ({
   const [ticketData, setTicketData] = useState(null);
 
   const buyerEmail = currentUser?.email || guestEmail;
-  const buyerName = currentUser?.fullName || currentUser?.name;
-  // const buyerNumber = currentUser?.phone || guestNumber;
+  const buyerName = currentUser?.fullName || currentUser?.name || currentUser?.displayName || guestName;
 
-  const totalAmount = ticket.amount * ticket.num;
+  const totalAmount = Number(ticket.amount || 0) * Number(ticket.num || 0);
+  const isFreeTicket = totalAmount === 0;
 
   const payWithPaystack = async () => {
-    if (!buyerEmail || !buyerName ) {
+    if (!buyerEmail || !buyerName) {
       alert("Please login or fill guest details.");
       return;
     }
@@ -45,67 +45,81 @@ const PaystackPayment = ({
           eventId: events.id,
           ticketLabel: ticket.label,
           ticketNumber: ticket.num,
+          userId: currentUser?.uid || null
         }
       );
-      console.log(events.id);
-      console.log(events);
-      
-      
 
       setReference(res.data.reference);
 
-      // Redirect to Paystack
-      window.location.href = res.data.authorization_url;
+      if (res.data.isFree || isFreeTicket) {
+        console.log("Free pass registered. Waiting for live confirmation sync...");
+      } else if (res.data.authorization_url) {
+        window.location.href = res.data.authorization_url;
+      } else {
+        throw new Error("Invalid backend routing execution parameter mapping layout.");
+      }
     } catch (err) {
-      console.error("Payment init failed:", err.response?.data || err);
-      alert("Unable to start payment");
+      console.error("Ticket registration failed:", err.response?.data || err);
+      alert(err.response?.data?.error || "Unable to complete registration configuration.");
       setLoading(false);
     }
   };
 
-  // Listen for ticket creation in Firestore
-  useEffect(() => {
-    if (!reference) return;
+// Listen for ticket creation in Firestore
+useEffect(() => {
+  if (!reference || !buyerEmail) return;
 
-    const q = query(
-      collection(db, "tickets"),
-      where("reference", "==", reference)
-    );
+  const standardizedEmail = buyerEmail.toLowerCase().trim();
 
-    const unsub = onSnapshot(q, (snap) => {
-      if (!snap.empty) {
-        const docData = snap.docs[0].data();
-        setTicketData(docData);
-        setSuccess(true);
-        setLoading(false);
-      }
-    });
+  // We query the collection, forcing the engine to evaluate the email field
+  const q = query(
+    collection(db, "tickets"),
+    where("reference", "==", reference),
+    where("userId", "==", currentUser.uid)
+  );
 
-    return () => unsub();
-  }, [reference]);
+  const unsub = onSnapshot(q, (snap) => {
+    if (!snap.empty) {
+      const docData = snap.docs[0].data();
+      setTicketData(docData);
+      setSuccess(true);
+      setLoading(false);
+    }
+  }, (error) => {
+    console.error("❌ Live-sync validation error dropped:", error);
+
+  });
+
+  return () => unsub();
+}, [reference, buyerEmail]);
 
   if (success && ticketData) {
     return (
-      <div className="flex flex-col items-center justify-center w-full min-h-screen text-center px-4">
-        <FaCheckCircle className="text-green-500 text-6xl mb-4" />
-        <h1 className="font-semibold text-gray-600 text-2xl mb-2">
-          Transaction Successful 🎉
+      <div className="flex flex-col items-center justify-center w-full p-6 text-center border border-green-500/20 rounded-2xl bg-green-500/5 mt-2 transition-all duration-300">
+        <FaCheckCircle className="text-green-500 text-4xl mb-2" />
+        <h1 className="font-bold  text-xl mb-1">
+          {isFreeTicket ? "Registration Successful 🎉" : "Transaction Successful 🎉"}
         </h1>
-        <p className="text-gray-600 text-lg">
-          Thank you for purchasing <b>{events.name}</b>,{" "}
-          {buyerName?.split(" ")[1] || buyerName}!
+        <p className="text-sm text-gray-500">
+          Thank you for processing access to <b>{events.name}</b>,{" "}
+          {buyerName?.split(" ")[0] || "Guest"}!
         </p>
-        <p className="text-gray-500 mt-2">
-          Your QR ticket has been sent to <b>{buyerEmail}</b>
+        <p className="text-xs text-orange-500 mt-1 font-medium">
+          Your QR entrance pass has been sent to <b>{buyerEmail}</b>
         </p>
 
-        {/* Optional QR preview */}
+        {/* QR preview frame rendering config */}
         {ticketData.qr && (
-          <img
-            src={`data:image/png;base64,${ticketData.qr}`}
-            alt="Ticket QR"
-            className="w-48 h-48 mt-4 rounded-xl shadow-md"
-          />
+          <div className="mt-4 p-2  rounded-xl shadow-sm flex flex-col items-center">
+            <img
+              src={`data:image/png;base64,${ticketData.qr}`}
+              alt="Ticket QR"
+              className="w-40 h-40 object-contain"
+            />
+            <span className="text-[10px] font-mono  mt-2 block">
+              REF: {reference?.substring(0, 12)}
+            </span>
+          </div>
         )}
       </div>
     );
@@ -115,11 +129,13 @@ const PaystackPayment = ({
     <button
       disabled={loading}
       onClick={payWithPaystack}
-      className="bg-orange-500 p-2 rounded-lg text-white active:scale-90 hover:bg-orange-600 disabled:opacity-60"
+      className="bg-orange-500 p-2 rounded-lg text-white font-medium tracking-wide active:scale-90 hover:bg-orange-600 disabled:opacity-60 transition"
     >
       {loading
-        ? "Processing payment..."
-        : `Pay for ${ticket.label} – ${ticket.currency}${Number(totalAmount).toLocaleString()}`}
+        ? "Processing..."
+        : isFreeTicket
+        ? `Claim Free Ticket (${ticket.num})`
+        : `Pay for ${ticket.label} – ${ticket.currency || "₦"}${Number(totalAmount).toLocaleString()}`}
     </button>
   );
 };

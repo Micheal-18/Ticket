@@ -100,7 +100,7 @@ const Login = () => {
         replace: true,
       });
     } catch (error) {
-      setError(getErrorMessage(error.code));
+      setError(error.code === "auth/user-not-found" ? "User not found." : error.message);
     } finally {
       setLoginLoading(false);
     }

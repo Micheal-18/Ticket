@@ -1,7 +1,6 @@
 import React from "react";
 import { useOutletContext } from "react-router-dom";
-import { FaAnchor, FaCalendarPlus, FaShoppingCart, FaTicketAlt, FaUserAlt } from "react-icons/fa";
-
+import { FaCalendarPlus, FaTicketAlt, FaUserFriends, FaAnchor } from "react-icons/fa";
 import {
   BarChart,
   Bar,
@@ -11,30 +10,57 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import EventChartPanel from "./component/Rechart";
 import Profile from "./component/Profile";
 
 const DashboardHome = () => {
   const { events, users, recentActivities, currentUser, profileOpen, setProfileOpen } = useOutletContext();
 
-  const totalRevenue = events.reduce((sum, e) => sum + (e.revenue || 0), 0);
-  const totalTicketsSold = events.reduce((sum, e) => sum + (e.ticketSold || 0), 0);
+  /* ---------------- 🛠️ RESILIENT PARSER FOR INCOMING DATA ---------------- */
+  const parseToNativeDate = (dateField) => {
+    if (!dateField) return null;
+    if (dateField instanceof Date && !isNaN(dateField.getTime())) return dateField;
+    if (typeof dateField.toDate === "function") return dateField.toDate();
+    if (dateField.seconds) return new Date(dateField.seconds * 1000);
+    
+    // Catch-all string parsing fix: Prevent UTC shift on standard YYYY-MM-DD input structures
+    if (typeof dateField === "string" && dateField.includes("-") && !dateField.includes("T")) {
+      const [year, month, day] = dateField.split("-").map(Number);
+      return new Date(year, month - 1, day); // Extracted as absolute local calendar system date
+    }
 
+    const parsed = new Date(dateField);
+    return isNaN(parsed.getTime()) ? null : parsed;
+  };
+
+  /* ---------------- GET SYSTEM MIDNIGHT TO FAIRLY CHECK UPCOMING ---------------- */
+  const todayMidnight = new Date();
+  todayMidnight.setHours(0, 0, 0, 0);
+
+  /* ---------------- CALCULATIONS ---------------- */
+  const totalRevenue = events.reduce((sum, e) => sum + Number(e.revenue || 0), 0);
+  const totalTicketsSold = events.reduce((sum, e) => sum + Number(e.ticketSold || 0), 0);
+  const currency = events[0]?.currency || "₦";
+
+  /* ---------------- CHART DATA ---------------- */
   const chartData = (() => {
-    const monthOrder = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-    const counts = {};
-    monthOrder.forEach(m => counts[m]=0);
-    events.forEach(e => {
-      const date = e.date ? new Date(e.date) : null;
-      if(date && !isNaN(date)){
-        const month = date.toLocaleString("default",{month:"short"});
-        counts[month]+=1;
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const counts = Object.fromEntries(months.map(m => [m, 0]));
+
+    events.forEach((e) => {
+      const d = parseToNativeDate(e.date);
+      if (d) {
+        const m = d.toLocaleString("default", { month: "short" });
+        if (counts[m] !== undefined) {
+          counts[m]++;
+        }
       }
     });
-    return monthOrder.map(m => ({ name: m, registrations: counts[m] }));
+
+    return months.map(m => ({ name: m, registrations: counts[m] }));
   })();
 
-
-    /* ---------------- FOLLOWERS (READ-ONLY) ---------------- */
+  /* ---------------- FOLLOWERS PROCESSING ---------------- */
   const followersMap = {};
   recentActivities
     .filter(a => a.type === "ticket" && a.user)
@@ -47,119 +73,156 @@ const DashboardHome = () => {
 
   const followers = Object.values(followersMap);
 
-
-    
   return (
-    <main className="flex-1 py-4 custom-scrollbar">
+    <main className="flex-1 py-4 overflow-y-auto space-y-10 custom-scrollbar">
       {profileOpen && (
         <Profile
           profileOpen={profileOpen}
           setProfileOpen={setProfileOpen}
         />
       )}
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 md:gap-4 gap-2 mb-8">
-        <div className=" p-4 rounded-2xl shadow">
-          <h2 className="text-gray-400">Total Events</h2>
-          <p className="text-3xl font-semibold mt-2">{events.length}</p>
-                </div>
-                <div className=" p-4 rounded-2xl shadow">
-                  <h2 className="text-gray-400">Followers</h2>
-                  <span className="text-3xl font-semibold mt-2">
-                    {followers.length}
-                  </span>
-                </div>
-                {currentUser?.isAdmin && (
-                  <div className=" p-4 rounded-2xl shadow">
-                    <h2 className="text-gray-400">Users</h2>
-                    <span className="text-3xl font-semibold mt-2">{users.length || 0}</span>
-                  </div>
-                )}
-                <div className=" p-4 rounded-2xl shadow">
-                  <h2 className="text-gray-400">Revenue</h2>
-                  <span className="font-semibold mt-2 text-3xl">{events[0]?.currency}{totalRevenue.toLocaleString()}</span>
-                </div>
-                <div className=" p-4 rounded-2xl shadow">
-                  <h2 className="text-gray-400">TicketSold</h2>
-                  <span className="text-3xl font-semibold mt-2">{totalTicketsSold}</span>
-                </div>
-              </div>
-    
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {/* Chart Section */}
-                <div className="lg:px-4 px-0 py-4 rounded-2xl shadow mb-8">
-                  <h2 className="text-xl font-semibold mb-4">Events per Month</h2>
-                  <div className="h-64">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={chartData}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                        <XAxis dataKey="name" stroke="#9CA3AF" />
-                        <YAxis stroke="#9CA3AF" />
-                        <Tooltip />
-                        <Bar dataKey="registrations" fill="#F97316" radius={[6, 6, 0, 0]} />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                </div>
-    
-                {/* Recent Activities Section */}
-                <div className="lg:px-4 px-0 py-6  rounded-2xl shadow mb-8">
-                  <h2 className="text-xl font-semibold mb-4">Recent Activities</h2>
-                  <div className="space-y-4 max-h-96 custom-scrollbar">
-                    {recentActivities.map((activity, index) => (
-                      <div key={index} className="flex items-start gap-3 border-b border-gray-700 pb-4">
-                        <div className="text-orange-500 mt-1">
-                          {activity.type === "event" ? <FaCalendarPlus /> : activity.type === "ticket" ? <FaTicketAlt /> : activity.type === "users" ? <FaUserAlt /> : <FaAnchor />}
-                        </div>
-    
-                        <div>
-                          {activity.type === "event" && (
-                            <>
-                              <h3 className="text-lg font-semibold">{activity?.name} event added</h3>
-                              <p className="text-gray-400">{new Date(activity?.date).toLocaleString()}</p>
-                            </>
-                          )}
 
-                          {activity.type === "ticket" && (
-                            <>
-                              <h3 className="text-lg font-semibold">{activity?.user} bought  {activity?.ticket} ticket for {activity?.name} events</h3>
-                              <p className="text-gray-400">{new Date(activity.date).toLocaleString()}</p>
-                            </>
-                          )}
+      {/* ================= SUMMARY CARDS ================= */}
+      <div className={`grid grid-cols-1 sm:grid-cols-2 ${currentUser?.isAdmin ? 'lg:grid-cols-5' : 'lg:grid-cols-4'} gap-4`}>
+        <SummaryCard title="Total Events" value={events.length} />
+        <SummaryCard title="Followers" value={followers.length} />
+        {currentUser?.isAdmin && (
+          <SummaryCard title="Users" value={users.length || 0} />
+        )}
+        <SummaryCard
+          title="Revenue"
+          value={`${currency}${totalRevenue.toLocaleString()}`}
+        />
+        <SummaryCard title="Tickets Sold" value={totalTicketsSold} />
+      </div>
 
-                           {activity.type === "users" && (
-                            <>
-                              <h3 className="text-lg font-semibold">{activity?.name || "Unknown User"} registered for {activity?.account}</h3>
-                              <p className="text-gray-400">{new Date(activity?.date).toLocaleString()}</p>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-    
+      {/* ================= CHART & ACTIVITIES ================= */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        {/* EVENTS CHART */}
+        <EventChartPanel chartData={chartData} />
+        {/* RECENT ACTIVITIES */}
+        <div className="p-4 rounded-2xl shadow">
+          <h2 className="text-xl font-semibold mb-4">Recent Activities</h2>
+
+          <div className="space-y-4 max-h-80 overflow-y-auto custom-scrollbar">
+            {recentActivities.length === 0 && (
+              <p className="text-gray-400 text-sm">No activity yet</p>
+            )}
+
+            {recentActivities.map((activity, index) => {
+              const activityDate = parseToNativeDate(activity.date);
+
+              return (
+                <div
+                  key={index}
+                  className="flex gap-3 border-b border-gray-700 pb-4"
+                >
+                  <div className="text-orange-500 mt-1">
+                    {activity.type === "event" ? (
+                      <FaCalendarPlus />
+                    ) : activity.type === "ticket" ? (
+                      <FaTicketAlt />
+                    ) : activity.type === "users" ? (
+                      <FaUserFriends />
+                    ) : (
+                      <FaAnchor />
+                    )}
+                  </div>
+
+                  <div>
+                    <h3 className="font-semibold text-sm lg:text-base">
+                      {activity.type === "event" && `${activity?.name || "Event"} event added`}
+                      {activity.type === "ticket" && `${activity?.user || "Someone"} bought ${activity?.ticket || "Flat"} ticket for ${activity?.name || "Event"} events`}
+                      {activity.type === "users" && `${activity?.name || "Unknown User"} registered for ${activity?.account || "User"}`}
+                    </h3>
+                    <p className="text-gray-400 text-xs mt-0.5">
+                      {activityDate ? activityDate.toLocaleString() : "No date snapshot"}
+                    </p>
                   </div>
                 </div>
-              </div>
-    
-              {/*Upcoming Events Section */}
-              <div className="lg:px-4 px-0 py-6 rounded-2xl shadow mb-8">
-                <h2 className="text-xl font-semibold mb-4">Upcoming Events</h2>
-                <div className="space-y-4 max-h-96 custom-scrollbar ">
-                  {events
-                    .filter((e) => new Date(e.date) > new Date())
-                    .sort((a, b) => new Date(a.date) - new Date(b.date)).map((event) => (
-                      <div key={event.id} className="border-b border-gray-700 pb-4">
-                        <h3 className="text-lg font-semibold">{event.name}</h3>
-                        <p className="text-gray-400">
-                          {new Date(event.date).toLocaleDateString()} at {event.startTime}
-                        </p>
-                      </div>
-                    ))}
-                </div>
-              </div>
-              <div></div>
-            </main>
-  )
-}
+              );
+            })}
+          </div>
+        </div>
+      </div>
 
-export default DashboardHome
+      {/* ================= UPCOMING EVENTS SECTION ================= */}
+      <div className="p-4 rounded-2xl shadow ">
+        <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+          <FaCalendarPlus className="text-orange-500" /> Upcoming Events
+        </h2>
+        <div className="space-y-4 max-h-80 overflow-y-auto custom-scrollbar">
+          {events
+  .filter((e) => {
+    const eventDate = parseToNativeDate(e.date);
+    return eventDate && eventDate.getTime() >= todayMidnight.getTime();
+  })
+  .sort((a, b) => {
+    const dateA = parseToNativeDate(a.date)?.getTime() || 0;
+    const dateB = parseToNativeDate(b.date)?.getTime() || 0;
+    return dateA - dateB;
+  })
+  .map((event) => {
+    const eventDate = parseToNativeDate(event.date);
+
+    // 1. Format the Date beautifully (e.g., "Wed, Jul 1, 2026")
+    const formattedDate = eventDate
+      ? eventDate.toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })
+      : "Date error";
+
+    // 2. Intelligently format the time cleanly
+    const formattedTime = (() => {
+      // Case A: If event.date already contained the full time timestamp (like the ISO text string)
+      if (typeof event.date === "string" && event.date.includes("T") && eventDate) {
+        return eventDate.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+      }
+
+      // Case B: If event.startTime is a standalone time string (e.g., "16:00" or "16:00:00")
+      if (typeof event.startTime === "string" && event.startTime.includes(":")) {
+        const parts = event.startTime.split(":");
+        const hours = parseInt(parts[0], 10);
+        const minutes = parseInt(parts[1], 10);
+        
+        if (!isNaN(hours) && !isNaN(minutes)) {
+          const tempDate = new Date();
+          tempDate.setHours(hours, minutes, 0, 0);
+          return tempDate.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+        }
+      }
+
+      // Case C: Fallback to whatever raw value is in event.startTime if nothing else matches
+      return event.startTime || "N/A";
+    })();
+
+    return (
+      <div key={event.id} className=" pb-4 last:border-0 last:pb-0">
+        <h3 className="text-lg font-semibold">{event.name}</h3>
+        <p className="text-gray-400 text-sm mt-0.5">
+          {formattedDate} at {formattedTime}
+        </p>
+      </div>
+    );
+  })}
+            
+          {events.filter((e) => {
+            const eventDate = parseToNativeDate(e.date);
+            return eventDate && eventDate >= todayMidnight;
+          }).length === 0 && (
+            <p className="text-gray-400 text-sm">No upcoming events listed.</p>
+          )}
+        </div>
+      </div>
+    </main>
+  );
+};
+
+/* ---------------- SMALL REUSABLE CARD ---------------- */
+const SummaryCard = ({ title, value }) => (
+  <div className="p-4 rounded-2xl shadow">
+    <h2 className="text-gray-400 text-sm font-medium">{title}</h2>
+    <p className="text-3xl font-semibold mt-2">{value}</p>
+  </div>
+);
+
+export default DashboardHome;

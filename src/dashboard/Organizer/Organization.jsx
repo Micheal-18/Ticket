@@ -13,27 +13,29 @@ import {
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import Profile from "./component/OrgProfile";
+import EventChartPanel from "./component/OrgRechart";
 
 const Organization = () => {
   const { events, recentActivities, currentUser, profileOpen, setProfileOpen  } = useOutletContext();
 
+  /* ---------------- 🛠️ RESILIENT PARSER FOR INCOMING DATA ---------------- */
+  const parseToNativeDate = (dateField) => {
+    if (!dateField) return null;
+    if (dateField instanceof Date && !isNaN(dateField.getTime())) return dateField;
+    if (typeof dateField.toDate === "function") return dateField.toDate();
+    if (dateField.seconds) return new Date(dateField.seconds * 1000);
+    
+    const parsed = new Date(dateField);
+    return isNaN(parsed.getTime()) ? null : parsed;
+  };
+
   /* ---------------- FILTER EVENTS ---------------- */
-  const orgEvents = events.filter(
-    (e) => e.ownerId === currentUser?.uid
-  );
+  const orgEvents = events.filter((e) => e.ownerId === currentUser?.uid);
 
   /* ---------------- CALCULATIONS ---------------- */
-  const totalRevenue = events.reduce(
-    (sum, e) => sum + Number(e.organizerRevenue || 0),
-    0
-  );
-
-  const totalTicketsSold = events.reduce(
-    (sum, e) => sum + Number(e.ticketSold || 0),
-    0
-  );
-
-  const currency = events[0]?.currency || "₦";
+  const totalRevenue = orgEvents.reduce((sum, e) => sum + Number(e.organizerRevenue || 0), 0);
+  const totalTicketsSold = orgEvents.reduce((sum, e) => sum + Number(e.ticketSold || 0), 0);
+  const currency = orgEvents[0]?.currency || "₦";
 
   /* ---------------- CHART DATA ---------------- */
   const chartData = (() => {
@@ -41,11 +43,13 @@ const Organization = () => {
     const counts = Object.fromEntries(months.map(m => [m, 0]));
 
     orgEvents.forEach((e) => {
-      if (!e.date) return;
-      const d = new Date(e.date);
-      if (!isNaN(d)) {
+      // e.date refers to event execution day value
+      const d = parseToNativeDate(e.date);
+      if (d) {
         const m = d.toLocaleString("default", { month: "short" });
-        counts[m]++;
+        if (counts[m] !== undefined) {
+          counts[m]++;
+        }
       }
     });
 
@@ -53,35 +57,36 @@ const Organization = () => {
   })();
 
   /* ---------------- FOLLOWERS (READ-ONLY) ---------------- */
+  const [followers, setFollowers] = useState([]);
 
+  useEffect(() => {
+    if (!currentUser) return;
 
-const [followers, setFollowers] = useState([]);
+    const fetchFollowers = async () => {
+      try {
+        const q = query(
+          collection(db, "users"),
+          where("following", "array-contains", currentUser.uid)
+        );
 
-useEffect(() => {
-  if (!currentUser) return;
+        const snap = await getDocs(q);
+        setFollowers(
+          snap.docs.map(d => ({
+            id: d.id,
+            ...d.data(),
+          }))
+        );
+      } catch (err) {
+        console.error("Error reading followers dataset:", err);
+      }
+    };
 
-  const fetchFollowers = async () => {
-    const q = query(
-      collection(db, "users"),
-      where("following", "array-contains", currentUser.uid)
-    );
-
-    const snap = await getDocs(q);
-    setFollowers(
-      snap.docs.map(d => ({
-        id: d.id,
-        ...d.data(),
-      }))
-    );
-  };
-
-  fetchFollowers();
-}, [currentUser]);
-
+    fetchFollowers();
+  }, [currentUser]);
 
   return (
     <main className="flex-1 py-4 overflow-y-auto space-y-10">
-            {profileOpen && (
+      {profileOpen && (
         <Profile
           profileOpen={profileOpen}
           setProfileOpen={setProfileOpen}
@@ -95,7 +100,6 @@ useEffect(() => {
           title="Followers"
           value={currentUser?.followersCount || 0}
         />
-
         <SummaryCard
           title="Revenue"
           value={`${currency}${totalRevenue.toLocaleString()}`}
@@ -107,23 +111,10 @@ useEffect(() => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
         {/* EVENTS CHART */}
-        <div className="p-4 rounded-2xl shadow ">
-          <h2 className="text-xl font-semibold mb-4">Events per Month</h2>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis dataKey="name" stroke="#9CA3AF" />
-                <YAxis stroke="#9CA3AF" />
-                <Tooltip />
-                <Bar dataKey="events" fill="#F97316" radius={[6, 6, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
+        <EventChartPanel chartData={chartData} />
 
         {/* RECENT ACTIVITIES */}
-        <div className="p-4 rounded-2xl shadow ">
+        <div className="p-4 rounded-2xl shadow border border-gray-800/40">
           <h2 className="text-xl font-semibold mb-4">Recent Activities</h2>
 
           <div className="space-y-4 max-h-80 overflow-y-auto">
@@ -131,30 +122,34 @@ useEffect(() => {
               <p className="text-gray-400 text-sm">No activity yet</p>
             )}
 
-            {recentActivities.map((activity, index) => (
-              <div
-                key={index}
-                className="flex gap-3 border-b border-gray-700 pb-4"
-              >
-                <div className="text-orange-500 mt-1">
-                  {activity.type === "event"
-                    ? <FaCalendarPlus /> : activity.type === "users"
-                    ? <FaUserFriends /> : <FaTicketAlt />}
-                </div>
+            {recentActivities.map((activity, index) => {
+              const activityDate = parseToNativeDate(activity.date);
 
-                <div>
-                  <h3 className="font-semibold">
+              return (
+                <div
+                  key={index}
+                  className="flex gap-3 border-b border-gray-700 pb-4"
+                >
+                  <div className="text-orange-500 mt-1">
                     {activity.type === "event"
-                      ? `${activity?.name} event created` : activity?.type === "users"
-                      ? `${activity?.user} followed you`
-                      : `${activity?.user} bought a ${activity?.ticketNo || 1} ${activity?.ticketType || "Flat"} ticket for ${activity?.name}`}
-                  </h3>
-                  <p className="text-gray-400 text-sm">
-                    {new Date(activity.date).toLocaleString()}
-                  </p>
+                      ? <FaCalendarPlus /> : activity.type === "users"
+                      ? <FaUserFriends /> : <FaTicketAlt />}
+                  </div>
+
+                  <div>
+                    <h3 className="font-semibold">
+                      {activity.type === "event"
+                        ? `${activity?.name || "Event"} created` : activity?.type === "users"
+                        ? `${activity?.user || "Someone"} followed you`
+                        : `${activity?.user || "Someone"} bought a ${activity?.ticketNo || 1} ${activity?.ticketType || "Flat"} ticket for ${activity?.name || "Event"}`}
+                    </h3>
+                    <p className="text-gray-400 text-sm">
+                      {activityDate ? activityDate.toLocaleString() : "No date snapshot"}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
@@ -171,22 +166,26 @@ useEffect(() => {
           </p>
         ) : (
           <div className="space-y-4 max-h-80 overflow-y-auto">
-            {followers.map((f, idx) => (
-              <div
-                key={idx}
-                className="flex justify-between items-center  pb-3"
-              >
-                <div>
-                  <p className="font-semibold">{f.fullName || "Unknown"}</p>
-                  <p className="text-gray-400 text-sm">
-                    Last activity: {new Date(f.createdAt?.toDate?.() || new Date(0)).toLocaleString()}
-                  </p>
+            {followers.map((f, idx) => {
+              const lastActive = parseToNativeDate(f.createdAt);
+              
+              return (
+                <div
+                  key={idx}
+                  className="flex justify-between items-center pb-3"
+                >
+                  <div>
+                    <p className="font-semibold">{f.fullName || "Unknown"}</p>
+                    <p className="text-gray-400 text-sm">
+                      Last activity: {lastActive ? lastActive.toLocaleString() : "No activity timestamp"}
+                    </p>
+                  </div>
+                  <span className="text-xs bg-orange-500/10 text-orange-400 px-3 py-1 rounded-full">
+                    Follower
+                  </span>
                 </div>
-                <span className="text-xs bg-orange-500/10 text-orange-400 px-3 py-1 rounded-full">
-                  Follower
-                </span>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
@@ -197,7 +196,7 @@ useEffect(() => {
 /* ---------------- SMALL REUSABLE CARD ---------------- */
 const SummaryCard = ({ title, value }) => (
   <div className="p-4 rounded-2xl shadow ">
-    <h2 className="text-gray-400">{title}</h2>
+    <h2 className="text-gray-400 text-sm font-medium">{title}</h2>
     <p className="text-3xl font-semibold mt-2">{value}</p>
   </div>
 );

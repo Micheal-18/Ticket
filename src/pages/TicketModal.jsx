@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { collection, doc, getDoc, getDocs, limit, query, where } from "firebase/firestore";
+import { collection, query, where, limit, getDocs } from "firebase/firestore";
 import { db } from "../firebase/firebase";
-import { FiX } from "react-icons/fi";
+import { FiX as CloseIcon } from "react-icons/fi"; // Adjusted duplicate naming cleaner
 import PaystackPayment from "../components/PaystackPayment";
 import { formatEventStatus } from "../utils/formatEventRange";
 import OptimizedImage from "../components/OptimizedImage";
@@ -15,12 +15,12 @@ const TicketModal = ({ currentUser }) => {
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [guestEmail, setGuestEmail] = useState("");
   const [guestName, setGuestName] = useState("");
-  const [guestNumber, setGuestNumber] = useState();
+  const [guestNumber, setGuestNumber] = useState("");
   const [loading, setLoading] = useState(true);
   const [ticketQty, setTicketQty] = useState({});
 
-  // 🧭 Fetch event data
-  const number = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+  const numberOptions = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
   useEffect(() => {
     const fetchEvent = async () => {
       try {
@@ -29,8 +29,6 @@ const TicketModal = ({ currentUser }) => {
           where("slug", "==", slug),
           limit(1)
         );
-        console.log("Slug from URL:", slug);
-
         const querySnapshot = await getDocs(eventQuery);
         if (!querySnapshot.empty) {
           const docSnap = querySnapshot.docs[0];
@@ -41,54 +39,51 @@ const TicketModal = ({ currentUser }) => {
       } catch (error) {
         console.error("Error fetching event:", error);
       } finally {
-        setLoading(false);
+        loading && setLoading(false);
       }
     };
 
     fetchEvent();
   }, [slug]);
 
-  const handleSelectTicket = (ticket) => {
-  const qty = ticketQty[ticket.label] || 0;
+  const handleCheckoutAction = (ticket) => {
+    const qty = ticketQty[ticket.label] || 0;
 
-  if (qty <= 0) {
-    return alert("Select at least 1 ticket");
-  }
+    if (qty <= 0) {
+      return alert("Please select at least 1 ticket quantity.");
+    }
 
-  if (!currentUser) {
-    // ❌ Not logged in → trigger Google login instead
-    return setSelectedTicket({
+    if (!currentUser) {
+      // Prompt Authentication Wall
+      setSelectedTicket({
+        ...ticket,
+        num: qty,
+        requiresAuth: true,
+      });
+      return;
+    }
+
+    setSelectedTicket({
       ...ticket,
       num: qty,
-      requiresAuth: true,
-    });
-  }
-
-  // ✅ Logged in → go straight to payment
-  setSelectedTicket({
-    ...ticket,
-    num: qty,
-  });
-};
-
-useEffect(() => {
-  if (currentUser && selectedTicket?.requiresAuth) {
-    setSelectedTicket((prev) => ({
-      ...prev,
       requiresAuth: false,
-    }));
-  }
-}, [currentUser]);
+    });
+  };
 
-  // 🕓 Safe date formatting
+  // Keep state sync updated when user logs in via the GoogleAuth wall trigger
+  useEffect(() => {
+    if (currentUser && selectedTicket?.requiresAuth) {
+      setSelectedTicket((prev) => ({
+        ...prev,
+        requiresAuth: false,
+      }));
+    }
+  }, [currentUser, selectedTicket]);
+
   const formatDate = (date) => {
     try {
       if (!date) return "Date not set";
-
-      const formattedDate = date.seconds
-        ? new Date(date.seconds * 1000)
-        : new Date(date);
-
+      const formattedDate = date.seconds ? new Date(date.seconds * 1000) : new Date(date);
       if (isNaN(formattedDate)) return "Invalid date";
 
       return formattedDate.toLocaleDateString("en-US", {
@@ -105,21 +100,20 @@ useEffect(() => {
   if (loading) return <div className="text-center p-10">Loading event...</div>;
   if (!selectedEvent) return <div className="text-center p-10">Event not found</div>;
 
-
-
   return (
     <div className="fixed left-0 top-0 w-full h-full backdrop-blur-xs flex justify-center items-center z-[9999] custom-scrollbar">
       <div className="relative w-full flex justify-center items-center">
-        <div className="flex flex-col  bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) space-y-4 p-6 rounded-lg shadow-lg lg:w-[70%] w-[80%] max-h-[90vh] overflow-y-auto custom-scrollbar">
-          {/* Close Button */}
+        <div className="flex flex-col bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) space-y-4 p-6 rounded-lg shadow-lg lg:w-[70%] w-[80%] max-h-[90vh] overflow-y-auto custom-scrollbar">
+          
+          {/* Close Window Banner Button */}
           <div
-            className="text-2xl absolute top-4 lg:right-1/6 right-12 cursor-pointer hover:scale-105"
+            className="text-2xl absolute top-4 lg:right-1/6 right-12 cursor-pointer hover:scale-105 z-50"
             onClick={() => window.history.back()}
           >
-            <FiX />
+            <CloseIcon />
           </div>
 
-          {/* Event Image */}
+          {/* Event Image Banner layout asset */}
           <div className="flex justify-center mb-4">
             <OptimizedImage
               src={selectedEvent.photoURL}
@@ -128,33 +122,30 @@ useEffect(() => {
             />
           </div>
 
-          {/* Event Details */}
           <h2 className="text-2xl text-center uppercase font-bold mb-4">
             {selectedEvent.name}
           </h2>
 
           <div className="space-y-4">
-            {/* Description */}
+            {/* Description Meta Section */}
             <div className="border-b space-y-2 border-gray-300 w-full">
               <h1 className="uppercase font-semibold text-xl">Description</h1>
               <p className="text-gray-400 mb-2">{selectedEvent?.description}</p>
             </div>
 
-
-            {/* Category */}
+            {/* Category Section */}
             <div className="border-b space-y-2 border-gray-300 w-full">
               <h1 className="uppercase font-semibold text-xl">Category</h1>
               <p className="text-gray-400 mb-2">{selectedEvent?.category}</p>
             </div>
 
-            {/* Location */}
+            {/* Location Section */}
             <div className="border-b space-y-2 border-gray-300 w-full">
               <h1 className="uppercase font-semibold text-xl">Location</h1>
               <p className="text-gray-400 mb-2">{selectedEvent?.location}</p>
             </div>
 
-            {/* Oranganizes */}
-
+            {/* Organizer Block */}
             <div className="flex justify-between items-center border-b space-y-2 border-gray-300 w-full">
               <div>
                 <h1 className="uppercase font-semibold text-xl">Organized by</h1>
@@ -169,8 +160,8 @@ useEffect(() => {
               )}
             </div>
 
-            {/* Date & Time */}
-            <div>
+            {/* Date & Time Section */}
+            <div className="border-b pb-4 border-gray-300 w-full">
               <h1 className="uppercase font-semibold text-xl">Date & Time</h1>
               <p className="text-gray-400">
                 {formatDate(selectedEvent.date)} |{" "}
@@ -179,117 +170,96 @@ useEffect(() => {
               </p>
             </div>
 
-            {/* Ticket List */}
-            <div className="border-b space-y-2 border-gray-300 w-full">
-              <h1 className="uppercase font-semibold text-xl">Tickets</h1>
+            {/* Interactive Ticket Management Selection Grid */}
+            <div className="space-y-2 w-full">
+              <h1 className="uppercase font-semibold text-xl mb-2">Select Tickets</h1>
 
               {Array.isArray(selectedEvent.price) && selectedEvent.price.length > 0 ? (
-                selectedEvent.price.map((ticket, index) => (
-                  <div key={index} className="flex flex-col gap-2 mb-4">
-                    <div className="flex items-center gap-2">
-                      <select
-                        value={ticketQty[ticket.label] || 0}
-                        onChange={(e) =>
-                          setTicketQty({
-                            ...ticketQty,
-                            [ticket.label]: Number(e.target.value),
-                          })
-                        }
+                selectedEvent.price.map((ticket, index) => {
+                  const currentQty = ticketQty[ticket.label] || 0;
+                  const isFree = Number(ticket.amount) === 0 || selectedEvent.isFree;
+                  const isThisTicketSelected = selectedTicket?.label === ticket.label;
 
-                        className="p-2 border rounded-lg"
-                      >
-                        {number.map((number, num) => (
-                          <option key={num + 1} value={num}>
-                            {number}
-                          </option>
-                        ))}
-                      </select>
+                  return (
+                    <div key={index} className="flex flex-col gap-3 p-4 shadow rounded-xl  mb-4">
+                      
+                      {/* Ticket Information Bar Row Control */}
+                      <div className="flex flex-wrap items-center justify-between gap-4">
+                        <div className="flex flex-col">
+                          <span className="font-bold text-lg text-orange-500">{ticket.label}</span>
+                          <span className="text-sm text-gray-400">
+                            {isFree ? "Free Admission" : `${ticket.currency || "₦"}${Number(ticket.amount).toLocaleString()}`}
+                          </span>
+                        </div>
 
-                      <button
-                        onClick={() => handleSelectTicket(ticket)}
-                        className="flex-1 flex lg:flex-row flex-col space-x-4 text-left p-2 border rounded-lg  active:scale-95 transition"
-                      >
-                        <span>
-                          {ticket.label}: {ticket.currency}
-                          {ticket.amount} × {ticketQty[ticket.label] || 0} ={" "}
-                          <strong>
-                            {ticket.currency}
-                            {Number(ticket.amount) * Number(ticketQty[ticket.label] || 0)}
+                        {/* Quantity Dropdown Counter Option */}
+                        <div className="flex items-center space-x-2">
+                          <label className="text-xs text-gray-400 font-medium uppercase">Qty:</label>
+                          <select
+                            value={currentQty}
+                            onChange={(e) => {
+                              setTicketQty({
+                                ...ticketQty,
+                                [ticket.label]: Number(e.target.value),
+                              });
+                              // Clear active ticket state layout mapping if count parameters alter
+                              setSelectedTicket(null);
+                            }}
+                            className="p-2 rounded-lg shadow font-semibold"
+                          >
+                            {numberOptions.map((num) => (
+                              <option key={num} value={num}>
+                                {num}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
 
-                          </strong>
-                        </span>
-
-
-                      </button>
-
-
+                      {/* Dynamic Dynamic Action Buttons Rendering Layer */}
+                      <div className="w-full flex flex-col items-stretch mt-1">
+                        {currentQty > 0 ? (
+                          !currentUser ? (
+                            <div className="flex flex-col items-center gap-2 p-2 rounded-lg">
+                              <p className="text-xs text-gray-400 text-center">Authentication required to secure pass allocation tiers.</p>
+                              <GoogleAuth className="w-full" />
+                            </div>
+                          ) : isThisTicketSelected && !selectedTicket.requiresAuth ? (
+                            /* Embed direct action handlers securely into mapped array positions */
+                            <PaystackPayment
+                              events={selectedEvent}
+                              ticket={selectedTicket}
+                              currentUser={currentUser}
+                              guestEmail={guestEmail}
+                              guestName={guestName}
+                              guestNumber={guestNumber}
+                            />
+                          ) : (
+                            <button
+                              onClick={() => handleCheckoutAction(ticket)}
+                              className={`w-full py-2.5 px-4 rounded-lg font-bold transition tracking-wide active:scale-95 ${
+                                isFree 
+                                  ? "bg-green-600 hover:bg-green-700 text-white" 
+                                  : "bg-orange-500 hover:bg-orange-600 text-white"
+                              }`}
+                            >
+                              {isFree ? `Claim Free Pass (${currentQty})` : `Buy Ticket • ${ticket.currency || "₦"}${(Number(ticket.amount) * currentQty).toLocaleString()}`}
+                            </button>
+                          )
+                        ) : (
+                          <button disabled className="w-full py-2.5 px-4 rounded-lg font-bold bg-gray-700/40 text-gray-500 cursor-not-allowed text-sm text-center">
+                            Select quantity above to unlock
+                          </button>
+                        )}
+                      </div>
                     </div>
-
-                    {!currentUser && (
-                      <>
-                        {/* <div className="flex space-x-2 items-center">
-                          <label className="font-bold text-gray-400">Name:</label>
-                          <input
-                            placeholder="Name"
-                            type="text"
-                            className="border-2 border-gray-200 lg:w-1/2 w-full rounded-md p-3"
-                            value={guestName}
-                            onChange={(e) => setGuestName(e.target.value)}
-                          />
-
-                        </div>
-
-                       
-                        <div className="flex space-x-2 items-center">
-                          <label className="font-bold text-gray-400">Email:</label>
-                          <input
-                            placeholder="Email"
-                            type="email"
-                            className="lg:w-1/2 w-full border-2 border-gray-200 rounded-md p-3"
-                            value={guestEmail}
-                            onChange={(e) => setGuestEmail(e.target.value)}
-                          />
-
-                        </div>
-
-                        <div className="flex space-x-2 items-center">
-                          <label className="font-bold text-gray-400">Number:</label>
-                          <input
-                            placeholder="Phone"
-                            type="number"
-                            className="border-2 border-gray-200 lg:w-1/2 w-full rounded-md p-3"
-                            value={guestNumber}
-                            onChange={(e) => setGuestNumber(e.target.value.trim())}
-                          />
-
-                        </div> */}
-                        <div className="flex justify-center">
-<GoogleAuth className="w-1/2"/>
-                        </div>
-
-                        
-                      </>
-                    )}
-                  </div>
-                ))
+                  );
+                })
               ) : (
                 <p className="text-gray-400 text-sm">No tickets available</p>
               )}
-
             </div>
-
-
           </div>
-          {/* Paystack Payment */}
-          {selectedTicket && !selectedTicket.requiresAuth && (
-  <PaystackPayment
-    events={selectedEvent}
-    ticket={selectedTicket}
-    currentUser={currentUser}
-    email={currentUser?.email}
-    name={currentUser?.name || currentUser?.fullName || currentUser?.displayName}
-  />
-)}
         </div>
       </div>
     </div>

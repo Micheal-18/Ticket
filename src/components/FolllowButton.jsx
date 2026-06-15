@@ -6,7 +6,8 @@ import {
   increment,
   addDoc,
   collection,
-  serverTimestamp
+  serverTimestamp,
+  deleteField // 📑 Added to clean up fields on unfollow
 } from 'firebase/firestore'
 import { db } from '../firebase/firebase'
 import { useEffect, useState } from 'react'
@@ -30,16 +31,24 @@ const FollowButton = ({ currentUser, ownerId }) => {
 
     try {
       if (isFollowing) {
+        // ❌ UNFOLLOWING LOGIC
         await updateDoc(userRef, {
-          following: arrayRemove(ownerId)
+          following: arrayRemove(ownerId),
+          // Dynamic path safely removes the specific timestamp tracking key
+          [`followingDates.${ownerId}`]: deleteField() 
         })
         await updateDoc(organizerRef, {
           followersCount: increment(-1)
         })
         setIsFollowing(false)
       } else {
+        // 🎫 FOLLOWING LOGIC
+        const now = new Date(); // Use local timestamp instance for quick layout mapping fallback compatibility
+
         await updateDoc(userRef, {
-          following: arrayUnion(ownerId)
+          following: arrayUnion(ownerId),
+          // 🛠️ FIX: Track exactly when this user followed this specific organizer id
+          [`followingDates.${ownerId}`]: now
         })
         await updateDoc(organizerRef, {
           followersCount: increment(1)
@@ -49,7 +58,7 @@ const FollowButton = ({ currentUser, ownerId }) => {
         await addDoc(collection(db, 'notifications'), {
           type: 'new_follower',
           title: '👤 New Follower',
-          message: `${currentUser.displayName || 'Someone'} followed you`,
+          message: `${currentUser.fullName || currentUser.displayName || 'Someone'} followed you`,
           userId: ownerId, // organizer receives it
           actorId: currentUser.uid, // who followed
           read: false,
@@ -58,7 +67,6 @@ const FollowButton = ({ currentUser, ownerId }) => {
 
         setIsFollowing(true)
       }
-      console.log(isFollowing)
     } catch (err) {
       console.error('Follow error:', err)
     } finally {

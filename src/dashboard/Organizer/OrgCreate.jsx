@@ -50,6 +50,11 @@ const CreateEvent = () => {
   const [startTime, setStartTime] = useState(new Date())
   const [endTime, setEndTime] = useState(new Date())
   const [photo, setPhoto] = useState(null)
+  const [loading, setLoading] = useState(false)
+
+  
+  // Ticket Mode & Pricing States
+  const [ticketType, setTicketType] = useState("paid")
   const [price, setPrice] = useState([{ id: 1, label: "", amount: "", currency: "₦" }])
   const [openDate, setOpenDate] = useState(false)
 
@@ -58,15 +63,14 @@ const CreateEvent = () => {
   const [bankName, setBankName] = useState("")
   const banks = Object.keys(bankCodes)
 
-
-
   const Category = [
     "Art", "Business", "Education", "Entertainment", "Food", "Health", "Music",
     "Networking", "Sports", "Technology", "Other..."
   ]
   const currencies = ["₦", "$", "€"]
 
-  const handleAddInput = () => setPrice([...price, { id: price.length + 1, label: "", amount: "", currency: "₦" }])
+  // Use Date.now() for unique dynamic item IDs to prevent react mutation keys collisions
+  const handleAddInput = () => setPrice([...price, { id: Date.now(), label: "", amount: "", currency: "₦" }])
   const handlePriceChange = (id, field, value) => setPrice(price.map((p) => (p.id === id ? { ...p, [field]: value } : p)))
   const handleRemoveInput = (id) => setPrice(price.filter((p) => p.id !== id))
   const handleOpenDate = () => setOpenDate(!openDate)
@@ -77,11 +81,17 @@ const CreateEvent = () => {
     const user = auth.currentUser
     if (!user) return alert("You must be logged in to create an event.")
 
-    if (!name || !category || !description || !location || !organizer || !accountNumber || !bankName) {
+    // Dynamic bank requirement check depending on ticket type
+    if (ticketType === "paid" && (!accountNumber || !bankName)) {
+      return alert("Please fill in your banking payout details for your paid tickets.")
+    }
+
+    if (!name || !category || !description || !location || !organizer) {
       return alert("Please fill all required fields.")
     }
 
     try {
+      setLoading(true)
       const eventId = `${Date.now()}_${user.uid}`
       const eventRef = doc(db, "events", eventId)
 
@@ -90,11 +100,25 @@ const CreateEvent = () => {
 
       const slug = `${name.toLowerCase().trim().replace(/\s+/g, "-").replace(/[^\w-]+/g, "")}-${Date.now()}`
       const finalStart = new Date(date)
-      finalStart.setHours(startTime.getHours(), startTime.getMinutes())
+      finalStart.setHours(startTime.getHours(), startTime.getMinutes(), 0, 0)
+      
       const finalEnd = new Date(date)
-      finalEnd.setHours(endTime.getHours(), endTime.getMinutes())
+      finalEnd.setHours(endTime.getHours(), endTime.getMinutes(), 0, 0)
 
-      const bankCode = bankCodes[bankName] // Get Paystack bank code
+      // Fallback check if end time inadvertently rolled behind start time configuration
+    if (finalEnd <= finalStart) {
+  finalEnd.setDate(finalEnd.getDate() + 1);
+}
+
+      // Sanitize the pricing array format cleanly for DB storage
+      const formattedPriceTiers = price.map(p => ({
+        id: p.id,
+        label: ticketType === "free" ? "General Admission" : (p.label.trim() || "Regular"),
+        amount: ticketType === "free" ? 0 : parseFloat(p.amount || 0),
+        currency: ticketType === "free" ? "" : p.currency
+      }))
+
+      const bankCode = ticketType === "paid" ? bankCodes[bankName] : ""
 
       // Save event as PENDING
       await setDoc(eventRef, {
@@ -103,20 +127,21 @@ const CreateEvent = () => {
         description,
         location,
         organizer,
-        price,
+        price: formattedPriceTiers,
+        isFree: ticketType === "free",
         photoURL,
         date: date.toISOString(),
-        startTime: finalStart.toISOString(),
-        endTime: finalEnd.toISOString(),
+        startTime: finalStart.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', hour12: true }), // "4:00 PM"
+        endTime: finalEnd.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', hour12: true }),
         createdBy: user.uid,
         ownerId: user.uid,
         organizerEmail: user.email,
         slug,
-        status: "pending", // ✅ Pending admin approval
+        status: "pending", // Pending admin approval
         ticketSold: 0,
-        accountNumber,
-        adminFee: 8,
-        bankName,
+        accountNumber: ticketType === "paid" ? accountNumber : "",
+        adminFee: ticketType === "paid" ? 8 : 0,
+        bankName: ticketType === "paid" ? bankName : "",
         bankCode,
         createdAt: new Date().toISOString(),
       })
@@ -124,8 +149,9 @@ const CreateEvent = () => {
       await setDoc(doc(db, "notifications", `${Date.now()}_${eventId}`), {
         type: "event_submission",
         title: "📢 New Event Submission",
-        message: `Your event "${name}" has been submitted for approval.`,
-        userId: user.uid,
+        message: `Event "${name}" needs admin review and approval.`,
+        senderId: user.uid,
+        senderName: organizer,
         link: "/event/" + slug,
         status: "pending",
         read: false,
@@ -136,14 +162,15 @@ const CreateEvent = () => {
       navigate("/dashboard/organization")
     } catch (err) {
       console.error(err)
+      setLoading(false)
       alert("❌ Failed to submit event.")
     }
   }
 
   return (
     <section className='w-full h-screen pb-4 flex flex-col space-y-6 custom-scrollbar'>
-      <div className=' flex space-x-4'>
-        {/* <RiArrowLeftFill onClick={() => navigate("/dashboard")} className='cursor-pointer text-xl text-orange-600'/> */}
+      <div className='flex space-x-4 items-center'>
+        <RiArrowLeftFill onClick={() => navigate("/dashboard/organization")} className='cursor-pointer text-xl text-orange-600'/>
         <h1 className='uppercase font-semibold lg:text-5xl text-2xl'>Create Event</h1>
       </div>
 
@@ -164,12 +191,12 @@ const CreateEvent = () => {
           </select>
         </div>
 
-        <div className='flex  py-4 space-x-2 border-b '>
+        <div className='flex py-4 space-x-2 border-b '>
           <label>Description:</label>
           <textarea required onChange={(e) => setDescription(e.target.value)} value={description} name='description' placeholder='Describe your event here...' className='border-2 border-gray-500 rounded-lg p-2 w-full h-[200px]'></textarea>
         </div>
 
-        <div className='flex items-center py-4 space-x-4  border-b '>
+        <div className='flex items-center py-4 space-x-4 border-b '>
           <label>Photos:</label>
           <input ref={fileInputRef} onChange={handlePhotoUpload} type='file' name='photo' accept='image/*' className='border rounded-xl w-[100%] p-2' />
         </div>
@@ -187,47 +214,116 @@ const CreateEvent = () => {
         {/* Calendar */}
         <div className='relative flex justify-between border-b py-6'>
           <div className='flex items-center space-x-4'>
-            <h1 className='font-semibold  uppercase '>Dates:</h1>
+            <h1 className='font-semibold uppercase '>Dates:</h1>
             <p className="text-sm text-gray-600">{formatEventStatus(startTime, endTime)}</p>
           </div>
-          <div onClick={handleOpenDate} className='border rounded-xl px-2 space-x-2 flex items-center'>
+          <div onClick={handleOpenDate} className='border rounded-xl px-2 space-x-2 flex items-center ' style={{ cursor: 'pointer' }}>
             <FaCalendarCheck className='text-gray-500' />
             <h1 className='uppercase font-semibold lg:text-xl text-sm'>Calendar</h1>
           </div>
         </div>
         {openDate && (
-          <div className='flex flex-col  gap-2  justify-center'>
+          <div className='flex flex-col gap-2 justify-center'>
             <DatePicker selected={date} onChange={(newDate) => setDate(newDate)} dateFormat="MMMM d, yyyy" className='text-white cursor-pointer bg-gray-800 p-4 rounded-lg' />
-            <DatePicker selected={startTime} onChange={(time) => setStartTime(time)} showTimeSelect showTimeSelectOnly timeIntervals={30} timeCaption="Start Time" dateFormat="h:mm aa" className='text-white cursor-pointer bg-gray-800 p-4 rounded-lg'/>
-            <DatePicker selected={endTime} onChange={(time) => setEndTime(time)} showTimeSelect showTimeSelectOnly timeIntervals={30} timeCaption="End Time" dateFormat="h:mm aa" className='text-white cursor-pointer bg-gray-800 p-4 rounded-lg'/>
+           <div className="flex flex-col gap-1">
+              <span className="text-xs text-gray-400">Start Time (24h)</span>
+              <DatePicker 
+                selected={startTime} 
+                onChange={(time) => setStartTime(time)} 
+                showTimeSelect 
+                showTimeSelectOnly 
+                timeIntervals={30} 
+                timeCaption="Start Time" 
+                timeFormat="HH:mm"
+                dateFormat="HH:mm" 
+                className='text-white cursor-pointer bg-gray-800 p-4 rounded-lg w-full' 
+              />
+            </div>
+            
+            <div className="flex flex-col gap-1">
+              <span className="text-xs text-gray-400">End Time (24h)</span>
+              <DatePicker 
+                selected={endTime} 
+                onChange={(time) => setEndTime(time)} 
+                showTimeSelect 
+                showTimeSelectOnly 
+                timeIntervals={30} 
+                timeCaption="End Time" 
+                timeFormat="HH:mm"
+                dateFormat="HH:mm" 
+                className='text-white cursor-pointer bg-gray-800 p-4 rounded-lg w-full' 
+              />
+            </div>
           </div>
         )}
 
-        {/* Ticket Prices */}
-        <div className="flex flex-col space-y-2">
-          {price.map((p) => (
-            <div key={p.id} className="flex flex-wrap space-y-2 items-center p-2 w-full space-x-4 border-b">
-              <input type="text" placeholder="Ticket Type" value={p.label} onChange={(e) => handlePriceChange(p.id, "label", e.target.value)} className="p-2 border rounded-lg"/>
-              <select value={p.currency} onChange={(e) => handlePriceChange(p.id, "currency", e.target.value)} className="p-2 border  rounded-lg">
-                {currencies.map((cur, idx) => <option key={idx} value={cur}>{cur}</option>)}
-              </select>
-              <input type="number" placeholder="0.00" value={p.amount} onChange={(e) => handlePriceChange(p.id, "amount", e.target.value)} className="p-2 border rounded-lg w-40"/>
-              {price.length > 1 && <button type="button" onClick={() => handleRemoveInput(p.id)} className="text-red-500 hover:text-red-700 font-bold"><FiX /></button>}
-            </div>
-          ))}
-          <button type="button" onClick={handleAddInput} className="flex items-center gap-2 text-gray-500 hover:text-gray-700 mt-2"><FaPlus /> Add another ticket type</button>
+        {/* Ticket Type Selector Switch */}
+        <div className="flex flex-col space-y-2 border-b py-4">
+          <label className="text-sm font-bold text-gray-400">Ticket Mode</label>
+          <div className="flex space-x-4">
+            <button
+              type="button"
+              onClick={() => {
+                setTicketType("free");
+                setPrice([{ id: 1, label: "Free Pass", amount: 0, currency: "" }]);
+              }}
+              className={`flex-1 py-3 rounded-lg font-bold border transition-all ${
+                ticketType === "free"
+                  ? "bg-green-600 text-white border-green-600 shadow-sm"
+                  : "border-gray-600 text-gray-400 hover:bg-gray-800"
+              }`}
+            >
+              🆓 Free Event
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setTicketType("paid");
+                setPrice([{ id: 1, label: "", amount: "", currency: "₦" }]);
+              }}
+              className={`flex-1 py-3 rounded-lg font-bold border transition-all ${
+                ticketType === "paid"
+                  ? "bg-orange-500 text-white border-orange-500 shadow-sm"
+                  : "border-gray-600 text-gray-400 hover:bg-gray-800"
+              }`}
+            >
+              💳 Paid Event
+            </button>
+          </div>
         </div>
 
-        {/* Bank Info */}
-        <h2 className="font-semibold">Bank Info (for payout)</h2>
-        <input required placeholder="Account Number" value={accountNumber} onChange={(e) => setAccountNumber(e.target.value)} className="p-2 border rounded-lg"/>
-        <select required value={bankName} onChange={(e) => setBankName(e.target.value)} className="p-2 border rounded-lg">
-          <option value="">Select Bank</option>
-          {banks.map((b, i) => <option key={i} value={b}>{b}</option>)}
-        </select>
+        {/* Dynamic Ticket Prices Setup (Only shows up when Paid is clicked) */}
+        {ticketType === "paid" && (
+          <div className="flex flex-col space-y-2">
+            <h2 className="font-semibold text-sm text-gray-400 uppercase">Pricing Tiers</h2>
+            {price.map((p) => (
+              <div key={p.id} className="flex flex-wrap space-y-2 items-center p-2 w-full space-x-4 border-b">
+                <input required={ticketType === "paid"} type="text" placeholder="Ticket Type (e.g., Regular, VIP)" value={p.label} onChange={(e) => handlePriceChange(p.id, "label", e.target.value)} className="p-2 border rounded-lg"/>
+                <select value={p.currency} onChange={(e) => handlePriceChange(p.id, "currency", e.target.value)} className="p-2 border rounded-lg bg-gray-800 text-white">
+                  {currencies.map((cur, idx) => <option key={idx} value={cur}>{cur}</option>)}
+                </select>
+                <input required={ticketType === "paid"} type="number" min="1" placeholder="Amount" value={p.amount} onChange={(e) => handlePriceChange(p.id, "amount", e.target.value)} className="p-2 border rounded-lg w-40"/>
+                {price.length > 1 && <button type="button" onClick={() => handleRemoveInput(p.id)} className="text-red-500 hover:text-red-700 font-bold"><FiX /></button>}
+              </div>
+            ))}
+            <button type="button" onClick={handleAddInput} className="flex items-center gap-2 text-gray-500 hover:text-gray-700 mt-2 self-start"><FaPlus /> Add another ticket type</button>
+          </div>
+        )}
 
-        <button type='submit' className='bg-orange-500 text-white py-3 rounded-lg font-bold active:scale-90 hover:bg-orange-600'>
-          Submit for Approval
+        {/* Bank Info Container (Hidden entirely if the event is 100% Free) */}
+        {ticketType === "paid" && (
+          <div className="flex flex-col space-y-4 pt-2">
+            <h2 className="font-semibold">Bank Info (for payout)</h2>
+            <input required={ticketType === "paid"} placeholder="Account Number" value={accountNumber} onChange={(e) => setAccountNumber(e.target.value)} className="p-2 border rounded-lg" maxLength={10}/>
+            <select required={ticketType === "paid"} value={bankName} onChange={(e) => setBankName(e.target.value)} className="p-2 border rounded-lg bg-gray-800 text-white">
+              <option value="">Select Bank</option>
+              {banks.map((b, i) => <option key={i} value={b}>{b}</option>)}
+            </select>
+          </div>
+        )}
+
+        <button type='submit' className='bg-orange-500 text-white py-3 cursor-pointer rounded-lg font-bold active:scale-90 hover:bg-orange-600 transition-all'>
+         {loading ? "Submitting..." : "Submit Event for Approval"}
         </button>
       </form>
     </section>
