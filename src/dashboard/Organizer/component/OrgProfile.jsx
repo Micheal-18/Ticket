@@ -115,11 +115,11 @@ const OrgProfile = ({profileOpen, setProfileOpen}) => {
         <h1 className="text-2xl font-bold text-center uppercase">Profile</h1>
 
         <button
-  onClick={() => setProfileOpen(false)}
-  className="absolute right-4 top-6 text-lg hover:scale-110"
->
-  <FiX />
-</button>
+          onClick={() => setProfileOpen(false)}
+          className="absolute right-4 top-6 text-lg hover:scale-110"
+        >
+          <FiX />
+        </button>
 
         {/* Profile Image */}
         <div className="flex flex-col items-center space-y-3">

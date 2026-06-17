@@ -34,7 +34,17 @@ import OrgEvent from "./dashboard/Organizer/OrgEvent";
 import Dashblog from "./dashboard/Admin/Dashblog";
 import AdminWallet from "./dashboard/Admin/AdminWallet";
 import WelcomeBack from "./components/WelcomeBack";
+import Profile from "./dashboard/Admin/component/Profile";
 import { Toaster } from "react-hot-toast";
+import UserMain from "./dashboard/Users/UserMain";
+import UserLayout from "./dashboard/Users/UserLayout";
+import OrgProfile from "./dashboard/Organizer/component/OrgProfile";
+import UserEventsAndTickets from "./dashboard/Users/UserEvent";
+import UserProfile from "./dashboard/Users/UserProfile";
+import TransactionHistory from "./dashboard/Users/Billing";
+// import UserProfile from "./dashboard/Users/UserProfile";
+// import UserTransactions from "./dashboard/Users/UserTransactions";
+// import UserSettings from "./dashboard/Users/UserSettings";
 
 
 
@@ -172,9 +182,7 @@ useEffect(() => {
       />
 
       <Route path="/event/:slug" element={
-        <Layout currentUser={currentUser}>
           <TicketModal currentUser={currentUser} />
-        </Layout>
       } />
 
       <Route path="/guide" element={
@@ -223,6 +231,7 @@ useEffect(() => {
         <Route index element={<DashboardHome currentUser={currentUser} />} />
 
         <Route path="blog" element={<Dashblog currentUser={currentUser} />} />
+        <Route path="profile" element={<Profile currentUser={currentUser} />} />
 
         {/* Create Event */}
         <Route path="create" element={<CreateEvent currentUser={currentUser} />} />
@@ -246,11 +255,21 @@ useEffect(() => {
 
         <Route path="create" element={<OrgCreate currentUser={currentUser} />} />
         <Route path="wallet" element={<OrgWallet currentUser={currentUser} />} />
+        <Route path="profile" element={<OrgProfile currentUser={currentUser} />} />
         <Route path="scanner" element={<TicketScanner currentUser={currentUser} />} />
         <Route path="events" element={<OrgEvent currentUser={currentUser} />} />
         <Route path="event/:slug" element={<TicketModal currentUser={currentUser} />} />
         <Route path="blog" element={<WriteBlog />} />
       </Route>
+     
+      <Route path="/dashboard/users" element={ <UserLayout currentUser={currentUser} />}>
+        <Route index element={<UserMain currentUser={currentUser} />} />
+        <Route path="events" element={<UserEventsAndTickets currentUser={currentUser} />} />
+        <Route path="profile" element={<UserProfile currentUser={currentUser} />} />
+        <Route path="transactions" element={<TransactionHistory currentUser={currentUser} />} />
+        {/* <Route path="settings" element={<UserSettings currentUser={currentUser} />} /> */}
+      </Route>
+      
 
 
     </Routes>

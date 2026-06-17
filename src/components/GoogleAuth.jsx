@@ -5,41 +5,60 @@ import {
   getRedirectResult
 } from "firebase/auth";
 import { auth, googleProvider } from '../firebase/firebase';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
 
-const GoogleAuth = () => {
+const GoogleAuth = ({ onAuthSuccess, className }) => {
 
-  // Handle redirect result (VERY IMPORTANT)
+  // Process core document payload writes to Firestore
+  const handleUserSync = async (user) => {
+    const userRef = doc(db, 'users', user.uid);
+    
+    // First check if user already exists to preserve custom fields (like accountType or isAdmin)
+    const existingSnap = await getDoc(userRef);
+    
+    const userPayload = {
+      name: user.displayName,
+      email: user.email?.toLowerCase().trim(),
+      photoURL: user.photoURL,
+      provider: 'google',
+      verified: true,
+      updatedAt: new Date().toISOString()
+    };
+
+    // Include standard fallback structures if it's a completely new account
+    if (!existingSnap.exists()) {
+      userPayload.createdAt = new Date().toISOString();
+      userPayload.accountType = 'user'; 
+    }
+
+    await setDoc(userRef, userPayload, { merge: true });
+
+    // Read fresh reference copy to supply accurate dynamic redirection parameters
+    const freshSnap = await getDoc(userRef);
+    return freshSnap.data();
+  };
+
+  // Handle mobile redirect pipelines asynchronously
   React.useEffect(() => {
     const handleRedirect = async () => {
       try {
         const result = await getRedirectResult(auth);
-        if (!result) return;
+        if (!result || !onAuthSuccess) return;
 
-        const user = result.user;
-
-        await setDoc(doc(db, 'users', user.uid), {
-          name: user.displayName,
-          email: user.email?.toLowerCase().trim(),
-          photoURL: user.photoURL,
-          provider: 'google',
-          verified: true,
-          updatedAt: new Date().toISOString()
-        }, { merge: true });
-
+        const userData = await handleUserSync(result.user);
+        onAuthSuccess(userData);
       } catch (error) {
         console.error("Redirect login error:", error);
       }
     };
 
     handleRedirect();
-  }, []);
+  }, [onAuthSuccess]);
 
   const signInWithGoogle = async () => {
     try {
-      const isMobile =
-        /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
       if (isMobile) {
         await signInWithRedirect(auth, googleProvider);
@@ -47,18 +66,12 @@ const GoogleAuth = () => {
       }
 
       const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
+      const userData = await handleUserSync(result.user);
 
-      await setDoc(doc(db, 'users', user.uid), {
-        name: user.displayName,
-        email: user.email?.toLowerCase().trim(),
-        photoURL: user.photoURL,
-        provider: 'google',
-        verified: true,
-        updatedAt: new Date().toISOString()
-      }, { merge: true });
-
-      console.log('✅ Logged in:', user);
+      // If a callback is passed (Login page), execute it. If not (Ticket Modal), do nothing.
+      if (onAuthSuccess) {
+        onAuthSuccess(userData);
+      }
 
     } catch (error) {
       console.error('Google login error:', error);
@@ -66,7 +79,11 @@ const GoogleAuth = () => {
   };
 
   return (
-    <button onClick={signInWithGoogle}>
+    <button 
+      onClick={signInWithGoogle} 
+      type="button"
+      className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg shadow hover:shadow-lg transition-transform duration-200 ${className}`}
+    >
       Continue with Google
     </button>
   );

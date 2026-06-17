@@ -56,7 +56,7 @@ const Navbar = ({ currentUser }) => {
               <a href={item.href} className='py-6 px-16'>{item.id}</a>
             </div>
           ))}
-
+          <Darkmode />
           {!currentUser ? (
             <a
               href="/Register"
@@ -74,9 +74,13 @@ const Navbar = ({ currentUser }) => {
               {dropdown && (
                 <div className="absolute top-20 right-2 mt-3 w-48  bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) rounded-xl shadow-lg border z-50">
                   <ul className="flex flex-col py-2">  
-                    <Darkmode />            
+                              
                     {currentUser?.isAdmin && (
                       <li onClick={() => navigate("/dashboard")} className="flex items-center gap-2 px-4 py-2 text-orange-600 hover:bg-gray-100 cursor-pointer"><FaUserPlus />Dashboard</li>
+                    )}
+
+                    {currentUser?.accountType === "user" && (
+                      <li onClick={() => navigate("/dashboard/users")} className="flex items-center gap-2 px-4 py-2 text-orange-600 hover:bg-gray-100 cursor-pointer"><RiDashboard2Line />Dashboard</li>
                     )}
 
                     {currentUser?.accountType === "organization" && (
@@ -126,8 +130,8 @@ const Navbar = ({ currentUser }) => {
               {item.id}
             </a>
           ))}
-
           <Darkmode />
+
           {!currentUser ? (
             <a
               href="/Register"
@@ -137,23 +141,6 @@ const Navbar = ({ currentUser }) => {
             </a>
           ) : (
             <div className="flex flex-col  gap-2">
-              {/* {currentUser?.isAdmin && (
-                  <button
-                  onClick={() => navigate("/create")}
-                  className="px-4 py-2 bg-gray-100 rounded-md active:scale-90  hover:bg-gray-200"
-                >
-                  CreateEvents
-                </button>
-                )} */}
-              {/* {currentUser?.isAdmin && (
-                <button
-                  onClick={() => navigate("/scanner")}
-                  className="px-4 py-2 bg-gray-100 rounded-md active:scale-90 hover:bg-gray-200"
-                >
-                  Scanner
-                </button>
-              )} */}
-
 
               {currentUser?.isAdmin && (
                 <button
@@ -164,6 +151,15 @@ const Navbar = ({ currentUser }) => {
                 </button>
               )}
 
+             
+                <button
+                  onClick={() => navigate("/dashboard/users")}
+                  className="px-4 py-2 bg-(--bg-color) dark:bg-(--bg-color)  rounded-md active:scale-90 hover:bg-gray-200 dark:hover:bg-gray-400"
+                >
+                  Dashboard
+                </button>
+              
+
               {currentUser?.accountType === "organization" && (
                 <button
                   onClick={() => navigate("/dashboard/organization")}
@@ -172,15 +168,6 @@ const Navbar = ({ currentUser }) => {
                  Dashboard
                 </button>
               )}
-
-              {/* {currentUser?.isAdmin && (
-                <button
-                  onClick={() => navigate("/tracking")}
-                  className="px-4 py-2 bg-gray-100 rounded-md active:scale-90 hover:bg-gray-200"
-                >
-                  Analytic
-                </button>
-              )} */}
 
               <button
                 onClick={handleLogout}

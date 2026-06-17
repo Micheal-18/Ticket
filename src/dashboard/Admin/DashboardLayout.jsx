@@ -49,7 +49,7 @@ const DashboardLayout = ({ currentUser }) => {
     /* 🛠️ NOTIFICATION ROUTING FIX:
        If the logged-in user is an admin (e.g., matching your role logic or checking an account field), 
        we include "admin" in the listener target array so approval alerts stream right in. */
-    const isAdminAccount = currentUser?.role === 'admin' || currentUser?.accountType === 'admin'; 
+    const isAdminAccount = currentUser?.isAdmin === true || currentUser?.accountType === 'admin'; 
     const notificationTargets = [currentUser.uid];
     
     // Always append 'admin' channels or conditionally map it if you want global admins to see it
@@ -188,6 +188,7 @@ const DashboardLayout = ({ currentUser }) => {
           
           <nav className='w-full flex flex-col gap-2'>
             {navItem('/dashboard', <RiDashboard2Line size={22} />, 'Overview')}
+            {navItem('/dashboard/profile', <FaUserFriends size={22} />, 'Profile')}
             {navItem('/dashboard/events', <RiTicket2Line size={22} />, 'My Events')}
             {navItem('/dashboard/scanner', <RiQrScanLine size={22} />, 'Scan')}
             {navItem('/dashboard/wallet', <FaMoneyBillTrendUp size={22} />, 'Earnings')}
