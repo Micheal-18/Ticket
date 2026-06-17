@@ -20,6 +20,7 @@ const GoogleAuth = ({ onAuthSuccess, className }) => {
     const userPayload = {
       name: user.displayName,
       email: user.email?.toLowerCase().trim(),
+      accountType: 'user',
       photoURL: user.photoURL,
       provider: 'google',
       verified: true,

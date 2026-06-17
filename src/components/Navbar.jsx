@@ -56,7 +56,7 @@ const Navbar = ({ currentUser }) => {
               <a href={item.href} className='py-6 px-16'>{item.id}</a>
             </div>
           ))}
-          <Darkmode />
+
           {!currentUser ? (
             <a
               href="/Register"
@@ -78,6 +78,8 @@ const Navbar = ({ currentUser }) => {
                     {currentUser?.isAdmin && (
                       <li onClick={() => navigate("/dashboard")} className="flex items-center gap-2 px-4 py-2 text-orange-600 hover:bg-gray-100 cursor-pointer"><FaUserPlus />Dashboard</li>
                     )}
+
+                    <Darkmode />
 
                     {currentUser?.accountType === "user" && (
                       <li onClick={() => navigate("/dashboard/users")} className="flex items-center gap-2 px-4 py-2 text-orange-600 hover:bg-gray-100 cursor-pointer"><RiDashboard2Line />Dashboard</li>
@@ -152,13 +154,14 @@ const Navbar = ({ currentUser }) => {
               )}
 
              
-                <button
-                  onClick={() => navigate("/dashboard/users")}
-                  className="px-4 py-2 bg-(--bg-color) dark:bg-(--bg-color)  rounded-md active:scale-90 hover:bg-gray-200 dark:hover:bg-gray-400"
-                >
-                  Dashboard
-                </button>
-              
+                {currentUser?.accountType === "user" && (
+                  <button
+                    onClick={() => navigate("/dashboard/users")}
+                    className="px-4 py-2 bg-(--bg-color) dark:bg-(--bg-color)  rounded-md active:scale-90 hover:bg-gray-200 dark:hover:bg-gray-400"
+                  >
+                    Dashboard
+                  </button>
+                )}
 
               {currentUser?.accountType === "organization" && (
                 <button

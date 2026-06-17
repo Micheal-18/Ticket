@@ -176,7 +176,7 @@ const DashboardLayout = ({ currentUser }) => {
       {/* DESKTOP SIDEBAR PANEL */}
       <aside
         className={`
-          fixed lg:sticky top-0 left-0 z-50
+          fixed lg:sticky top-0 left-0 z-50 space-y-6
           w-64 h-screen bg-(--bg-color) border-r border-gray-200/10 shadow-xl
           flex flex-col justify-between p-6 transform transition-transform duration-300 ease-in-out
           ${slide ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
@@ -185,17 +185,17 @@ const DashboardLayout = ({ currentUser }) => {
       >
         <div className="w-full">
           <div className="flex items-center justify-between mb-8">
-            <span className="font-bold tracking-wider uppercase text-orange-500">Airticks Dashboard</span>
+            <span className="font-bold tracking-wider uppercase text-orange-500">{currentUser?.fullName}</span>
             <FiX size={20} onClick={slideMovement} className='lg:hidden cursor-pointer hover:text-orange-500' />
           </div>
           
           <nav className='w-full flex flex-col gap-2'>
-            {navItem('/dashboard', <RiDashboard2Line size={22} />, 'Overview')}
-            {navItem('/dashboard/profile', <FaUser size={22} />, 'Profile')}
-            {navItem('/dashboard/events', <RiTicket2Line size={22} />, 'My Events')}
-            {navItem('/dashboard/scanner', <RiQrScanLine size={22} />, 'Scan')}
-            {navItem('/dashboard/wallet', <FaMoneyBillTrendUp size={22} />, 'Earnings')}
-            {navItem('/dashboard/blog', <FaBlog size={22} />, 'Blogs')}
+            {navItem('/dashboard', <RiDashboard2Line size={18} />, 'Overview')}
+            {navItem('/dashboard/profile', <FaUser size={18} />, 'Profile')}
+            {navItem('/dashboard/events', <RiTicket2Line size={18} />, 'My Events')}
+            {navItem('/dashboard/scanner', <RiQrScanLine size={18} />, 'Scan')}
+            {navItem('/dashboard/wallet', <FaMoneyBillTrendUp size={18} />, 'Earnings')}
+            {navItem('/dashboard/blog', <FaBlog size={18} />, 'Blogs')}
           </nav>
         </div>
 

@@ -450,7 +450,7 @@ const Register = ({ step, setStep }) => {
                   {registerLoading ? (
                     <>
                       <div className='loading'></div>
-                      <p className='ml-2'> CreatingAccount...</p>{' '}
+                      <p className='ml-2'> Creating Account...</p>{' '}
                     </>
                   ) : (
                     'Register'
