@@ -3,14 +3,14 @@ import React, { useRef, useState } from 'react'
 // import "react-calendar/dist/Calendar.css"; // default styling
 import { FaCalendarCheck, FaPlus } from 'react-icons/fa6'
 import { RiArrowLeftFill } from 'react-icons/ri'
-import { uploadToCloudinary } from '../utils/cloudinaryUpload'
+import { uploadToCloudinary } from '../../utils/cloudinaryUpload'
 import { doc, setDoc } from 'firebase/firestore'
-import { db, auth } from '../firebase/firebase'
+import { db, auth } from '../../firebase/firebase'
 import { useNavigate, useOutletContext } from 'react-router-dom'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { format } from 'date-fns'
-import { formatEventStatus } from '../utils/formatEventRange'
+import { formatEventStatus } from '../../utils/formatEventRange'
 import { FiX } from 'react-icons/fi'
 
 const CreateEvent = () => {
