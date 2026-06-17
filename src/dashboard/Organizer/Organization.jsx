@@ -86,12 +86,6 @@ const Organization = () => {
 
   return (
     <main className="flex-1 py-4 overflow-y-auto space-y-10">
-      {profileOpen && (
-        <Profile
-          profileOpen={profileOpen}
-          setProfileOpen={setProfileOpen}
-        />
-      )}
 
       {/* ================= SUMMARY CARDS ================= */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

@@ -75,12 +75,6 @@ const DashboardHome = () => {
 
   return (
     <main className="flex-1 py-4 overflow-y-auto space-y-10 custom-scrollbar">
-      {profileOpen && (
-        <Profile
-          profileOpen={profileOpen}
-          setProfileOpen={setProfileOpen}
-        />
-      )}
 
       {/* ================= SUMMARY CARDS ================= */}
       <div className={`grid grid-cols-1 sm:grid-cols-2 ${currentUser?.isAdmin ? 'lg:grid-cols-5' : 'lg:grid-cols-4'} gap-4`}>
@@ -172,13 +166,22 @@ const DashboardHome = () => {
       : "Date error";
 
     // 2. Intelligently format the time cleanly
+   // 2. Intelligently format the time cleanly
     const formattedTime = (() => {
-      // Case A: If event.date already contained the full time timestamp (like the ISO text string)
-      if (typeof event.date === "string" && event.date.includes("T") && eventDate) {
-        return eventDate.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+      // Case A: If event.startTime contains the full ISO timestamp (e.g., "2026-07-01T16:00:00.000Z")
+      if (typeof event.startTime === "string" && event.startTime.includes("T")) {
+        const parsedStart = new Date(event.startTime);
+        if (!isNaN(parsedStart.getTime())) {
+          return parsedStart.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', hour12: true });
+        }
       }
 
-      // Case B: If event.startTime is a standalone time string (e.g., "16:00" or "16:00:00")
+      // Case B: Fallback if event.date contains the full timestamp string instead
+      if (typeof event.date === "string" && event.date.includes("T") && eventDate) {
+        return eventDate.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', hour12: true });
+      }
+
+      // Case C: If event.startTime is just a standalone 24hr string (e.g., "16:00")
       if (typeof event.startTime === "string" && event.startTime.includes(":")) {
         const parts = event.startTime.split(":");
         const hours = parseInt(parts[0], 10);
@@ -187,11 +190,11 @@ const DashboardHome = () => {
         if (!isNaN(hours) && !isNaN(minutes)) {
           const tempDate = new Date();
           tempDate.setHours(hours, minutes, 0, 0);
-          return tempDate.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+          return tempDate.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', hour12: true });
         }
       }
 
-      // Case C: Fallback to whatever raw value is in event.startTime if nothing else matches
+      // Case D: Fallback to whatever raw value is in event.startTime
       return event.startTime || "N/A";
     })();
 

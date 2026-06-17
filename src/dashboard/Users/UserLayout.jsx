@@ -143,8 +143,8 @@ const UserLayout = ({ currentUser }) => {
       <div className='flex-1 flex flex-col min-w-0'>
         
         {/* HEADER */}
-        <header className='sticky top-0 z-40 bg-(--bg-color) border-b border-gray-200/10 px-4 lg:px-8 py-3 shadow-sm flex items-center justify-between backdrop-blur-md bg-opacity-95'>
-          <div onClick={handleOpenProfile} className='flex gap-3 items-center cursor-pointer group'>
+        <header className='sticky top-0 z-40 bg-(--bg-color) border-b border-gray-200/10 px-2 lg:px-8 py-3 shadow-sm flex items-center justify-between backdrop-blur-md bg-opacity-95'>
+          <div onClick={handleOpenProfile} className='flex gap-2 items-center cursor-pointer group'>
             <img
               src={currentUser?.photoURL || logo }
               alt="profile"

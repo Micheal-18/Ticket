@@ -1,26 +1,50 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, getDocs, query, where, doc, getDoc } from 'firebase/firestore';
 import { db } from '../../firebase/firebase';
 import OptimizedImage from '../../components/OptimizedImage';
-import { FaCalendar, FaLocationArrow } from 'react-icons/fa';
+import { FaCalendar, FaLocationArrow, FaUsers } from 'react-icons/fa';
 import { Link, useOutletContext } from 'react-router-dom';
 import Spinner from '../../components/Spinner';
 import Blog from '../../pages/Blog'; 
+import logo from '../../assets/Default.png'; // Fallback avatar source
 
 const UserMain = () => {
   const { currentUser } = useOutletContext();
   
   const [events, setEvents] = useState([]);
   const [blogs, setBlogs] = useState([]);
+  const [followers, setFollowers] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchDashboardContent = async () => {
       try {
+        // 1. Fetch Approved Events
         const eventsQuery = query(collection(db, "events"), where("status", "==", "approved"));
         const eventsSnapshot = await getDocs(eventsQuery);
         const eventsData = eventsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setEvents(eventsData);
+
+        // 2. Fetch User Followers if currentUser exists
+        if (currentUser?.uid) {
+          const userDocRef = doc(db, "users", currentUser.uid);
+          const userDocSnap = await getDoc(userDocRef);
+          
+          if (userDocSnap.exists() && userDocSnap.data().followers) {
+            const followerIds = userDocSnap.data().followers; // Expected structure: Array of string UIDs
+            
+            if (followerIds.length > 0) {
+              // Map through and resolve profiles for the first few followers
+              const profilePromises = followerIds.slice(0, 5).map(async (uid) => {
+                const followerSnap = await getDoc(doc(db, "users", uid));
+                return followerSnap.exists() ? { id: uid, ...followerSnap.data() } : null;
+              });
+              
+              const resolvedFollowers = await Promise.all(profilePromises);
+              setFollowers(resolvedFollowers.filter(f => f !== null));
+            }
+          }
+        }
       } catch (err) {
         console.error("Error building user dashboard datasets:", err);
       } finally {
@@ -29,7 +53,7 @@ const UserMain = () => {
     };
 
     fetchDashboardContent();
-  }, []);
+  }, [currentUser]);
 
   /* 🛠️ RESILIENT PARSER FOR INCOMING DATA (From Component A) */
   const parseToNativeDate = (dateField) => {
@@ -55,16 +79,23 @@ const UserMain = () => {
       : "Date error";
   };
 
-  /* 🛠️ INTELLIGENT TIME FORMATTER ENGINE (From Component A) */
+/* 🛠️ INTELLIGENT TIME FORMATTER ENGINE WITH EXPLICIT ISO & 12-HOUR REGIME */
   const getFormattedTimeString = (event) => {
-    const eventDate = parseToNativeDate(event.date);
-
-    // Case A: If event.date already contained the full time timestamp (like the ISO text string)
-    if (typeof event.date === "string" && event.date.includes("T") && eventDate) {
-      return eventDate.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+    // Case A: If event.startTime is a full ISO timestamp string containing a "T"
+    if (typeof event.startTime === "string" && event.startTime.includes("T")) {
+      const parsedStart = new Date(event.startTime);
+      if (!isNaN(parsedStart.getTime())) {
+        return parsedStart.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', hour12: true });
+      }
     }
 
-    // Case B: If event.startTime is a standalone time string (e.g., "16:00" or "16:00:00")
+    // Case B: Fallback if event.date contained a full time component
+    const eventDate = parseToNativeDate(event.date);
+    if (typeof event.date === "string" && event.date.includes("T") && eventDate) {
+      return eventDate.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', hour12: true });
+    }
+
+    // Case C: If event.startTime is just a standalone time string (e.g., "16:00")
     if (typeof event.startTime === "string" && event.startTime.includes(":")) {
       const parts = event.startTime.split(":");
       const hours = parseInt(parts[0], 10);
@@ -73,11 +104,11 @@ const UserMain = () => {
       if (!isNaN(hours) && !isNaN(minutes)) {
         const tempDate = new Date();
         tempDate.setHours(hours, minutes, 0, 0);
-        return tempDate.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+        return tempDate.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', hour12: true });
       }
     }
 
-    // Case C: Fallback to whatever raw value is in event.startTime if nothing else matches
+    // Case D: Fallback to whatever raw string value is provided
     return event.startTime || "N/A";
   };
 
@@ -137,7 +168,7 @@ const UserMain = () => {
 
   if (loading) {
     return (
-      <div className=" animate-spin flex items-center justify-center">
+      <div className="animate-loading-bar">
       </div>
     );
   }
@@ -152,7 +183,7 @@ const UserMain = () => {
           <Link 
             to={`/event/${event.slug}`} 
             key={event.id} 
-            className="group  border border-gray-200/10 shadow-sm rounded-2xl p-3 flex gap-4 hover:shadow-md transition-all"
+            className="group border border-gray-200/10 shadow-sm rounded-2xl p-3 flex gap-4 hover:shadow-md transition-all"
           >
             <div className="w-20 h-20 shrink-0 rounded-xl overflow-hidden aspect-square">
               <OptimizedImage 
@@ -165,7 +196,6 @@ const UserMain = () => {
               <h4 className="font-bold text-sm text-(--text-color) truncate group-hover:text-orange-500 transition-colors uppercase tracking-wide">
                 {event.name}
               </h4>
-              {/* Localized Date and Time Strings Combined */}
               <p className="text-xs text-gray-400 flex items-center gap-1.5 truncate">
                 <FaCalendar className="text-orange-500 shrink-0" size={12} /> 
                 {getFormattedDateString(event.date)} at {getFormattedTimeString(event)}
@@ -182,6 +212,41 @@ const UserMain = () => {
 
   return (
     <div className="space-y-14">
+      
+      {/* 👥 FOLLOWERS OVERVIEW SECTION */}
+      <section className="bg-gradient-to-r from-orange-500/5 via-transparent to-transparent p-4 rounded-2xl border border-gray-200/10">
+        <div className="flex items-center justify-between  mb-4">
+          <h2 className="text-lg font-extrabold uppercase tracking-wide flex items-center gap-2">
+            <FaUsers className="text-orange-500" size={20} /> Community Connections
+          </h2>
+          <span className="text-xs font-bold text-orange-500 uppercase tracking-wider bg-orange-500/10 px-2.5 py-1 rounded-full">
+            {followers.length > 0 ? `${followers.length} Recent` : '0 Followers'}
+          </span>
+        </div>
+        
+        {followers.length === 0 ? (
+          <p className="text-sm text-gray-400 font-medium italic py-2">No connections on file yet. Share your events to grow your network!</p>
+        ) : (
+          <div className="flex flex-wrap gap-4 items-center">
+            <div className="flex -space-x-3 overflow-hidden">
+              {followers.map(follower => (
+                <img
+                  key={follower.id}
+                  className="inline-block h-10 w-10 rounded-full ring-2 ring-(--bg-color) object-cover"
+                  src={follower.photoURL || logo}
+                  alt={follower.fullName || "User Avatar"}
+                  title={follower.fullName}
+                />
+              ))}
+            </div>
+            <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+              Followed by <span className="text-(--text-color) font-bold">{followers[0]?.fullName || 'Community members'}</span> 
+              {followers.length > 1 && ` and ${followers.length - 1} others`}
+            </div>
+          </div>
+        )}
+      </section>
+
       {/* 🌟 HIGHLIGHTED EXPERIENCE EXPERIENCES */}
       {sortedEvents.highlighted.length > 0 && (
         <section>

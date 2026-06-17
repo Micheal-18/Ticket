@@ -11,7 +11,7 @@ import {
   updateDoc
 } from 'firebase/firestore'
 import { db, auth } from '../../firebase/firebase'
-import { FaBell, FaBlog, FaMoneyBillTrendUp } from 'react-icons/fa6'
+import { FaBell, FaBlog, FaMoneyBillTrendUp, FaUser } from 'react-icons/fa6'
 import { RiDashboard2Line, RiQrScanLine, RiTicket2Line } from 'react-icons/ri'
 import { FiMenu, FiX } from 'react-icons/fi'
 import { signOut } from 'firebase/auth'
@@ -32,7 +32,10 @@ const DashboardLayout = ({ currentUser }) => {
   const initialized = useRef(false);
   const [profileOpen, setProfileOpen] = useState(false);
   
-  const handleOpenProfile = () => setProfileOpen(true);
+  const handleOpenProfile = async () => {
+    setProfileOpen(true);
+    navigate('/dashboard/profile');
+    }
   const unreadCount = notifications.filter(n => !n.read).length
   const slideMovement = () => setSlide(!slide)
   const navigate = useNavigate()
@@ -177,7 +180,7 @@ const DashboardLayout = ({ currentUser }) => {
           w-64 h-screen bg-(--bg-color) border-r border-gray-200/10 shadow-xl
           flex flex-col justify-between p-6 transform transition-transform duration-300 ease-in-out
           ${slide ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-          ${slide ? 'block' : 'hidden lg:flex'}
+          ${slide ? 'block custom-scrollbar' : 'hidden lg:flex'}
         `}
       >
         <div className="w-full">
@@ -188,7 +191,7 @@ const DashboardLayout = ({ currentUser }) => {
           
           <nav className='w-full flex flex-col gap-2'>
             {navItem('/dashboard', <RiDashboard2Line size={22} />, 'Overview')}
-            {navItem('/dashboard/profile', <FaUserFriends size={22} />, 'Profile')}
+            {navItem('/dashboard/profile', <FaUser size={22} />, 'Profile')}
             {navItem('/dashboard/events', <RiTicket2Line size={22} />, 'My Events')}
             {navItem('/dashboard/scanner', <RiQrScanLine size={22} />, 'Scan')}
             {navItem('/dashboard/wallet', <FaMoneyBillTrendUp size={22} />, 'Earnings')}

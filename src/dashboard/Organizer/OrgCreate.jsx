@@ -131,8 +131,8 @@ const CreateEvent = () => {
         isFree: ticketType === "free",
         photoURL,
         date: date.toISOString(),
-        startTime: finalStart.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', hour12: true }), // "4:00 PM"
-        endTime: finalEnd.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', hour12: true }),
+        startTime: finalStart.toISOString(),
+        endTime: finalEnd.toISOString(),
         createdBy: user.uid,
         ownerId: user.uid,
         organizerEmail: user.email,

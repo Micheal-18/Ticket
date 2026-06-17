@@ -38,7 +38,8 @@ const FollowButton = ({ currentUser, ownerId }) => {
           [`followingDates.${ownerId}`]: deleteField() 
         })
         await updateDoc(organizerRef, {
-          followersCount: increment(-1)
+          followersCount: increment(-1),
+          followers: arrayRemove(currentUser.uid)
         })
         setIsFollowing(false)
       } else {
@@ -51,7 +52,8 @@ const FollowButton = ({ currentUser, ownerId }) => {
           [`followingDates.${ownerId}`]: now
         })
         await updateDoc(organizerRef, {
-          followersCount: increment(1)
+          followersCount: increment(1),
+          followers: arrayUnion(currentUser.uid) // Keep this array populated for UserMain.jsx!
         })
 
         // 🔔 CREATE NOTIFICATION

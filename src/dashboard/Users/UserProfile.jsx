@@ -209,21 +209,21 @@ const UserProfile = ({ currentUser }) => {
             onClick={() => { setActiveTab('details'); setIsEditing(false); }}
             className={`flex items-center gap-1.5 pb-3 px-2 border-b-2 transition-all ${activeTab === 'details' ? 'border-orange-500 text-orange-500' : 'border-transparent text-gray-400'}`}
           >
-            <FiUser size={15} /> Details
+            <FiUser size={12} /> Details
           </button>
           <button 
             type="button"
             onClick={() => setActiveTab('email')}
             className={`flex items-center gap-1.5 pb-3 px-2 border-b-2 transition-all ${activeTab === 'email' ? 'border-orange-500 text-orange-500' : 'border-transparent text-gray-400'}`}
           >
-            <FiMail size={15} /> Email System
+            <FiMail size={12} /> Email 
           </button>
           <button 
             type="button"
             onClick={() => setActiveTab('password')}
             className={`flex items-center gap-1.5 pb-3 px-2 border-b-2 transition-all ${activeTab === 'password' ? 'border-orange-500 text-orange-500' : 'border-transparent text-gray-400'}`}
           >
-            <FiLock size={15} /> Security
+            <FiLock size={12} /> Security
           </button>
         </div>
 
