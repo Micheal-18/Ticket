@@ -25,23 +25,28 @@ const UserMain = () => {
         const eventsData = eventsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setEvents(eventsData);
 
-        // 2. Fetch User Followers if currentUser exists
+                // 2. Fetch People I'm Following
         if (currentUser?.uid) {
           const userDocRef = doc(db, "users", currentUser.uid);
           const userDocSnap = await getDoc(userDocRef);
-          
-          if (userDocSnap.exists() && userDocSnap.data().followers) {
-            const followerIds = userDocSnap.data().followers; // Expected structure: Array of string UIDs
-            
-            if (followerIds.length > 0) {
-              // Map through and resolve profiles for the first few followers
-              const profilePromises = followerIds.slice(0, 5).map(async (uid) => {
-                const followerSnap = await getDoc(doc(db, "users", uid));
-                return followerSnap.exists() ? { id: uid, ...followerSnap.data() } : null;
+
+          if (userDocSnap.exists()) {
+            const followingIds = userDocSnap.data().following || [];
+
+            if (followingIds.length > 0) {
+              const profilePromises = followingIds.slice(0, 5).map(async (uid) => {
+                const userSnap = await getDoc(doc(db, "users", uid));
+
+                return userSnap.exists()
+                  ? { id: uid, ...userSnap.data() }
+                  : null;
               });
-              
-              const resolvedFollowers = await Promise.all(profilePromises);
-              setFollowers(resolvedFollowers.filter(f => f !== null));
+
+              const resolvedProfiles = await Promise.all(profilePromises);
+
+              setFollowers(
+                resolvedProfiles.filter(profile => profile !== null)
+              );
             }
           }
         }
@@ -217,32 +222,25 @@ const UserMain = () => {
       <section className="bg-gradient-to-r from-orange-500/5 via-transparent to-transparent p-4 rounded-2xl border border-gray-200/10">
         <div className="flex items-center justify-between  mb-4">
           <h2 className="text-lg font-extrabold uppercase tracking-wide flex items-center gap-2">
-            <FaUsers className="text-orange-500" size={20} /> Community Connections
+            <FaUsers className="text-orange-500" size={20} />
+            Following
           </h2>
           <span className="text-xs font-bold text-orange-500 uppercase tracking-wider bg-orange-500/10 px-2.5 py-1 rounded-full">
-            {followers.length > 0 ? `${followers.length} Recent` : '0 Followers'}
+            {followers.length} Following
           </span>
         </div>
         
         {followers.length === 0 ? (
-          <p className="text-sm text-gray-400 font-medium italic py-2">No connections on file yet. Share your events to grow your network!</p>
+          <p className="text-sm text-gray-400 font-medium italic py-2">
+            You are not following anyone yet.
+          </p>
         ) : (
-          <div className="flex flex-wrap gap-4 items-center">
-            <div className="flex -space-x-3 overflow-hidden">
-              {followers.map(follower => (
-                <img
-                  key={follower.id}
-                  className="inline-block h-10 w-10 rounded-full ring-2 ring-(--bg-color) object-cover"
-                  src={follower.photoURL || logo}
-                  alt={follower.fullName || "User Avatar"}
-                  title={follower.fullName}
-                />
-              ))}
-            </div>
-            <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-              Followed by <span className="text-(--text-color) font-bold">{followers[0]?.fullName || 'Community members'}</span> 
-              {followers.length > 1 && ` and ${followers.length - 1} others`}
-            </div>
+          <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+            Following{" "}
+            <span className="text-(--text-color) font-bold">
+              {followers[0]?.fullName || "Users"}
+            </span>
+            {followers.length > 1 && ` and ${followers.length - 1} others`}
           </div>
         )}
       </section>

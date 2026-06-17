@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react'
 import { RiArrowLeftFill } from 'react-icons/ri'
 import { FaCalendarCheck, FaPlus } from 'react-icons/fa6'
 import { FiX } from 'react-icons/fi'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useOutletContext } from 'react-router-dom'
 import { doc, setDoc } from "firebase/firestore"
 import { db, auth } from "../../firebase/firebase"
 import DatePicker from "react-datepicker"
@@ -39,6 +39,7 @@ const bankCodes = {
 const CreateEvent = () => {
   const navigate = useNavigate()
   const fileInputRef = useRef(null)
+  const { currentUser } = useOutletContext()
 
   // Event state
   const [name, setName] = useState("")
@@ -78,8 +79,7 @@ const CreateEvent = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    const user = auth.currentUser
-    if (!user) return alert("You must be logged in to create an event.")
+    if (!currentUser) return alert("You must be logged in to create an event.")
 
     // Dynamic bank requirement check depending on ticket type
     if (ticketType === "paid" && (!accountNumber || !bankName)) {
@@ -92,7 +92,7 @@ const CreateEvent = () => {
 
     try {
       setLoading(true)
-      const eventId = `${Date.now()}_${user.uid}`
+      const eventId = `${Date.now()}_${currentUser.uid}`
       const eventRef = doc(db, "events", eventId)
 
       let photoURL = ""
@@ -133,9 +133,9 @@ const CreateEvent = () => {
         date: date.toISOString(),
         startTime: finalStart.toISOString(),
         endTime: finalEnd.toISOString(),
-        createdBy: user.uid,
-        ownerId: user.uid,
-        organizerEmail: user.email,
+        createdBy: currentUser.uid,
+        ownerId: currentUser.uid,
+        organizerEmail: currentUser.email,
         slug,
         status: "pending", // Pending admin approval
         ticketSold: 0,
@@ -150,13 +150,20 @@ const CreateEvent = () => {
         type: "event_submission",
         title: "📢 New Event Submission",
         message: `Event "${name}" needs admin review and approval.`,
-        senderId: user.uid,
+        senderId: currentUser.uid,
         senderName: organizer,
         link: "/event/" + slug,
         status: "pending",
         read: false,
         createdAt: new Date().toISOString()
       })
+
+      if (currentUser) {
+        await notifyFollowersOfNewEvent(currentUser, {
+          id: eventId,
+          name: name
+        })
+      }
 
       alert("✅ Event submitted for approval. Admin will review it.")
       navigate("/dashboard/organization")
@@ -299,7 +306,7 @@ const CreateEvent = () => {
             {price.map((p) => (
               <div key={p.id} className="flex flex-wrap space-y-2 items-center p-2 w-full space-x-4 border-b">
                 <input required={ticketType === "paid"} type="text" placeholder="Ticket Type (e.g., Regular, VIP)" value={p.label} onChange={(e) => handlePriceChange(p.id, "label", e.target.value)} className="p-2 border rounded-lg"/>
-                <select value={p.currency} onChange={(e) => handlePriceChange(p.id, "currency", e.target.value)} className="p-2 border rounded-lg bg-gray-800 text-white">
+                <select value={p.currency} onChange={(e) => handlePriceChange(p.id, "currency", e.target.value)} className="p-2 border rounded-lg ">
                   {currencies.map((cur, idx) => <option key={idx} value={cur}>{cur}</option>)}
                 </select>
                 <input required={ticketType === "paid"} type="number" min="1" placeholder="Amount" value={p.amount} onChange={(e) => handlePriceChange(p.id, "amount", e.target.value)} className="p-2 border rounded-lg w-40"/>
@@ -315,7 +322,7 @@ const CreateEvent = () => {
           <div className="flex flex-col space-y-4 pt-2">
             <h2 className="font-semibold">Bank Info (for payout)</h2>
             <input required={ticketType === "paid"} placeholder="Account Number" value={accountNumber} onChange={(e) => setAccountNumber(e.target.value)} className="p-2 border rounded-lg" maxLength={10}/>
-            <select required={ticketType === "paid"} value={bankName} onChange={(e) => setBankName(e.target.value)} className="p-2 border rounded-lg bg-gray-800 text-white">
+            <select required={ticketType === "paid"} value={bankName} onChange={(e) => setBankName(e.target.value)} className="p-2 border rounded-lg ">
               <option value="">Select Bank</option>
               {banks.map((b, i) => <option key={i} value={b}>{b}</option>)}
             </select>

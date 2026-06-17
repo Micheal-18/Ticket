@@ -6,7 +6,7 @@ import { RiArrowLeftFill } from 'react-icons/ri'
 import { uploadToCloudinary } from '../utils/cloudinaryUpload'
 import { doc, setDoc } from 'firebase/firestore'
 import { db, auth } from '../firebase/firebase'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useOutletContext } from 'react-router-dom'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { format } from 'date-fns'
@@ -31,6 +31,7 @@ const CreateEvent = () => {
   const navigate = useNavigate()
   const fileInputRef = useRef(null)
   const [ticketType, setTicketType] = useState('paid') // "paid" or "free"
+  const { currentUser } = useOutletContext();
 
   const Category = [
     'Art',
@@ -76,8 +77,7 @@ const CreateEvent = () => {
 
   const handleSubmit = async e => {
     e.preventDefault()
-    const user = auth.currentUser
-    if (!user) {
+    if (!currentUser) {
       alert('You must be logged in to create an event.')
       return
     }
@@ -95,7 +95,7 @@ const CreateEvent = () => {
 
     try {
       // Generate unique ID for event
-      const eventId = `${Date.now()}_${user.uid}`
+      const eventId = `${Date.now()}_${currentUser.uid}`
       const eventRef = doc(db, 'events', eventId)
 
       let photoURL = ''
@@ -150,13 +150,20 @@ const CreateEvent = () => {
         date: date.toISOString(),
         startTime: finalStart.toISOString(),
         endTime: finalEnd.toISOString(),
-        createdBy: user.uid,
-        ownerId: user.uid,
+        createdBy: currentUser.uid,
+        ownerId: currentUser.uid,
         slug,
         ticketSold: 0,
         followersCount: 0,
         createdAt: new Date().toISOString()
       })
+
+      if (currentUser) {
+        await notifyFollowersOfNewEvent(currentUser, {
+          id: eventId,
+          name: name
+        })
+      }
       alert('✅ Event created successfully! 🎉🤡')
       navigate('/event') //
       // Inside your clear-form sequence in handleSubmit:
@@ -174,6 +181,8 @@ const CreateEvent = () => {
       console.error('Error uploading event:', error)
       alert('❌ Failed to create event. Check console for details.')
     }
+
+    
   }
 
   return (
