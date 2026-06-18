@@ -197,7 +197,7 @@ const UserProfile = ({ currentUser }) => {
   };
 
   return (
-    <div className="w-full min-h-screen  p-4 md:p-8 flex justify-center items-start">
+    <div  className="w-full min-h-screen  p-4 md:p-8 flex justify-center items-start">
       <div className="flex flex-col bg-(--bg-color) p-6 rounded-xl shadow-md w-full max-w-2xl border border-gray-100 dark:border-gray-800">
         
         <h1 className="text-xl font-bold  mb-6">Account Profile</h1>

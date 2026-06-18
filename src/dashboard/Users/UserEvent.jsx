@@ -158,7 +158,7 @@ const formatEventDateTime = (dateField) => {
   const currentTabTickets = activeTab === 'upcoming' ? partitionedTickets.upcoming : partitionedTickets.past;
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto px-1">
+    <div  className="space-y-8 max-w-7xl mx-auto px-1">
       
       {/* HEADER SECTION BLOCK */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100  pb-5">

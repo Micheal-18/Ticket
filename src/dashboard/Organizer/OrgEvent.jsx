@@ -81,7 +81,7 @@ const OrgEvent = () => {
   };
 
   return (
-    <section className="relative min-h-screen w-full flex flex-col lg:mt-5 mt-4 flex-1 custom-scrollbar z-10">
+    <section  className="relative min-h-screen w-full flex flex-col lg:mt-5 mt-4 flex-1 custom-scrollbar z-10">
       <div className="max-w-6xl mx-auto w-full px-4">
         
         {/* HEADER */}

@@ -443,24 +443,27 @@ const Event = ({ currentUser, events, setEvents }) => {
                       {event.location}
                     </span>
                   </p>
-
-                  {Array.isArray(event.price) ? (
-                    event.price.map((priceOption, index) => (
-                      <p key={index}>
-                        <span className="text-orange-500 text-lg font-semibold">
-                          {priceOption.currency} {" "}
-                          {Number(priceOption.amount)}
-                        </span>
-                      </p>
-                    ))
-                  ) : (
-                    <p>
-                      <span className="text-orange-500 text-lg font-semibold">
-                        {event.currency} {" "}
-                        {Number(event.price?.amount) + ((1.5 / 100) * Number(event.price?.amount) + 100)}
-                      </span>
-                    </p>
-                  )}
+                  <div>
+                      {event.isFree ? (
+                        <span className="text-green-500 text-sm font-bold bg-green-500/10 px-2 py-0.5 rounded-md">🆓 Free Admission</span>
+                      ) : Array.isArray(event.price) ? (
+                        event.price.map((priceOption, index) => (
+                          <p key={index}>
+                            <span className="text-orange-500 text-lg font-semibold">
+                              {priceOption.currency} {" "}
+                              {Number(priceOption.amount)}
+                            </span>
+                          </p>
+                        ))
+                      ) : (
+                        <p>
+                          <span className="text-orange-500 text-lg font-semibold">
+                            {event.currency} {" "}
+                            {Number(event.price?.amount) + ((1.5 / 100) * Number(event.price?.amount) + 100)}
+                          </span>
+                        </p>
+                      )}
+                  </div>
                 </span>
 
                 <span className="overflow-hidden rounded-xl">

@@ -103,7 +103,7 @@ const Home = ({currentUser}) => {
   return (
     <>
       {/* HERO */}
-      <section className='relative min-h-screen bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) w-full flex flex-col lg:mt-5 mt-4 flex-1 items-center justify-center z-10'>
+      <section className='relative min-h-screen bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) w-full flex flex-col lg:mt-5 mt-4 flex-1 items-center justify-center z-10 '>
         <header data-aos="zoom-out" className='flex flex-1 flex-col items-center justify-center uppercase space-y-3'>
           <h1 className='lg:text-9xl md:text-8xl text-5xl tracking-tighter font-bold'>
             airticks<span className='text-orange-500'>event</span>

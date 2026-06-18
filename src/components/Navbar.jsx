@@ -65,41 +65,51 @@ const Navbar = ({ currentUser }) => {
               Register
             </a>
           ) : (
-            <div onClick={() => setDropdown(!dropdown)} className="relative cursor-pointer flex items-center bg-orange-500 active:scale-90 py-3 px-16">
-              <h1 className='text-gray-700'>{currentUser?.fullName?.slice(0, 2)}</h1>
-              <RiUser3Line
-                className="text-3xl cursor-pointer hover:scale-105"
-              />
+           <div 
+  onClick={() => setDropdown(!dropdown)} 
+  className="relative cursor-pointer flex items-center bg-orange-500 active:scale-90 py-3 px-16"
+>
+  <h1 className='text-gray-700'>{currentUser?.fullName?.slice(0, 2)}</h1>
+  <RiUser3Line className="text-3xl cursor-pointer hover:scale-105" />
 
-              {dropdown && (
-                <div className="absolute top-20 right-2 mt-3 w-48  bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) rounded-xl shadow-lg border z-50">
-                  <ul className="flex flex-col py-2">  
-                              
-                    {currentUser?.isAdmin && (
-                      <li onClick={() => navigate("/dashboard")} className="flex items-center gap-2 px-4 py-2 text-orange-600 hover:bg-gray-100 cursor-pointer"><FaUserPlus />Dashboard</li>
-                    )}
+  {/* Smooth Dropdown Menu */}
+  <div 
+    className={`absolute top-18 right-0  w-44 bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) border shadow-lg z-50 transform transition-all duration-300 ease-in-out
+      ${dropdown 
+        ? 'opacity-100 translate-x-0 scale-100 pointer-events-auto' 
+        : 'opacity-0 translate-x-1/2 scale-95 pointer-events-none'
+      }`}
+  >
+    <ul className="flex flex-col py-2">  
+      {currentUser?.isAdmin && (
+        <li onClick={() => navigate("/dashboard")} className="flex items-center gap-2 px-4 py-2 text-orange-600 hover:bg-gray-100 cursor-pointer">
+          <FaUserPlus />Dashboard
+        </li>
+      )}
 
-                    <Darkmode />
+      <Darkmode />
 
-                    {currentUser?.accountType === "user" && (
-                      <li onClick={() => navigate("/dashboard/users")} className="flex items-center gap-2 px-4 py-2 text-orange-600 hover:bg-gray-100 cursor-pointer"><RiDashboard2Line />Dashboard</li>
-                    )}
+      {currentUser?.accountType === "user" && (
+        <li onClick={() => navigate("/dashboard/users")} className="flex items-center gap-2 px-4 py-2 text-orange-600 hover:bg-gray-100 cursor-pointer">
+          <RiDashboard2Line />Dashboard
+        </li>
+      )}
 
-                    {currentUser?.accountType === "organization" && (
-                      <li onClick={() => navigate("/dashboard/organization")} className="flex items-center gap-2 px-4 py-2 text-orange-600 hover:bg-gray-100 cursor-pointer"><RiDashboard2Line />Dashboard</li>
-                    )}
+      {currentUser?.accountType === "organization" && (
+        <li onClick={() => navigate("/dashboard/organization")} className="flex items-center gap-2 px-4 py-2 text-orange-600 hover:bg-gray-100 cursor-pointer">
+          <RiDashboard2Line />Dashboard
+        </li>
+      )}
 
-                    <li
-                      onClick={handleLogout}
-                      className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-gray-100 cursor-pointer"
-                    >
-                      <RiLogoutBoxLine /> Logout
-                    </li>
-
-                  </ul>
-                </div>
-              )}
-            </div>
+      <li
+        onClick={handleLogout}
+        className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-gray-100 cursor-pointer"
+      >
+        <RiLogoutBoxLine /> Logout
+      </li>
+    </ul>
+  </div>
+</div>
           )}
 
         </div>

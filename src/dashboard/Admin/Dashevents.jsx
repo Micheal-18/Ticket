@@ -152,7 +152,7 @@ const Dashevents = ({ currentUser, events, setEvents }) => {
   };
 
   return (
-    <section className="relative min-h-screen w-full flex flex-col lg:mt-5 mt-4 flex-1 custom-scrollbar z-10">
+    <section data-aos="fade-up" className="relative min-h-screen w-full flex flex-col lg:mt-5 mt-4 flex-1 custom-scrollbar z-10">
       {/* Delete Modal */}
       {isDeleting && selectedEvent && (
         <DeleteModal

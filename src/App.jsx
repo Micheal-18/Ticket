@@ -42,10 +42,6 @@ import UserEventsAndTickets from "./dashboard/Users/UserEvent";
 import UserProfile from "./dashboard/Users/UserProfile";
 import TransactionHistory from "./dashboard/Users/Billing";
 import CreateEvent from "./dashboard/Admin/CreateEvent";
-// import UserProfile from "./dashboard/Users/UserProfile";
-// import UserTransactions from "./dashboard/Users/UserTransactions";
-// import UserSettings from "./dashboard/Users/UserSettings";
-
 
 
 const App = () => {
@@ -98,18 +94,24 @@ useEffect(() => {
   return (<>
     <Toaster position="bottom-right" />
     <Routes>
-      {/* Home route — redirect unverified users to /verify */}
+      {/* Home route — Redirect logged-in users to their respective dashboards */}
       <Route
         path="/"
         element={
-          currentUser && !currentUser.emailVerified ? (
-            <Navigate to="/verify" replace />
+          currentUser ? (
+            !currentUser.emailVerified ? (
+              <Navigate to="/verify" replace />
+            ) : currentUser.isAdmin ? (
+              <Navigate to="/dashboard" replace />
+            ) : currentUser.accountType === "organization" ? (
+              <Navigate to="/dashboard/organization" replace />
+            ) : (
+              <Navigate to="/dashboard/users" replace />
+            )
           ) : (
-
             <Layout currentUser={currentUser}>
               <Home currentUser={currentUser} />
             </Layout>
-
           )
         }
       />
@@ -132,7 +134,7 @@ useEffect(() => {
               <Navigate to="/dashboard/organization" replace />
             ) : (
               // Regular user -> redirect to homepage
-              <Navigate to="/" replace />
+              <Navigate to="/dashboard/users" replace />
             )
           ) : (
             // Not logged in -> show Register page
@@ -151,34 +153,19 @@ useEffect(() => {
         resendMessage={""}
         setResendMessage={() => { }} /></Layout>}
       />
-      {/* Verify route — force unverified users here */}
-      {/* <Route
-        path="/verify"
-        element={
-          currentUser ? (
-            currentUser.emailVerified ? (
-              <Navigate to="/" replace />
-            ) : (
-              <Verify
-                email={currentUser.email}
-                step="verify"
-                setStep={() => { }}
-                error={""}
-                setError={() => { }}
-                resendMessage={""}
-                setResendMessage={() => { }}
-              />
-            )
-          ) : (
-            <Navigate to="/Login" replace />
-          )
-        }
-      /> */}
 
       <Route path="/event" element={
-        <Layout currentUser={currentUser}>
-          <Event events={events} setEvents={setEvents} currentUser={currentUser} />
-        </Layout>}
+        currentUser ? (
+          <Navigate to={
+            currentUser.isAdmin ? "/dashboard" : 
+            currentUser.accountType === "organization" ? "/dashboard/organization" : 
+            "/dashboard/users"
+          } replace />
+        ) : (
+          <Layout currentUser={currentUser}>
+            <Event events={events} setEvents={setEvents} currentUser={currentUser} />
+          </Layout>
+        )}
       />
 
       <Route path="/event/:slug" element={

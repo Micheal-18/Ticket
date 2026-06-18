@@ -216,7 +216,7 @@ const UserMain = () => {
   };
 
   return (
-    <div className="space-y-14">
+    <div  className="space-y-14">
       
       {/* 👥 FOLLOWERS OVERVIEW SECTION */}
       <section className="bg-gradient-to-r from-orange-500/5 via-transparent to-transparent p-4 rounded-2xl border border-gray-200/10">

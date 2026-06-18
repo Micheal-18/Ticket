@@ -73,7 +73,7 @@ const TransactionHistory = () => {
   }
 
   return (
-    <div className="w-full min-h-screen text-gray-900 dark:text-gray-100 p-4 md:p-8 flex justify-center items-start">
+    <div  className="w-full min-h-screen text-gray-900 dark:text-gray-100 p-4 md:p-8 flex justify-center items-start">
       <div className="flex flex-col bg-(--bg-color) p-6 rounded-xl shadow-md w-full max-w-4xl border border-gray-100 dark:border-gray-800">
         
         {/* Header Block */}
