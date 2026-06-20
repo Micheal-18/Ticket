@@ -68,14 +68,25 @@ useEffect(() => {
   const unsubscribe = onAuthStateChanged(auth, async (user) => {
     setLoading(true);
     if (user) {
-      // Get the document, but DON'T try to fix/update it here
       const docRef = doc(db, "users", user.uid);
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
         setCurrentUser({ ...user, ...docSnap.data() });
       } else {
-        setCurrentUser(user);
+        // 👈 Create a safe fallback structure for registering users
+        setCurrentUser({
+          uid: user.uid,
+          displayName: user.displayName,
+          name: user.displayName,
+          email: user.email,
+          photoURL: user.photoURL,
+          accountType: "user", // Default tier parameter
+          isAdmin: false,
+          emailVerified: true,
+          verified: true
+
+        });
       }
     } else {
       setCurrentUser(null);
@@ -128,7 +139,7 @@ useEffect(() => {
         path="/register"
         element={
           // If user is logged in
-          currentUser && currentUser?.verified === true ? (
+          currentUser && (currentUser.verified === true || currentUser.provider === 'google') ? (
             // Organizer -> redirect to org dashboard
             currentUser.accountType === "organization" ? (
               <Navigate to="/dashboard/organization" replace />

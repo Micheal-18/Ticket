@@ -13,8 +13,6 @@ const GoogleAuth = ({ onAuthSuccess, className }) => {
   // Process core document payload writes to Firestore
   const handleUserSync = async (user) => {
     const userRef = doc(db, 'users', user.uid);
-    
-    // First check if user already exists to preserve custom fields (like accountType or isAdmin)
     const existingSnap = await getDoc(userRef);
     
     const userPayload = {
@@ -23,39 +21,22 @@ const GoogleAuth = ({ onAuthSuccess, className }) => {
       accountType: 'user',
       photoURL: user.photoURL,
       provider: 'google',
-      verified: true,
+      emailVerified: true,
       updatedAt: new Date().toISOString()
     };
 
-    // Include standard fallback structures if it's a completely new account
     if (!existingSnap.exists()) {
       userPayload.createdAt = new Date().toISOString();
       userPayload.accountType = 'user'; 
+      userPayload.isAdmin = false;
+      userPayload.verified = true;
     }
 
     await setDoc(userRef, userPayload, { merge: true });
-
-    // Read fresh reference copy to supply accurate dynamic redirection parameters
     const freshSnap = await getDoc(userRef);
     return freshSnap.data();
   };
 
-  // Handle mobile redirect pipelines asynchronously
-  React.useEffect(() => {
-    const handleRedirect = async () => {
-      try {
-        const result = await getRedirectResult(auth);
-        if (!result || !onAuthSuccess) return;
-
-        const userData = await handleUserSync(result.user);
-        onAuthSuccess(userData);
-      } catch (error) {
-        console.error("Redirect login error:", error);
-      }
-    };
-
-    handleRedirect();
-  }, [onAuthSuccess]);
 
   const signInWithGoogle = async () => {
     try {
