@@ -40,23 +40,27 @@ const GoogleAuth = ({ onAuthSuccess, className }) => {
 
   const signInWithGoogle = async () => {
     try {
-      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+      let result;
 
-      if (isMobile) {
+      // ✅ BEST PRACTICE: Try popup first (works on most browsers including Safari sometimes)
+      try {
+        result = await signInWithPopup(auth, googleProvider);
+      } catch (popupError) {
+        console.warn("Popup failed, switching to redirect...", popupError);
+
+        // 🔥 Safari / mobile fallback
         await signInWithRedirect(auth, googleProvider);
         return;
       }
 
-      const result = await signInWithPopup(auth, googleProvider);
       const userData = await handleUserSync(result.user);
 
-      // If a callback is passed (Login page), execute it. If not (Ticket Modal), do nothing.
       if (onAuthSuccess) {
         onAuthSuccess(userData);
       }
 
     } catch (error) {
-      console.error('Google login error:', error);
+      console.error("Google login error:", error);
     }
   };
 
