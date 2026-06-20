@@ -69,25 +69,32 @@ useEffect(() => {
     setLoading(true);
     if (user) {
       const docRef = doc(db, "users", user.uid);
-      const docSnap = await getDoc(docRef);
+      let docSnap = await getDoc(docRef);
 
-      if (docSnap.exists()) {
-        setCurrentUser({ ...user, ...docSnap.data() });
-      } else {
-        // 👈 Create a safe fallback structure for registering users
-        setCurrentUser({
+      // 🚀 Automatically create a Firestore profile for new Google Sign-Ins
+      if (!docSnap.exists()) {
+        const fallbackUser = {
           uid: user.uid,
-          displayName: user.displayName,
-          name: user.displayName,
+          displayName: user.displayName || user.fullName,
+          name: user.displayName || "User",
           email: user.email,
-          photoURL: user.photoURL,
+          photoURL: user.photoURL || "",
           accountType: "user", // Default tier parameter
           isAdmin: false,
-          emailVerified: true,
-          verified: true
-
-        });
+          verified: user.emailVerified // Google defaults this to true
+        };
+        await setDoc(docRef, fallbackUser);
+        docSnap = await getDoc(docRef); // Re-fetch clean document data
       }
+
+      const data = docSnap.data();
+      setCurrentUser({
+        ...user,
+        ...data,
+        emailVerified: user.emailVerified,
+        verified: data?.verified ?? user.emailVerified
+      });
+
     } else {
       setCurrentUser(null);
     }
@@ -106,26 +113,27 @@ useEffect(() => {
     <Toaster position="bottom-right" />
     <Routes>
       {/* Home route — Redirect logged-in users to their respective dashboards */}
-      <Route
-        path="/"
-        element={
-          currentUser ? (
-            !currentUser.emailVerified ? (
-              <Navigate to="/verify" replace />
-            ) : currentUser.isAdmin ? (
-              <Navigate to="/dashboard" replace />
-            ) : currentUser.accountType === "organization" ? (
-              <Navigate to="/dashboard/organization" replace />
-            ) : (
-              <Navigate to="/dashboard/users" replace />
-            )
-          ) : (
-            <Layout currentUser={currentUser}>
-              <Home currentUser={currentUser} />
-            </Layout>
-          )
-        }
-      />
+{/* Home route — Dynamically redirects verified users to their respective layouts */}
+<Route
+  path="/"
+  element={
+    currentUser ? (
+      !(currentUser.verified || currentUser.emailVerified) ? (
+        <Navigate to="/verify" replace />
+      ) : currentUser.isAdmin ? (
+        <Navigate to="/dashboard" replace />
+      ) : currentUser.accountType === "organization" ? (
+        <Navigate to="/dashboard/organization" replace />
+      ) : (
+        <Navigate to="/dashboard/users" replace />
+      )
+    ) : (
+      <Layout currentUser={currentUser}>
+        <Home currentUser={currentUser} />
+      </Layout>
+    )
+  }
+/>
 
       {/* Login route */}
       <Route
@@ -139,7 +147,7 @@ useEffect(() => {
         path="/register"
         element={
           // If user is logged in
-          currentUser && (currentUser.verified === true || currentUser.provider === 'google') ? (
+          currentUser && currentUser?.verified === true ? (
             // Organizer -> redirect to org dashboard
             currentUser.accountType === "organization" ? (
               <Navigate to="/dashboard/organization" replace />
@@ -157,13 +165,27 @@ useEffect(() => {
       />
 
 
-      <Route path="/verify" element={<Layout currentUser={currentUser}><Verify email={currentUser?.email} currentUser={currentUser} step="verify"
-        setStep={() => { }}
-        error={""}
-        setError={() => { }}
-        resendMessage={""}
-        setResendMessage={() => { }} /></Layout>}
-      />
+<Route 
+  path="/verify" 
+  element={
+    currentUser && (currentUser.verified || currentUser.emailVerified) ? (
+      <Navigate to="/" replace />
+    ) : (
+      <Layout currentUser={currentUser}>
+        <Verify 
+          email={currentUser?.email} 
+          currentUser={currentUser} 
+          step="verify"
+          setStep={() => { }}
+          error={""}
+          setError={() => { }}
+          resendMessage={""}
+          setResendMessage={() => { }} 
+        />
+      </Layout>
+    )
+  } 
+/>
 
       <Route path="/event" element={
         currentUser ? (

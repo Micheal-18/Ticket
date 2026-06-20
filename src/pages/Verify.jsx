@@ -31,9 +31,10 @@ const Verify = ({ email, currentUser }) => {
     }
   }, []);
 
-const continueAuth = async () => {
+const continueAuth = async (e) => {
+  if (e) e.preventDefault(); // Prevents "form is not connected" warnings
   setLoading(true);
-  setStatus({ type: "", message: "" }); // Clear previous errors
+  setStatus({ type: "", message: "" });
 
   try {
     const user = auth.currentUser;
@@ -42,28 +43,40 @@ const continueAuth = async () => {
       return;
     }
 
-    // 1. Fetch fresh data from Firestore
+    // 1. Force Firebase Auth to pull the absolute newest token state from the server
+    await user.reload();
+    
+    // 2. Write verification status to Firestore securely
     const userRef = doc(db, "users", user.uid);
+    await setDoc(
+      userRef,
+      {
+        verified: true,
+        verifiedAt: new Date().toISOString(),
+      },
+      { merge: true }
+    );
+
+    // 3. Force-fetch the fresh data from Firestore right now to choose the path
     const userSnap = await getDoc(userRef);
 
     if (userSnap.exists()) {
       const userData = userSnap.data();
 
-      // 2. Routing Logic
+      // 4. Clean window routing redirect so App.jsx reads the fresh context
       if (userData.isAdmin === true) {
-        navigate("/dashboard");
+        navigate("/dashboard", { replace: true });
       } else if (userData.accountType === "organization") {
-        navigate("/dashboard/organization");
+        navigate("/dashboard/organization", { replace: true });
       } else {
-        navigate("/");
+        navigate("/dashboard/users", { replace: true }); // Go to User Dashboard instead of / to avoid generic layout loops
       }
     } else {
-      // If doc doesn't exist yet, they might need to wait a second or re-login
-      setStatus({ type: "error", message: "Profile not found. Try logging in again." });
+      setStatus({ type: "error", message: "Profile data not found. Try logging in again." });
     }
   } catch (e) {
     console.error("Redirect Error:", e);
-    setStatus({ type: "error", message: "Error redirecting. Please try logging in." });
+    setStatus({ type: "error", message: "Error synchronizing session. Please try again." });
   } finally {
     setLoading(false);
   }
@@ -139,6 +152,7 @@ const continueAuth = async () => {
           { merge: true }
         );
         setVerified(true);
+        console.log(user.emailVerified)
         setStatus({ type: "success", message: "✅ Email verified!" });
       } else {
         setStatus({ type: "error", message: "⚠️ Still not verified. Check your inbox." });
@@ -169,7 +183,7 @@ const continueAuth = async () => {
         }
       </p>
 
-      {loading && <Spinner />}
+      {loading && <div className="animate-loading-bar"></div>}
       
       {status.message && (
         <div className={`p-3 rounded-lg mb-4 text-sm ${status.type === "error" ? "bg-red-100 text-red-600" : "bg-green-100 text-green-600"}`}>
