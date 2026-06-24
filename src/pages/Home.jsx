@@ -193,10 +193,10 @@ const Home = ({ currentUser }) => {
                     />
                   </div>
                   <div className='space-y-2 mt-2'>
-                    <h1 className='font-bold text-gray-700 uppercase text-2xl w-[100px] truncate lg:w-[250px] '>
+                    <h1 className='font-bold text-gray-700 uppercase text-2xl truncate w-[250px] '>
                       {event.name || 'Untitled Event'}
                     </h1>
-                    <p className='text-gray-600 text-sm line-clamp-2 mb-3 w-[150px] lg:w-[300px] truncate'>
+                    <p className='text-gray-600 text-sm line-clamp-2 mb-3 w-[300px] truncate'>
                       {event.description}
                     </p>
                     <p className='text-xs text-gray-500 flex items-center gap-2'>
@@ -208,7 +208,7 @@ const Home = ({ currentUser }) => {
                         year: 'numeric'
                       })}
                     </p>
-                    <p className='text-sm w-[150px] lg:w-[300px] text-gray-500 flex items-center gap-2'>
+                    <p className='text-sm w-[300px] text-gray-500 flex items-center gap-2'>
                       <FaClock />
                       <span className='truncate'>
                         {formatEventStatus(event.startTime, event.endTime)}
