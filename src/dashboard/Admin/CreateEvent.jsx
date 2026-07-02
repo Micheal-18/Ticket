@@ -246,7 +246,7 @@ const downloadFlyer = async () => {
   }
 
   return (
-    <section className='w-full h-screen py-4 flex flex-col space-y-6 custom-scrollbar px-8 shadow'>
+    <section className='w-full h-screen py-4 flex flex-col space-y-6 custom-scrollbar lg:px-8 shadow'>
 
       <div className=' flex space-x-4'>
         <h1 className='uppercase font-semibold lg:text-5xl text-3xl'>
