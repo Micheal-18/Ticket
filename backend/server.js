@@ -7,7 +7,15 @@ import cors from 'cors'
 import QRCode from 'qrcode'
 import Brevo from '@getbrevo/brevo'
 import crypto from 'crypto'
+import { GoogleGenAI } from "@google/genai";
+import axios from "axios";
+import nodemailer from "nodemailer";
 
+
+
+const ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY,
+});
 
 const app = express()
 app.use(cors())
@@ -60,6 +68,170 @@ emailApi.authentications['apiKey'].apiKey = process.env.BREVO_API_KEY
    TEST ROUTE
 ======================= */
 app.get('/', (req, res) => res.send('🚀 Airticks backend running'))
+
+app.post("/send-message", async (req, res) => {
+  const { name, email, message } = req.body;
+
+  if (!name || !email || !message) {
+    return res.status(400).json({ error: "All fields are required." });
+  }
+
+  try {
+    // Configure Brevo SMTP
+    const transporter = nodemailer.createTransport({
+      host: "smtp-relay.brevo.com",
+      port: 587,
+      auth: {
+        user: process.env.BREVO_USER,
+        pass: process.env.BREVO_SMTP_KEY,
+      },
+    });
+
+    // Message details
+    const mailOptions = {
+      from: `"Airticks Contact" <${process.env.EMAIL_FROM}>`,
+      to: "michaeleleke259@gmail.com", // 👈 your real inbox
+      subject: `New message from ${name}`,
+      html: `
+        <h2>New Contact Message</h2>
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Message:</strong></p>
+        <p>${message}</p>
+      `,
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log("✅ Email sent to your inbox");
+    res.status(200).json({ success: true, message: "Message sent successfully!" });
+  } catch (error) {
+    console.error("❌ Error sending email:", error);
+    res.status(500).json({ error: "Failed to send message." });
+  }
+});
+
+app.post("/api/description", async (req, res) => {
+  try {
+    const { name, category, location, description } = req.body;
+
+    const prompt = `
+You are an event marketing expert.
+Improve this event description.
+
+Event Name: ${name}
+Category: ${category}
+Location: ${location}
+
+Current Description:
+${description}
+
+Rules:
+- Return ONLY the final description.
+- Do NOT use Markdown.
+- Do NOT use **bold**.
+- Do NOT use *italics*.
+- Do NOT use bullet points.
+- Do NOT use headings.
+- Do NOT use quotation marks.
+- Do NOT add labels like "Description:".
+- Keep it under 100 words.
+- Make it sound human and exciting.
+- Write it as one or two natural paragraphs.
+- Start directly with the description.
+`;
+
+    // FIX: Using the correct, globally available text model
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash", 
+      contents: prompt,
+    });
+
+    res.json({
+      description: response.text,
+    });
+  } catch (err) {
+    console.error("Description Generation Error:", err);
+    res.status(500).json({
+      error: "Failed to generate description.",
+    });
+  }
+});
+
+// Endpoint 2: Generate Event Flyer Background
+app.post("/api/flyer", async (req, res) => {
+  try {
+    const { name, category, description, location, organizer} = req.body;
+
+    // Let Gemini improve the prompt
+    const promptResponse = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: `
+You are an expert graphic designer.
+
+Create a concise image prompt for an AI image generator.
+
+Event:
+${name}
+
+Category:
+${category}
+
+Organizer:
+${organizer}
+
+Location:
+${location}
+
+Description:
+${description}
+
+
+Requirements:
+- Premium event poster
+- Vibrant colors based on the event description
+- Modern lighting
+- Luxury style
+- High contrast
+- Cinematic
+- Vertical 3:4
+- Background only
+- No text
+- No logos
+- Leave empty space for event information
+`,
+    });
+
+    const prompt =
+      typeof promptResponse.text === "function"
+        ? promptResponse.text()
+        : promptResponse.text;
+
+    // Encode the prompt
+    const encodedPrompt = encodeURIComponent(prompt);
+
+    // Pollinations image URL
+    const imageUrl =
+      `https://image.pollinations.ai/prompt/${encodedPrompt}?width=768&height=1024&model=flux&nologo=true`;
+    // Download the generated image
+    const imageResponse = await axios.get(imageUrl, {
+      responseType: "arraybuffer",
+    });
+
+    // Convert image to base64
+    const base64 = Buffer.from(imageResponse.data, "binary").toString("base64");
+
+    res.json({
+      image: `data:image/png;base64,${base64}`,
+    });
+
+  } catch (err) {
+    console.error(err);
+
+    res.status(500).json({
+      error: "Failed to generate flyer.",
+    });
+  }
+});
 
 /* =======================
    CREATE PAYSTACK SUBACCOUNT
@@ -191,11 +363,14 @@ app.post('/api/init-payment', async (req, res) => {
       })
 
       // 2. Generate the visual pass QR asset code
-      const qrData = await QRCode.toDataURL(ticketRef.id, {
+      const qrUrl = `${process.env.FRONTEND_URL}/ticket/${ticketRef.id}`;
+        
+      const qrData = await QRCode.toDataURL(qrUrl, {
         width: 320,
         margin: 1,
-        errorCorrectionLevel: 'M'
-      })
+        errorCorrectionLevel: "M",
+      });
+
       const qrBase64 = qrData.replace(/^data:image\/png;base64,/, '')
       await ticketRef.update({ qr: qrBase64 })
 
@@ -427,11 +602,13 @@ app.post('/api/webhook/paystack', async (req, res) => {
       /* =========================
          QR CODE
       ========================== */
-      const qrData = await QRCode.toDataURL(ticketRef.id, {
+      const qrUrl = `${process.env.FRONTEND_URL}/ticket/${ticketRef.id}`;
+
+      const qrData = await QRCode.toDataURL(qrUrl, {
         width: 320,
         margin: 1,
-        errorCorrectionLevel: 'M'
-      })
+        errorCorrectionLevel: "M",
+      });
 
       // remove prefix ONCE
       const qrBase64 = qrData.replace(/^data:image\/png;base64,/, '')
@@ -624,6 +801,128 @@ await db.collection('notifications').add({
   }
 })
 
+
+app.post("/api/tickets/verify", async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader?.startsWith("Bearer ")) {
+      return res.status(401).json({
+        error: "Unauthorized",
+      });
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    const decoded = await admin.auth().verifyIdToken(token);
+
+    const scannerDoc = await db
+      .collection("users")
+      .doc(decoded.uid)
+      .get();
+
+    if (!scannerDoc.exists) {
+      return res.status(404).json({
+        error: "User not found",
+      });
+    }
+
+    const scanner = scannerDoc.data();
+
+    if (!scanner.isAdmin && scanner.accountType !== "organization") {
+      return res.status(403).json({
+        error: "Only organizers and admins can verify tickets.",
+      });
+    }
+
+    const { ticketId } = req.body;
+
+    const ticketRef = db.collection("tickets").doc(ticketId);
+
+    const ticketDoc = await ticketRef.get();
+
+    if (!ticketDoc.exists) {
+      return res.status(404).json({
+        error: "Ticket not found.",
+      });
+    }
+
+    const ticket = ticketDoc.data();
+
+    if (ticket.used) {
+      return res.status(409).json({
+        error: "Ticket already used.",
+        buyerName: ticket.buyerName,
+        eventName: ticket.eventName,
+      });
+    }
+
+    await ticketRef.update({
+      used: true,
+      scannedAt: admin.firestore.FieldValue.serverTimestamp(),
+      scannedBy: decoded.uid,
+      scannedByName:
+        scanner.fullName ||
+        scanner.displayName ||
+        scanner.name ||
+        "Admin",
+    });
+
+    res.json({
+      success: true,
+      buyerName: ticket.buyerName,
+      eventName: ticket.eventName,
+      ticketType: ticket.ticketType,
+      ticketNumber: ticket.ticketNumber,
+    });
+
+  } catch (err) {
+    console.error(err);
+
+    res.status(500).json({
+      error: "Verification failed.",
+    });
+  }
+});
+
+app.get("/api/tickets/:ticketId", async (req, res) => {
+  try {
+    const { ticketId } = req.params;
+
+    const ticketDoc = await db
+      .collection("tickets")
+      .doc(ticketId)
+      .get();
+
+    if (!ticketDoc.exists) {
+      return res.status(404).json({
+        error: "Ticket not found.",
+      });
+    }
+
+    const ticket = ticketDoc.data();
+
+    res.json({
+      buyerName: ticket.buyerName,
+      eventName: ticket.eventName,
+      ticketType: ticket.ticketType,
+      ticketNumber: ticket.ticketNumber,
+      used: ticket.used,
+      scannedByName: ticket.scannedByName || null,
+      scannedAt: ticket.scannedAt
+        ? ticket.scannedAt.toDate()
+        : null,
+    });
+
+  } catch (err) {
+    console.error(err);
+
+    res.status(500).json({
+      error: "Server error.",
+    });
+  }
+});
+
 /* ============================================================
    FETCH PAYSTACK SETTLEMENTS (BANK PAID STATUS)
 ============================================================ */
@@ -745,191 +1044,6 @@ app.get('/api/paystack/settlements', authenticate, async (req, res) => {
   }
 })
 
-/* =======================
-   ADMIN FETCH WITHDRAW REQUESTS
-======================= */
-// app.get("/api/admin/withdraw/requests", authenticate, async (req, res) => {
-//   if (!req.user.isAdmin) {
-//     return res.status(403).json({ error: "Admin only" });
-//   }
-
-//   try {
-//     const snap = await db
-//       .collection("withdraw_requests")
-//       .orderBy("createdAt", "desc")
-//       .get();
-
-//     const requests = snap.docs.map(doc => ({
-//       id: doc.id,
-//       ...doc.data(),
-//       createdAt: doc.data().createdAt?.toDate(),
-//     }));
-
-//     res.json(requests);
-//   } catch (err) {
-//     console.error("Admin fetch error:", err);
-//     res.status(500).json({ error: "Failed to fetch requests" });
-//   }
-// });
-
-/* =======================
-   ADMIN WITHDRAW
-======================= */
-
-// Example backend helper
-// const payWithPaystack = async ({ amount, accountNumber, bankCode, accountName, reason }) => {
-//   // 1. Create transfer recipient
-//   const resRecipient = await fetch("https://api.paystack.co/transferrecipient", {
-//     method: "POST",
-//     headers: {
-//       Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
-//       "Content-Type": "application/json",
-//     },
-//     body: JSON.stringify({
-//       type: "nuban",
-//       name: accountName,
-//       account_number: accountNumber,
-//       bank_code: bankCode,
-//       currency: "NGN",
-//     }),
-//   });
-//   const recipientData = await resRecipient.json();
-//   if (!recipientData.status) throw new Error(recipientData.message);
-
-//   // 2. Initiate transfer
-//   const resTransfer = await fetch("https://api.paystack.co/transfer", {
-//     method: "POST",
-//     headers: {
-//       Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
-//       "Content-Type": "application/json",
-//     },
-//     body: JSON.stringify({
-//       source: "balance",
-//       amount: amount * 100,
-//       recipient: recipientData.data.recipient_code,
-//       reason,
-//     }),
-//   });
-//   const transferData = await resTransfer.json();
-//   if (!transferData.status) throw new Error(transferData.message);
-
-//   return transferData.data;
-// };
-
-// app.post("/api/admin/withdraw/pay", authenticate, async (req, res) => {
-//   if (!req.user.isAdmin)
-//     return res.status(403).json({ error: "Admin only" });
-
-//   const { requestId } = req.body;
-//   if (!requestId)
-//     return res.status(400).json({ error: "requestId required" });
-
-//   try {
-//     const db = admin.firestore();
-
-//     // 1. Fetch withdraw request
-//     const requestRef = db.collection("withdraw_requests").doc(requestId);
-//     const requestSnap = await requestRef.get();
-
-//     if (!requestSnap.exists)
-//       return res.status(404).json({ error: "Request not found" });
-
-//     const request = requestSnap.data();
-//     if (request.status !== "pending")
-//       return res.status(400).json({ error: "Already processed" });
-
-//     // 2. Fetch event
-//     const eventRef = db.collection("events").doc(request.eventId);
-//     const eventSnap = await eventRef.get();
-
-//     if (!eventSnap.exists)
-//       return res.status(404).json({ error: "Event not found" });
-
-//     const event = eventSnap.data();
-
-//     if (event.balance < request.amount)
-//       return res.status(400).json({ error: "Insufficient event balance" });
-
-//     // 3. Paystack payout
-//     const transfer = await payWithPaystack({
-//       amount: request.amount,
-//       accountNumber: event.accountNumber,
-//       bankCode: event.bankCode,
-//       accountName: event.accountName,
-//       reason: `Payout for ${event.name}`,
-//     });
-
-//     // 4. Firestore transaction
-//     await db.runTransaction(async (tx) => {
-//       tx.update(eventRef, {
-//         balance: admin.firestore.FieldValue.increment(-request.amount),
-//       });
-
-//       tx.update(requestRef, {
-//         status: "success",
-//         paidAt: admin.firestore.FieldValue.serverTimestamp(),
-//         reference: transfer.reference,
-//       });
-
-//       tx.set(db.collection("wallet_transactions").doc(), {
-//         organizerId: request.organizerId,
-//         eventId: request.eventId,
-//         amount: request.amount,
-//         type: "withdrawal",
-//         reference: transfer.reference,
-//         createdAt: admin.firestore.FieldValue.serverTimestamp(),
-//       });
-//     });
-
-//     res.json({
-//       success: true,
-//       reference: transfer.reference,
-//     });
-//   } catch (err) {
-//     console.error("Admin payout error:", err);
-//     res.status(500).json({ error: err.message });
-//   }
-// });
-
-/* =======================
-   ORGANIZER reQUEST WITHDRAWAL
-======================= */
-// app.post("/api/withdraw/requests", authenticate, async (req, res) => {
-//   const { amount, eventId } = req.body;
-//   const organizerId = req.user.uid;
-
-//   if (!eventId || !amount || amount <= 0)
-//     return res.status(400).json({ error: "Invalid request" });
-
-//   const eventRef = db.collection("events").doc(eventId);
-//   const eventSnap = await eventRef.get();
-
-//   if (!eventSnap.exists)
-//     return res.status(404).json({ error: "Event not found" });
-
-//   const event = eventSnap.data();
-
-//   if (event.ownerId !== organizerId)
-//     return res.status(403).json({ error: "Not your event" });
-
-//   if (event.balance < amount)
-//     return res.status(400).json({ error: "Insufficient balance" });
-
-//   await db.collection("withdraw_requests").add({
-//     organizerId,
-//     eventId,
-//     eventName: event.name,
-//     amount,
-//     status: "pending",
-//     createdAt: admin.firestore.FieldValue.serverTimestamp(),
-//   });
-
-//   res.json({ success: true });
-// });
-
-/* ============================================================
-   ADMIN WITHDRAWAL (Platform Funds)
-============================================================ */
 app.post('/api/admin/withdraw', authenticate, async (req, res) => {
   // 1. Safety Check: Is the user actually an admin?
   if (!req.user.isAdmin) {

@@ -107,7 +107,7 @@ const OrgEvent = () => {
               className={`px-4 py-2 rounded-lg text-sm font-medium capitalize transition-colors ${
                 status === tab
                   ? "bg-orange-600 text-white"
-                  : "bg-gray-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 hover:bg-gray-200 dark:hover:bg-zinc-700"
+                  : " shadow"
               }`}
             >
               {tab}

@@ -161,7 +161,7 @@ const DashboardLayout = ({ currentUser }) => {
       onClick={!isMobileFooter ? slideMovement : undefined}
       className={({ isActive }) =>
         `flex flex-col items-center gap-1.5 transition text-center rounded-lg
-        ${isMobileFooter ? 'py-1 px-3' : 'lg:flex-row lg:text-left px-5 py-4 w-full'}
+        ${isMobileFooter ? 'py-1 px-3' : 'lg:flex-row lg:text-left px-3 py-2 w-full'}
         ${isActive ? 'text-orange-500 bg-orange-500/10 font-medium' : 'text-gray-400 hover:text-orange-400 hover:bg-orange-500/5'}`
       }
     >
@@ -176,7 +176,7 @@ const DashboardLayout = ({ currentUser }) => {
       {/* DESKTOP SIDEBAR PANEL */}
       <aside
         className={`
-          fixed lg:sticky top-0 left-0 z-50 space-y-6
+          fixed lg:sticky top-0 left-0 z-50 space-y-6 gap-20
           w-64 h-screen bg-(--bg-color) border-r border-gray-200/10 shadow-xl
           flex flex-col justify-between p-6 transform transition-transform duration-300 ease-in-out
           ${slide ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}

@@ -1,9 +1,9 @@
 import React, { useState, useRef } from "react";
 import BarcodeScannerComponent from "react-qr-barcode-scanner";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { db } from "../firebase/firebase";
+import { auth, db } from "../firebase/firebase";
 
-const TicketScanner = () => {
+const TicketScanner = ({currentUser}) => {
   const [status, setStatus] = useState(null);
   const isProcessing = useRef(false); // prevent multiple triggers
 
@@ -24,17 +24,23 @@ const TicketScanner = () => {
 const handleScan = async (resultText) => {
     if (!resultText || isProcessing.current) return;
 
+      let ticketId = resultText;
+
+      if (resultText.startsWith("http")) {
+        ticketId = resultText.split("/ticket/")[1];
+      }
+
     isProcessing.current = true;
     try {
       // 1. Call your Backend instead of Firestore directly
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/tickets/verify`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/tickets/verify`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           // Assuming you have the user's Firebase token
           "Authorization": `Bearer ${await auth.currentUser.getIdToken()}`
         },
-        body: JSON.stringify({ ticketId: resultText }),
+        body: JSON.stringify({ ticketId: ticketId }),
       });
 
       const data = await response.json();

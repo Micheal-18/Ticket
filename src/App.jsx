@@ -42,6 +42,7 @@ import UserEventsAndTickets from "./dashboard/Users/UserEvent";
 import UserProfile from "./dashboard/Users/UserProfile";
 import TransactionHistory from "./dashboard/Users/Billing";
 import CreateEvent from "./dashboard/Admin/CreateEvent";
+import TicketPage from "./pages/TicketPage";
 
 
 const App = () => {
@@ -204,6 +205,11 @@ useEffect(() => {
       <Route path="/event/:slug" element={
           <TicketModal currentUser={currentUser} />
       } />
+
+      <Route
+          path="/ticket/:ticketId"
+          element={<TicketPage currentUser={currentUser} />}
+      />
 
       <Route path="/guide" element={
         <Layout currentUser={currentUser}>
