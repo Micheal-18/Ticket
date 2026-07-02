@@ -9,6 +9,9 @@ import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
 import { formatEventStatus } from '../../utils/formatEventRange'
 import { uploadToCloudinary } from '../../utils/cloudinaryUpload'
+import { notifyFollowersOfNewEvent } from '../../utils/notifyFollowersOfNewEvent'
+import axios from 'axios'
+import { toPng } from 'html-to-image'
 
 const bankCodes = {
   "ACCESS BANK": "044",
@@ -52,6 +55,10 @@ const CreateEvent = () => {
   const [endTime, setEndTime] = useState(new Date())
   const [photo, setPhoto] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [flyerImage, setFlyerImage] = useState("");
+  const [loadingFlyer, setLoadingFlyer] = useState(false);
+  const [loadingDescription, setLoadingDescription] = useState(false);
+  const flyerRef = useRef();
 
   
   // Ticket Mode & Pricing States
@@ -76,6 +83,59 @@ const CreateEvent = () => {
   const handleRemoveInput = (id) => setPrice(price.filter((p) => p.id !== id))
   const handleOpenDate = () => setOpenDate(!openDate)
   const handlePhotoUpload = (e) => setPhoto(e.target.files[0])
+
+  const generateDescription = async () => {
+    try {
+      setLoadingDescription(true);
+  
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/description`,
+        {
+          name,
+          category,
+          location,
+          description
+        }
+      );
+  
+      setDescription(response.data.description);
+  
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingDescription(false);
+    }
+  };
+  
+  const generateFlyer = async () => {
+    try {
+      setLoadingFlyer(true);
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/flyer`,
+        { name, category, description, location, organizer}
+      );
+      setFlyerImage(response.data.image); // Works perfectly with Data URIs or normal URLs!
+    } catch (err) {
+      console.error(err);
+      alert("Failed to generate flyer.");
+    } finally {
+      setLoadingFlyer(false);
+    }
+  };
+  
+  const downloadFlyer = async () => {
+  
+      const dataUrl = await toPng(flyerRef.current);
+  
+      const link = document.createElement("a");
+  
+      link.download = `${name}.png`;
+  
+      link.href = dataUrl;
+  
+      link.click();
+  
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -175,10 +235,9 @@ const CreateEvent = () => {
   }
 
   return (
-    <section className='w-full h-screen pb-4 flex flex-col space-y-6 custom-scrollbar'>
+    <section className='w-full h-screen py-4 flex flex-col space-y-6 custom-scrollbar px-8 shadow'>
       <div className='flex space-x-4 items-center'>
-        <RiArrowLeftFill onClick={() => navigate("/dashboard/organization")} className='cursor-pointer text-xl text-orange-600'/>
-        <h1 className='uppercase font-semibold lg:text-5xl text-2xl'>Create Event</h1>
+        <h1 className='uppercase font-semibold lg:text-5xl text-3xl'>Create Event</h1>
       </div>
 
       <form onSubmit={handleSubmit} className='uppercase font-semibold space-y-4 flex flex-col mb-4'>
@@ -203,10 +262,123 @@ const CreateEvent = () => {
           <textarea required onChange={(e) => setDescription(e.target.value)} value={description} name='description' placeholder='Describe your event here...' className='border-2 border-gray-500 rounded-lg p-2 w-full h-[200px]'></textarea>
         </div>
 
+        <button
+          type="button"
+          onClick={generateDescription}
+          className="bg-orange-600 text-white px-4 py-2 rounded-lg mb-4 cursor-pointer active:scale-90 hover:bg-orange-700 transition"
+        >
+          {loadingDescription ? "Improving..." : "✨ Improve Description"}
+        </button>
+
         <div className='flex items-center py-4 space-x-4 border-b '>
           <label>Photos:</label>
           <input ref={fileInputRef} onChange={handlePhotoUpload} type='file' name='photo' accept='image/*' className='border rounded-xl w-[100%] p-2' />
         </div>
+
+        <button
+          type="button"
+          onClick={generateFlyer}
+          className="bg-purple-600 text-white px-4 py-2 rounded-lg"
+        >
+          {loadingFlyer ? "Generating..." : "🎨 Generate Flyer"}
+        </button>
+
+        {/* AI Flyer Preview */}
+        {flyerImage && (
+          <div className="mt-4 flex justify-center flex-col items-center">
+            <div
+              ref={flyerRef}
+              className="relative w-[340px] aspect-[3/4] overflow-hidden rounded-3xl shadow-2xl border border-white/10"
+            >
+              {/* Background */}
+              <img
+                src={flyerImage}
+                alt="AI Flyer"
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+
+              {/* Dark Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/40 to-black/80" />
+
+              {/* Content */}
+              <div className="absolute inset-0 flex flex-col justify-between p-6">
+
+                {/* Category */}
+                <div>
+                  <span className="inline-block bg-orange-500 text-white text-xs px-3 py-1 rounded-full font-semibold  tracking-wider">
+                    {category}
+                  </span>
+                </div>
+
+                {/* Event Details */}
+                <div className="space-y-2">
+                  <h1
+                    className="text-white font-black leading-tight"
+                    style={{
+                      fontSize:
+                        name.length > 30
+                          ? "24px"
+                          : name.length > 18
+                          ? "30px"
+                          : "38px",
+                    }}
+                  >
+                    {name}
+                  </h1>
+
+                  <p className="text-white/90 text-[12px] line-clamp-2">
+                    {description}
+                  </p>
+                </div>
+
+                {/* Footer */}
+                <div className="space-y-3">
+
+                  <div className="flex justify-between gap-4 text-white/90 text-[12px] items-center">
+
+                    <div>
+                      <p className="text-xs text-gray-300 uppercase">
+                        Organizer
+                      </p>
+
+                      <p className="text-white font-semibold">
+                        {organizer}
+                      </p>
+                    </div>
+
+                    <div className="text-right text-xs">
+                      <p className="text-sm text-gray-300 uppercase">
+                        Venue
+                      </p>
+
+                      <p className="text-white font-semibold">
+                        {location}
+                      </p>
+                    </div>
+
+                  </div>
+
+                  <button
+                    type="button"
+                    className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded-xl font-bold text-white"
+                  >
+                    🎟 Get Ticket
+                  </button>
+
+                </div>
+
+              </div>
+            </div>
+
+          <button
+            type="button"
+            onClick={downloadFlyer}
+            className="mt-4 w-full bg-green-600 cursor-pointer active:scale-90 hover:bg-green-700 text-white py-3 rounded-xl font-bold transition"
+          >
+            {loading ? "Downloading..." : "📥 Download Flyer"}
+          </button>
+          </div>
+        )}
 
         <div className='flex items-center p-2 w-full space-x-2 border-b '>
           <label>Location:</label>

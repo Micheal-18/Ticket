@@ -12,6 +12,10 @@ import 'react-datepicker/dist/react-datepicker.css'
 import { format } from 'date-fns'
 import { formatEventStatus } from '../../utils/formatEventRange'
 import { FiX } from 'react-icons/fi'
+import axios from 'axios'
+import { notifyFollowersOfNewEvent } from '../../utils/notifyFollowersOfNewEvent'
+import { toPng } from 'html-to-image'
+
 
 const CreateEvent = () => {
   const [openDate, setOpenDate] = useState(false)
@@ -29,9 +33,15 @@ const CreateEvent = () => {
     { id: 1, label: '', amount: '', currency: '₦' }
   ])
   const navigate = useNavigate()
+  const flyerRef = useRef();
   const fileInputRef = useRef(null)
   const [ticketType, setTicketType] = useState('paid') // "paid" or "free"
   const { currentUser } = useOutletContext();
+  const [flyerImage, setFlyerImage] = useState("");
+  const [loadingFlyer, setLoadingFlyer] = useState(false);
+  const [loadingDescription, setLoadingDescription] = useState(false);
+  const [loading, setLoading] = useState(false);
+
 
   const Category = [
     'Art',
@@ -71,9 +81,58 @@ const CreateEvent = () => {
     setPhoto(e.target.files[0])
   }
 
-  // const handleDate = (selectedDate) => {
-  //   setDate(selectedDate);
-  // };
+const generateDescription = async () => {
+  try {
+    setLoadingDescription(true);
+
+    const response = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/api/description`,
+      {
+        name,
+        category,
+        location,
+        description
+      }
+    );
+
+    setDescription(response.data.description);
+
+  } catch (err) {
+    console.error(err);
+  } finally {
+    setLoadingDescription(false);
+  }
+};
+
+const generateFlyer = async () => {
+  try {
+    setLoadingFlyer(true);
+    const response = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/api/flyer`,
+      { name, category, description, location, organizer}
+    );
+    setFlyerImage(response.data.image); // Works perfectly with Data URIs or normal URLs!
+  } catch (err) {
+    console.error(err);
+    alert("Failed to generate flyer.");
+  } finally {
+    setLoadingFlyer(false);
+  }
+};
+
+const downloadFlyer = async () => {
+
+    const dataUrl = await toPng(flyerRef.current);
+
+    const link = document.createElement("a");
+
+    link.download = `${name}.png`;
+
+    link.href = dataUrl;
+
+    link.click();
+
+};
 
   const handleSubmit = async e => {
     e.preventDefault()
@@ -87,16 +146,12 @@ const CreateEvent = () => {
       return
     }
 
-    // const numericPrice = parseFloat(price);
-    // if (Number.isNaN(numericPrice) || numericPrice < 0) {
-    //   alert("Please enter a valid price.");
-    //   return;
-    // }
 
-    try {
+    try {      
       // Generate unique ID for event
       const eventId = `${Date.now()}_${currentUser.uid}`
       const eventRef = doc(db, 'events', eventId)
+      setLoading(true)
 
       let photoURL = ''
 
@@ -175,7 +230,12 @@ const CreateEvent = () => {
       setTicketType('paid') // Reset switcher to default paid state
       setPrice([{ id: 1, label: '', amount: '', currency: '₦' }])
       setPhoto(null)
+      setFlyerImage('')
       setDate(new Date())
+      setStartTime(new Date())
+      setEndTime(new Date())
+      setLoading(false)
+
       if (fileInputRef.current) fileInputRef.current.value = ''
     } catch (error) {
       console.error('Error uploading event:', error)
@@ -186,13 +246,10 @@ const CreateEvent = () => {
   }
 
   return (
-    <section className='w-full h-screen py-4 flex flex-col space-y-6 custom-scrollbar'>
+    <section className='w-full h-screen py-4 flex flex-col space-y-6 custom-scrollbar px-8 shadow'>
+
       <div className=' flex space-x-4'>
-        <RiArrowLeftFill
-          onClick={() => navigate('/dashboard')}
-          className='cursor-pointer text-xl text-orange-600'
-        />
-        <h1 className='uppercase font-semibold lg:text-5xl text-2xl'>
+        <h1 className='uppercase font-semibold lg:text-5xl text-3xl'>
           What are you creating
         </h1>
       </div>
@@ -239,9 +296,16 @@ const CreateEvent = () => {
             value={description}
             name='description'
             placeholder='Describe your event here...'
-            className='border-2 border-gray-500 rounded-lg p-2 w-full h-[200px]'
+            className='border-2 border-gray-500 rounded-lg p-2 w-full h-[200px] custom-scrollbar'
           ></textarea>
         </div>
+        <button
+          type="button"
+          onClick={generateDescription}
+          className="bg-orange-600 text-white px-4 py-2 rounded-lg mb-4 cursor-pointer active:scale-90 hover:bg-orange-700 transition"
+        >
+          {loadingDescription ? "Improving..." : "✨ Improve Description"}
+        </button>
 
         <div className='flex items-center py-4 space-x-4  border-b '>
           <label htmlFor='photo'>Photos:</label>
@@ -255,6 +319,111 @@ const CreateEvent = () => {
           />
         </div>
 
+        <button
+          type="button"
+          onClick={generateFlyer}
+          className="bg-purple-600 text-white px-4 py-2 rounded-lg"
+        >
+          {loadingFlyer ? "Generating..." : "🎨 Generate Flyer"}
+        </button>
+
+
+        {/* AI Flyer Preview */}
+        {flyerImage && (
+          <div className="mt-4 flex justify-center flex-col items-center">
+            <div
+              ref={flyerRef}
+              className="relative w-[340px] aspect-[3/4] overflow-hidden rounded-3xl shadow-2xl border border-white/10"
+            >
+              {/* Background */}
+              <img
+                src={flyerImage}
+                alt="AI Flyer"
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+
+              {/* Dark Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/40 to-black/80" />
+
+              {/* Content */}
+              <div className="absolute inset-0 flex flex-col justify-between p-6">
+
+                {/* Category */}
+                <div>
+                  <span className="inline-block bg-orange-500 text-white text-xs px-3 py-1 rounded-full font-semibold  tracking-wider">
+                    {category}
+                  </span>
+                </div>
+
+                {/* Event Details */}
+                <div className="space-y-2">
+                  <h1
+                    className="text-white font-black leading-tight"
+                    style={{
+                      fontSize:
+                        name.length > 30
+                          ? "24px"
+                          : name.length > 18
+                          ? "30px"
+                          : "38px",
+                    }}
+                  >
+                    {name}
+                  </h1>
+
+                  <p className="text-white/90 text-[12px] line-clamp-2">
+                    {description}
+                  </p>
+                </div>
+
+                {/* Footer */}
+                <div className="space-y-3">
+
+                  <div className="flex justify-between gap-4 text-white/90 text-[12px] items-center">
+
+                    <div>
+                      <p className="text-xs text-gray-300 uppercase">
+                        Organizer
+                      </p>
+
+                      <p className="text-white font-semibold">
+                        {organizer}
+                      </p>
+                    </div>
+
+                    <div className="text-right text-xs">
+                      <p className="text-sm text-gray-300 uppercase">
+                        Venue
+                      </p>
+
+                      <p className="text-white font-semibold">
+                        {location}
+                      </p>
+                    </div>
+
+                  </div>
+
+                  <button
+                    type="button"
+                    className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded-xl font-bold text-white"
+                  >
+                    🎟 Get Ticket
+                  </button>
+
+                </div>
+
+              </div>
+            </div>
+
+          <button
+            type="button"
+            onClick={downloadFlyer}
+            className="mt-4 w-full bg-green-600 cursor-pointer active:scale-90 hover:bg-green-700 text-white py-3 rounded-xl font-bold transition"
+          >
+            {loading ? "Downloading..." : "📥 Download Flyer"}
+          </button>
+          </div>
+        )}
         <div className='flex items-center p-2 w-full space-x-2 border-b '>
           <label htmlFor='Location'>Location:</label>
           <input
@@ -288,12 +457,12 @@ const CreateEvent = () => {
             <p className='text-sm text-gray-600'>
               {startTime &&
                 !endTime &&
-                `Starts: ${startDate.toLocaleDateString()} at ${startTime.toLocaleTimeString(
+                `Starts: ${date.toLocaleDateString()} at ${startTime.toLocaleTimeString(
                   [],
                   { hour: '2-digit', minute: '2-digit' }
                 )}`}
               {endTime &&
-                `From ${startTime.toLocaleDateString()} ${startTime.toLocaleTimeString(
+                `From ${date.toLocaleDateString()} ${startTime.toLocaleTimeString(
                   [],
                   { hour: '2-digit', minute: '2-digit' }
                 )} →  ${endTime.toLocaleTimeString([], {
@@ -349,62 +518,6 @@ const CreateEvent = () => {
           </div>
         )}
 
-        {/* <div className='flex flex-col'>
-          <div className="flex items-center p-2 w-full space-x-4 border-b">
-            <label htmlFor="price">Price:</label>
-            <input type='text' id='value' className='p-2 border rounded-lg' />
-            <select
-              name="currency"
-              className="p-2 border bg-gray-700 rounded-lg"
-              value={currency}
-              onChange={(e) => setCurrency(e.target.value)}
-            >
-              {currencies.map((cur, idx) => (
-                <option key={idx} value={cur}>
-                  {cur}
-                </option>
-              ))}
-            </select>
-            <input
-              id="price"
-              type="number"
-              placeholder="0.00"
-              className="p-2 border rounded-lg w-40"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              min="0"
-            />
-            <FaPlus onClick={handleAddInput
-            } className='text-2xl text-gray-500' />
-
-          </div>
-          {addInput && (
-            <div className="flex items-center p-2 w-full space-x-4 border-b">
-              <label htmlFor="price">Price:</label>
-              <input type='text' id='value' className='p-2 border rounded-lg' />
-              <select
-                name="currency"
-                className="p-2 border bg-gray-700 rounded-lg"
-                value={currency}
-                onChange={(e) => setCurrency(e.target.value)}
-              >
-                {currencies.map((cur, idx) => (
-                  <option key={idx} value={cur}>
-                    {cur}
-                  </option>
-                ))}
-              </select>
-              <input
-                id="price"
-                type="number"
-                placeholder="0.00"
-                className="p-2 border rounded-lg w-40"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                min="0"
-              /></div>
-          )}
-        </div> */}
 
         {/* Price Section */}
         {/* Ticket Type Toggle Switch */}
@@ -526,7 +639,7 @@ const CreateEvent = () => {
           type='submit'
           className='bg-orange-500 text-white py-3 rounded-lg font-bold active:scale-90 hover:bg-orange-600'
         >
-          Save Event
+          {loading ? 'Saving...' : 'Create Event'}
         </button>
       </form>
     </section>
