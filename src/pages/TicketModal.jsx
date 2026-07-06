@@ -8,6 +8,9 @@ import { formatEventStatus } from "../utils/formatEventRange";
 import OptimizedImage from "../components/OptimizedImage";
 import FollowButton from "../components/FolllowButton";
 import GoogleAuth from "../components/GoogleAuth";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 
 const TicketModal = ({ currentUser }) => {
   const { slug } = useParams();
@@ -18,6 +21,17 @@ const TicketModal = ({ currentUser }) => {
   const [guestNumber, setGuestNumber] = useState("");
   const [loading, setLoading] = useState(true);
   const [ticketQty, setTicketQty] = useState({});
+  const [coordinates, setCoordinates] = useState({ lat: 6.5244, lng: 3.3792 }); // Default to Lagos, Nigeria
+
+  // Fix Leaflet default marker icon issue
+  useEffect(() => {
+    delete L.Icon.Default.prototype._getIconUrl;
+    L.Icon.Default.mergeOptions({
+      iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
+      iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
+      shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+    });
+  }, []);
 
   const numberOptions = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
@@ -32,7 +46,13 @@ const TicketModal = ({ currentUser }) => {
         const querySnapshot = await getDocs(eventQuery);
         if (!querySnapshot.empty) {
           const docSnap = querySnapshot.docs[0];
-          setSelectedEvent({ id: docSnap.id, ...docSnap.data() });
+          const eventData = { id: docSnap.id, ...docSnap.data() };
+          setSelectedEvent(eventData);
+          
+          // Geocode the location
+          if (eventData.location) {
+            geocodeLocation(eventData.location);
+          }
         } else {
           console.error("❌ Event not found!");
         }
@@ -45,6 +65,25 @@ const TicketModal = ({ currentUser }) => {
 
     fetchEvent();
   }, [slug]);
+
+  // Geocode location string to coordinates using Google Geocoding API
+  const geocodeLocation = async (location) => {
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}`
+      );
+      const data = await response.json();
+      if (data.length > 0) {
+        setCoordinates({
+          lat: parseFloat(data[0].lat),
+          lng: parseFloat(data[0].lon)
+        });
+      }
+    } catch (error) {
+      console.error("Geocoding error:", error);
+      // Keep default coordinates if geocoding fails
+    }
+  };
 
   const handleCheckoutAction = (ticket) => {
     const qty = ticketQty[ticket.label] || 0;
@@ -139,10 +178,34 @@ const TicketModal = ({ currentUser }) => {
               <p className="text-gray-400 mb-2">{selectedEvent?.category}</p>
             </div>
 
-            {/* Location Section */}
-            <div className="border-b space-y-2 border-gray-300 w-full">
+            {/* Location Section with Map */}
+            <div className="border-b space-y-3 border-gray-300 w-full">
               <h1 className="uppercase font-semibold text-xl">Location</h1>
-              <p className="text-gray-400 mb-2">{selectedEvent?.location}</p>
+              <p className="text-gray-400 mb-3 flex items-center gap-2">
+                📍 {selectedEvent?.location}
+              </p>
+              
+              {/* Leaflet Map Display */}
+              <div className="w-full h-64 rounded-lg overflow-hidden shadow-md border border-gray-400">
+                <MapContainer
+                  center={[coordinates.lat, coordinates.lng]}
+                  zoom={15}
+                  style={{ width: "100%", height: "100%" }}
+                >
+                  <TileLayer
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+                  />
+                  <Marker position={[coordinates.lat, coordinates.lng]}>
+                    <Popup>
+                      <div className="text-center">
+                        <p className="font-semibold">{selectedEvent?.name}</p>
+                        <p className="text-sm">{selectedEvent?.location}</p>
+                      </div>
+                    </Popup>
+                  </Marker>
+                </MapContainer>
+              </div>
             </div>
 
             {/* Organizer Block */}
