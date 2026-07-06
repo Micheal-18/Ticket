@@ -59,10 +59,10 @@ const Navbar = ({ currentUser }) => {
 
           {!currentUser ? (
             <a
-              href="/Register"
+              href="/Login"
               className="bg-orange-500 flex items-center py-3 px-16  cursor-pointer active:scale-90 hover:bg-orange-600"
             >
-              Register
+              Login
             </a>
           ) : (
            <div 
@@ -146,10 +146,10 @@ const Navbar = ({ currentUser }) => {
 
           {!currentUser ? (
             <a
-              href="/Register"
+              href="/Login"
               className="bg-orange-500  px-6 py-2 rounded-md active:scale-90 hover:bg-orange-600"
             >
-              Register
+              Login
             </a>
           ) : (
             <div className="flex flex-col  gap-2">

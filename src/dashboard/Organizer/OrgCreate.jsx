@@ -301,7 +301,7 @@ const CreateEvent = () => {
               <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/40 to-black/80" />
 
               {/* Content */}
-              <div className="absolute inset-0 flex flex-col justify-between p-6">
+              <div className="absolute inset-0 flex flex-col justify-between p-4">
 
                 {/* Category */}
                 <div>
@@ -360,7 +360,7 @@ const CreateEvent = () => {
 
                   <button
                     type="button"
-                    className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded-xl font-bold text-white"
+                    className="w-full bg-orange-500 hover:bg-orange-600  py-2 rounded-xl font-bold text-white"
                   >
                     🎟 Get Ticket
                   </button>
@@ -382,12 +382,12 @@ const CreateEvent = () => {
 
         <div className='flex items-center p-2 w-full space-x-2 border-b '>
           <label>Location:</label>
-          <input required onChange={(e) => setLocation(e.target.value)} type='text' value={location} placeholder='Address' className='w-full p-6 flex justify-center' />
+          <input required onChange={(e) => setLocation(e.target.value)} type='text' value={location} placeholder='Address (Please full detail location eg: airtick hall, city, state)' className='w-full p-4 flex justify-center' />
         </div>
 
         <div className='flex items-center p-2 w-full space-x-2 border-b '>
           <label>Organized by:</label>
-          <input required onChange={(e) => setOrganizer(e.target.value)} type='text' value={organizer} placeholder='Organizer' className='w-full p-6 flex justify-center' />
+          <input required onChange={(e) => setOrganizer(e.target.value)} type='text' value={organizer} placeholder='Organizer' className='w-full p-4 flex justify-center' />
         </div>
 
         {/* Calendar */}
