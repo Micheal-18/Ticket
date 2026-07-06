@@ -222,7 +222,16 @@ const TicketModal = ({ currentUser }) => {
                           !currentUser ? (
                             <div className="flex flex-col items-center gap-2 p-2 rounded-lg">
                               <p className="text-xs text-gray-400 text-center">Authentication required to secure pass allocation tiers.</p>
-                              <GoogleAuth className="w-full" />
+                              <GoogleAuth 
+                                className="w-full" 
+                                onAuthSuccess={(userData) => {
+                                  // Immediately update the ticket state without waiting for parent prop refresh
+                                  setSelectedTicket((prev) => ({
+                                    ...prev,
+                                    requiresAuth: false,
+                                  }));
+                                }}
+                              />
                             </div>
                           ) : isThisTicketSelected && !selectedTicket.requiresAuth ? (
                             /* Embed direct action handlers securely into mapped array positions */

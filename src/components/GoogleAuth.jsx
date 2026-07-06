@@ -68,7 +68,7 @@ const GoogleAuth = ({ onAuthSuccess, className }) => {
     <button 
       onClick={signInWithGoogle} 
       type="button"
-      className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg shadow hover:shadow-lg transition-transform duration-200 ${className}`}
+      className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg shadow hover:shadow-xl transition-transform duration-200 ${className}`}
     >
       Continue with Google
     </button>

@@ -39,6 +39,11 @@ const continueAuth = async (e) => {
   try {
     const user = auth.currentUser;
     if (!user) {
+      // If user verified via email link but not logged in, redirect to login
+      if (verified) {
+        navigate("/login", { replace: true });
+        return;
+      }
       setStatus({ type: "error", message: "Session expired. Please log in again." });
       return;
     }

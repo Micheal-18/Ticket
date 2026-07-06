@@ -43,6 +43,7 @@ import UserProfile from "./dashboard/Users/UserProfile";
 import TransactionHistory from "./dashboard/Users/Billing";
 import CreateEvent from "./dashboard/Admin/CreateEvent";
 import TicketPage from "./pages/TicketPage";
+import PaymentSuccess from "./pages/PaymentSucess";
 
 
 const App = () => {
@@ -205,6 +206,8 @@ useEffect(() => {
       <Route path="/event/:slug" element={
           <TicketModal currentUser={currentUser} />
       } />
+
+      <Route path="/payment-success" element={<PaymentSuccess />} />
 
       <Route
           path="/ticket/:ticketId"
