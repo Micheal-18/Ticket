@@ -119,57 +119,59 @@ const UserMain = () => {
 
   // Partition events dynamically using normalized cutoff filters
   const sortedEvents = useMemo(() => {
-    const now = new Date();
-    const todayMidnight = new Date();
-    todayMidnight.setHours(0, 0, 0, 0);
+  const now = new Date();
 
-    return {
-      highlighted: events.filter(e => e.highlighted === true),
-      
-      ongoing: events.filter(e => {
-        const baseDate = parseToNativeDate(e.date);
-        if (!baseDate) return false;
+  const getDateTime = (dateField, timeField) => {
+    const date = parseToNativeDate(dateField);
 
-        let startHours = 0, startMinutes = 0;
-        if (typeof e.startTime === "string" && e.startTime.includes(":")) {
-          const parts = e.startTime.split(":");
-          startHours = parseInt(parts[0], 10) || 0;
-          startMinutes = parseInt(parts[1], 10) || 0;
-        }
+    if (!date) return null;
 
-        const start = new Date(baseDate);
-        start.setHours(startHours, startMinutes, 0, 0);
+    // ISO datetime
+    if (
+      typeof timeField === "string" &&
+      timeField.includes("T")
+    ) {
+      const iso = new Date(timeField);
+      return isNaN(iso) ? null : iso;
+    }
 
-        let end = new Date(start.getTime() + 3 * 60 * 60 * 1000);
-        if (typeof e.endTime === "string" && e.endTime.includes(":")) {
-          const parts = e.endTime.split(":");
-          const endHours = parseInt(parts[0], 10) || 0;
-          const endMinutes = parseInt(parts[1], 10) || 0;
-          end = new Date(baseDate);
-          end.setHours(endHours, endMinutes, 0, 0);
-        }
+    // HH:mm
+    if (
+      typeof timeField === "string" &&
+      /^\d{1,2}:\d{2}$/.test(timeField)
+    ) {
+      const [h, m] = timeField.split(":").map(Number);
+      const result = new Date(date);
+      result.setHours(h, m, 0, 0);
+      return result;
+    }
 
-        return now >= start && now <= end;
-      }),
-      
-      upcoming: events.filter(e => {
-        const eventDate = parseToNativeDate(e.date);
-        if (!eventDate) return false;
+    return date;
+  };
 
-        let startHours = 0, startMinutes = 0;
-        if (typeof e.startTime === "string" && e.startTime.includes(":")) {
-          const parts = e.startTime.split(":");
-          startHours = parseInt(parts[0], 10) || 0;
-          startMinutes = parseInt(parts[1], 10) || 0;
-        }
+  return {
+    highlighted: events.filter(e => e.highlighted),
 
-        const preciseStart = new Date(eventDate);
-        preciseStart.setHours(startHours, startMinutes, 0, 0);
+    ongoing: events.filter(e => {
+      const start = getDateTime(e.date, e.startTime);
+      const end = getDateTime(e.date, e.endTime);
 
-        return preciseStart > now || eventDate.getTime() >= todayMidnight.getTime();
-      })
-    };
-  }, [events]);
+      return start && end && now >= start && now <= end;
+    }),
+
+    upcoming: events.filter(e => {
+      const start = getDateTime(e.date, e.startTime);
+
+      return start && start > now;
+    }),
+
+    past: events.filter(e => {
+      const end = getDateTime(e.date, e.endTime);
+
+      return end && end < now;
+    }),
+  };
+}, [events]);
 
   if (loading) {
     return (
