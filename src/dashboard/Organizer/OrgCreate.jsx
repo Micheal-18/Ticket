@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import { RiArrowLeftFill } from 'react-icons/ri'
 import { FaCalendarCheck, FaPlus } from 'react-icons/fa6'
 import { FiX } from 'react-icons/fi'
@@ -13,31 +13,6 @@ import { notifyFollowersOfNewEvent } from '../../utils/notifyFollowersOfNewEvent
 import axios from 'axios'
 import { toPng } from 'html-to-image'
 
-const bankCodes = {
-  "ACCESS BANK": "044",
-  "GTBANK": "058",
-  "UBA": "033",
-  "ZENITH BANK": "057",
-  "FIRST BANK": "011",
-  "ECOBANK": "050",
-  "FCMB": "214",
-  "STERLING BANK": "232",
-  "PROVIDUS BANK": "076",
-  "POLARIS BANK": "076",
-  "JAIZ BANK": "301",
-  "WEMA BANK": "035",
-  "CITIBANK": "023",
-  "HERITAGE BANK": "030",
-  "KEYSTONE BANK": "082",
-  "SKYE BANK": "076",
-  "STANDARD CHARTERED BANK": "068",
-  "UNITY BANK": "215",
-  "VFD MICROFINANCE BANK": "562",
-  "ALAT BY WEMABANK": "035",
-  "OPAY": "999992",
-  "KUDA BANK": "50211",
-  "MONIEPOINT": "000"
-};
 
 const CreateEvent = () => {
   const navigate = useNavigate()
@@ -58,7 +33,6 @@ const CreateEvent = () => {
   const [flyerImage, setFlyerImage] = useState("");
   const [loadingFlyer, setLoadingFlyer] = useState(false);
   const [loadingDescription, setLoadingDescription] = useState(false);
-  const flyerRef = useRef();
 
   
   // Ticket Mode & Pricing States
@@ -68,8 +42,11 @@ const CreateEvent = () => {
 
   // Bank info
   const [accountNumber, setAccountNumber] = useState("")
-  const [bankName, setBankName] = useState("")
-  const banks = Object.keys(bankCodes)
+  const [bankName, setBankName] = useState("");
+  const [accountName, setAccountName] = useState("");
+  const [resolving, setResolving] = useState(false);
+  const [banks, setBanks] = useState([]);
+  const [bankCode, setBankCode] = useState("");
 
   const Category = [
     "Art", "Business", "Education", "Entertainment", "Food", "Health", "Music",
@@ -83,6 +60,48 @@ const CreateEvent = () => {
   const handleRemoveInput = (id) => setPrice(price.filter((p) => p.id !== id))
   const handleOpenDate = () => setOpenDate(!openDate)
   const handlePhotoUpload = (e) => setPhoto(e.target.files[0])
+
+
+  useEffect(() => {
+  const fetchBanks = async () => {
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/banks`
+      );
+
+      setBanks(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  fetchBanks();
+}, []);
+
+const resolveAccount = async (accountNo, code) => {
+  if (accountNo.length !== 10 || !code) return;
+
+  try {
+    setResolving(true);
+
+    const res = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/api/resolve-account`,
+      {
+        accountNumber: accountNo,
+        bankCode: code,
+      }
+    );
+    setAccountName(res.data.accountName);
+  } catch (err) {
+    setAccountName("");
+    alert(
+      err.response?.data?.error ||
+      "Invalid account."
+    );
+  } finally {
+    setResolving(false);
+  }
+};
 
   const generateDescription = async () => {
     try {
@@ -123,18 +142,19 @@ const CreateEvent = () => {
     }
   };
   
-  const downloadFlyer = async () => {
-  
-      const dataUrl = await toPng(flyerRef.current);
-  
+const downloadFlyer = async () => {
+    if (!flyerRef.current) return;
+    try {
+      // Pass cacheBust and allowCORS configurations to handle cross-origin assets securely
+      const dataUrl = await toPng(flyerRef.current, { cacheBust: true, allowCORS: true });
       const link = document.createElement("a");
-  
-      link.download = `${name}.png`;
-  
+      link.download = `${name.toLowerCase().replace(/\s+/g, "-")}-flyer.png`;
       link.href = dataUrl;
-  
       link.click();
-  
+    } catch (err) {
+      console.error("Flyer export failed:", err);
+      alert("Failed to render canvas image. Try manually taking a screenshot of the card container.");
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -142,9 +162,12 @@ const CreateEvent = () => {
     if (!currentUser) return alert("You must be logged in to create an event.")
 
     // Dynamic bank requirement check depending on ticket type
-    if (ticketType === "paid" && (!accountNumber || !bankName)) {
-      return alert("Please fill in your banking payout details for your paid tickets.")
-    }
+      if (
+          ticketType === "paid" &&
+          (!accountNumber || !bankCode || !accountName)
+      ) {
+          return alert("Please verify your bank account.");
+      }
 
     if (!name || !category || !description || !location || !organizer) {
       return alert("Please fill all required fields.")
@@ -167,8 +190,8 @@ const CreateEvent = () => {
 
       // Fallback check if end time inadvertently rolled behind start time configuration
     if (finalEnd <= finalStart) {
-  finalEnd.setDate(finalEnd.getDate() + 1);
-}
+      finalEnd.setDate(finalEnd.getDate() + 1);
+    }
 
       // Sanitize the pricing array format cleanly for DB storage
       const formattedPriceTiers = price.map(p => ({
@@ -178,7 +201,6 @@ const CreateEvent = () => {
         currency: ticketType === "free" ? "" : p.currency
       }))
 
-      const bankCode = ticketType === "paid" ? bankCodes[bankName] : ""
 
       // Save event as PENDING
       await setDoc(eventRef, {
@@ -200,9 +222,10 @@ const CreateEvent = () => {
         status: "pending", // Pending admin approval
         ticketSold: 0,
         accountNumber: ticketType === "paid" ? accountNumber : "",
+        accountName: ticketType === "paid" ? accountName : "",
         adminFee: ticketType === "paid" ? 8 : 0,
-        bankName: ticketType === "paid" ? bankName : "",
-        bankCode,
+        bankName: ticketType === "paid" ? bankName : "" ,
+        bankCode: ticketType === "paid" ? bankCode : "",
         createdAt: new Date().toISOString(),
       })
 
@@ -212,7 +235,7 @@ const CreateEvent = () => {
         message: `Event "${name}" needs admin review and approval.`,
         senderId: currentUser.uid,
         senderName: organizer,
-        link: "/event/" + slug,
+        link: `/event/${slug}`,
         status: "pending",
         read: false,
         createdAt: new Date().toISOString()
@@ -287,7 +310,7 @@ const CreateEvent = () => {
         {flyerImage && (
           <div className="mt-4 flex justify-center flex-col items-center">
             <div
-              ref={flyerRef}
+              ref={flyerRe}
               className="relative w-[340px] aspect-[3/4] overflow-hidden rounded-3xl shadow-2xl border border-white/10"
             >
               {/* Background */}
@@ -493,16 +516,66 @@ const CreateEvent = () => {
         {ticketType === "paid" && (
           <div className="flex flex-col space-y-4 pt-2">
             <h2 className="font-semibold">Bank Info (for payout)</h2>
-            <input required={ticketType === "paid"} placeholder="Account Number" value={accountNumber} onChange={(e) => setAccountNumber(e.target.value)} className="p-2 border rounded-lg" maxLength={10}/>
-            <select required={ticketType === "paid"} value={bankName} onChange={(e) => setBankName(e.target.value)} className="p-2 border rounded-lg ">
-              <option value="">Select Bank</option>
-              {banks.map((b, i) => <option key={i} value={b}>{b}</option>)}
-            </select>
+              <input
+                required={ticketType === "paid"}
+                placeholder="Account Number"
+                value={accountNumber}
+                maxLength={10}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setAccountNumber(value);
+
+                  if (value.length === 10 && bankCode) {
+                    resolveAccount(value, bankCode);
+                  }
+                }} className="p-3 border rounded-lg  focus:outline-none"
+              />
+            
+                <select
+                  value={bankCode}
+                  onChange={(e) => {
+                    const code = e.target.value;
+                    setBankCode(code);
+                    const selected = banks.find(
+                      bank => bank.code === code
+                    );
+                    setBankName(selected?.name || "");
+                    if (accountNumber.length === 10) {
+                      resolveAccount(accountNumber, code);
+                    }
+                  }}
+                  className="p-3 border rounded-lg focus:outline-none "
+                >
+                  <option value="">Select Bank</option>
+
+                  {banks.map(bank => (
+                      <option
+                          key={bank.code}
+                          value={bank.code}
+                      >
+                          {bank.name}
+                      </option>
+                  ))}
+              </select>
+
+              {resolving ? (
+              <p className="text-xs text-blue-400 normal-case font-normal italic">Verifying bank account payload calculations...</p>
+            ) : accountName ? (
+              <p className="text-xs text-green-500 normal-case font-bold">✅ {accountName}</p>
+            ) : null}
           </div>
         )}
 
-        <button type='submit' className='bg-orange-500 text-white py-3 cursor-pointer rounded-lg font-bold active:scale-90 hover:bg-orange-600 transition-all'>
-         {loading ? "Submitting..." : "Submit Event for Approval"}
+        <button
+            type="submit"
+            disabled={loading || resolving}
+            className="bg-orange-500 text-white py-3 rounded-lg disabled:opacity-50"
+        >
+            {loading
+                ? "Submitting..."
+                : resolving
+                ? "Verifying Account..."
+                : "Submit Event for Approval"}
         </button>
       </form>
     </section>
