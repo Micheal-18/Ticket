@@ -18,6 +18,10 @@ const TicketPurchaseCard = ({
   }, [ticket.price, quantity])
 
   const remaining = ticket.quantity - (ticket.sold || 0)
+  console.log(ticket.quantity);
+  console.log(ticket.sold);
+  
+  
 
   const soldOut = remaining <= 0
 

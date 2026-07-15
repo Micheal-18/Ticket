@@ -19,10 +19,11 @@ const EventStats = ({ event }) => {
         )
       : 0;
 
-  const totalAvailable = tickets.reduce(
-    (sum, ticket) => sum + Number(ticket.quantity || 0),
-    0
-  );
+const totalAvailable = tickets.reduce(
+  (sum, ticket) =>
+    sum + (Number(ticket.quantity || 0) - Number(ticket.sold || 0)),
+  0
+);
 
   const totalGuests = event.guests?.length || 0;
 

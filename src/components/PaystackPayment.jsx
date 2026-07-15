@@ -310,7 +310,7 @@ if (success && ticketData) {
     <button
       disabled={loading}
       onClick={payWithPaystack}
-      className="bg-(--primary) w-full p-2 rounded-lg text-white font-medium tracking-wide active:scale-90 hover:bg-orange-600 disabled:opacity-60 transition"
+      className="bg-(--primary) w-full p-2 rounded-sm text-white font-medium tracking-wide active:scale-90 hover:bg-orange-600 disabled:opacity-60 transition"
     >
       {loading
         ? "Processing..."
