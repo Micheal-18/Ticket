@@ -67,7 +67,7 @@ const UserLayout = ({ currentUser }) => {
                   toast.dismiss(t.id);
                   if (n.link) navigate(n.link);
                 }}
-                className="cursor-pointer bg-white dark:bg-zinc-900 shadow-lg rounded-xl p-4 w-80 border-l-4 border-orange-500"
+                className="cursor-pointer bg-white dark:bg-zinc-900 shadow-lg rounded-xl p-4 w-80 border-l-4 border-(--primary)"
               >
                 <div className="flex items-center gap-2">
                   <span>{n.type === 'ticket_purchase' ? "🎫" : "🔔"}</span>
@@ -92,9 +92,9 @@ const UserLayout = ({ currentUser }) => {
       to={to}
       onClick={!isMobileFooter ? slideMovement : undefined}
       className={({ isActive }) =>
-        `flex flex-col items-center gap-1.5 transition text-center rounded-lg
+        `flex flex-col items-center gap-1.5 transition text-center rounded-xs
         ${isMobileFooter ? 'py-1 px-3' : 'lg:flex-row lg:text-left px-5 py-4 w-full'}
-        ${isActive ? 'text-orange-500 bg-orange-500/10 font-medium' : 'text-gray-400 hover:text-orange-400 hover:bg-orange-500/5'}`
+        ${isActive ? 'text-(--primary) bg-(--primary)/10 font-medium' : 'text-gray-400 hover:text-orange-400 hover:bg-(--primary)/5'}`
       }
     >
       {icon}
@@ -117,8 +117,8 @@ const UserLayout = ({ currentUser }) => {
       >
         <div className="w-full">
           <div className="flex items-center justify-between mb-8">
-            <span className="font-bold tracking-wider uppercase text-orange-500">{currentUser?.name || "User"}</span>
-            <FiX size={20} onClick={slideMovement} className='lg:hidden cursor-pointer hover:text-orange-500' />
+            <span className="font-bold tracking-wider uppercase text-(--primary)">{currentUser?.name || "User"}</span>
+            <FiX size={20} onClick={slideMovement} className='lg:hidden cursor-pointer hover:text-(--primary)' />
           </div>
           
           <nav className='w-full flex flex-col gap-2'>
@@ -148,10 +148,10 @@ const UserLayout = ({ currentUser }) => {
             <img
               src={currentUser?.photoURL || logo }
               alt="profile"
-              className="w-10 h-10 rounded-full object-cover ring-2 ring-transparent group-hover:ring-orange-500 transition-all duration-300"
+              className="w-10 h-10 rounded-full object-cover ring-2 ring-transparent group-hover:ring-(--primary) transition-all duration-300"
             />
             <div className="leading-tight">
-              <h2 className='font-semibold text-sm lg:text-base group-hover:text-orange-500 transition-colors capitalize'>
+              <h2 className='font-semibold text-sm lg:text-base group-hover:text-(--primary) transition-colors capitalize'>
                 {currentUser?.name || currentUser?.fullName || "User Account"}
               </h2>
               <p className='text-xs text-gray-400 max-w-[180px] lg:max-w-none truncate'>{currentUser?.email}</p>
@@ -160,14 +160,14 @@ const UserLayout = ({ currentUser }) => {
           
           <div className='flex items-center gap-4'>
             <div className="lg:hidden block">
-              <FiMenu size={24} onClick={slideMovement} className="cursor-pointer text-gray-400 hover:text-orange-500 transition" />
+              <FiMenu size={24} onClick={slideMovement} className="cursor-pointer text-gray-400 hover:text-(--primary) transition" />
             </div>
 
             <Darkmode />
 
             {/* BELL DROPBOX */}
             <div className='relative'>
-              <button onClick={() => setShowNotif(!showNotif)} className="relative p-1 text-gray-400 hover:text-orange-500 transition">
+              <button onClick={() => setShowNotif(!showNotif)} className="relative p-1 text-gray-400 hover:text-(--primary) transition">
                 <FaBell size={18} />
                 {unreadCount > 0 && (
                   <span className='absolute -top-1 -right-1 bg-red-600 text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center text-white'>

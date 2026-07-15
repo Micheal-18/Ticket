@@ -83,7 +83,7 @@ const DashboardLayout = ({ currentUser }) => {
                   toast.dismiss(t.id);
                   if (n.link) navigate(n.link);
                 }}
-                className="cursor-pointer bg-white dark:bg-zinc-950 shadow-lg rounded-xl p-4 w-80 border-l-4 border-orange-500 text-black dark:text-white transition-all"
+                className="cursor-pointer bg-white dark:bg-zinc-950 shadow-lg rounded-xl p-4 w-80 border-l-4 border-(--primary) text-black dark:text-white transition-all"
               >
                 <div className="flex items-center gap-2">
                   <span>{n.type === 'event_submission' ? "📢" : n.type === 'ticket_purchase' ? "🎫" : "🔔"}</span>
@@ -160,9 +160,9 @@ const DashboardLayout = ({ currentUser }) => {
       to={to}
       onClick={!isMobileFooter ? slideMovement : undefined}
       className={({ isActive }) =>
-        `flex flex-col items-center gap-1.5 transition text-center rounded-lg
+        `flex flex-col items-center gap-1.5 transition text-center 
         ${isMobileFooter ? 'py-1 px-3' : 'lg:flex-row lg:text-left px-3 py-2 w-full'}
-        ${isActive ? 'text-orange-500 bg-orange-500/10 font-medium' : 'text-gray-400 hover:text-orange-400 hover:bg-orange-500/5'}`
+        ${isActive ? 'text-(--primary) bg-(--primary)/10 font-medium' : 'text-gray-400 hover:text-(--primary-hover) hover:bg-(--primary)/5'}`
       }
     >
       {icon}
@@ -185,8 +185,8 @@ const DashboardLayout = ({ currentUser }) => {
       >
         <div className="w-full">
           <div className="flex items-center justify-between mb-8">
-            <span className="font-bold tracking-wider uppercase text-orange-500">{currentUser?.fullName}</span>
-            <FiX size={20} onClick={slideMovement} className='lg:hidden cursor-pointer hover:text-orange-500' />
+            <span className="font-bold tracking-wider uppercase text-(--primary)">{currentUser?.fullName}</span>
+            <FiX size={20} onClick={slideMovement} className='lg:hidden cursor-pointer hover:text-(--primary)' />
           </div>
           
           <nav className='w-full flex flex-col gap-2'>
@@ -217,23 +217,23 @@ const DashboardLayout = ({ currentUser }) => {
             <img
               src={currentUser?.photoURL || logo}
               alt="profile"
-              className="w-10 h-10 rounded-full object-cover ring-2 ring-transparent group-hover:ring-orange-500 transition-all duration-300"
+              className="w-10 h-10 rounded-full object-cover ring-2 ring-transparent group-hover:ring-(--primary) transition-all duration-300"
             />
             <div className="leading-tight">
-              <h2 className='font-semibold text-sm lg:text-base group-hover:text-orange-500 transition-colors'>{currentUser?.fullName || "User Account"}</h2>
+              <h2 className='font-semibold text-sm lg:text-base group-hover:text-(--primary) transition-colors'>{currentUser?.fullName || "User Account"}</h2>
               <p className='text-xs text-gray-400 max-w-[180px] lg:max-w-none truncate'>{currentUser?.email}</p>
             </div>
           </div>
           
           <div className='flex items-center gap-4'>
             <div className="lg:hidden block">
-              <FiMenu size={24} onClick={slideMovement} className="cursor-pointer text-gray-400 hover:text-orange-500 transition" />
+              <FiMenu size={24} onClick={slideMovement} className="cursor-pointer text-gray-400 hover:text-(--primary) transition" />
             </div>
 
             <Darkmode />
 
             <div className='relative'>
-              <button onClick={() => setShowNotif(!showNotif)} className="relative p-1 text-gray-400 hover:text-orange-500 transition">
+              <button onClick={() => setShowNotif(!showNotif)} className="relative p-1 text-gray-400 hover:text-(--primary) transition">
                 <FaBell size={18} />
                 {unreadCount > 0 && (
                   <span className='absolute -top-1 -right-1 bg-red-600 text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center text-white'>
@@ -246,7 +246,7 @@ const DashboardLayout = ({ currentUser }) => {
                 <div className='absolute right-0 mt-3 w-80 bg-zinc-900 border border-gray-800 shadow-2xl rounded-2xl p-4 z-50 animate-in fade-in slide-in-from-top-3 duration-200'>
                   <div className="flex items-center justify-between mb-3 border-b border-gray-800 pb-2">
                     <h4 className='font-bold text-sm text-white'>Notifications</h4>
-                    <span className="text-[10px] text-orange-400 bg-orange-400/10 px-2 py-0.5 rounded-full">{unreadCount} New</span>
+                    <span className="text-[10px] text-(--primary-hover) bg-(--primary-hover)/10 px-2 py-0.5 rounded-full">{unreadCount} New</span>
                   </div>
 
                   <NotificationPanel

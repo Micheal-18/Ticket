@@ -207,21 +207,21 @@ const UserProfile = ({ currentUser }) => {
           <button 
             type="button"
             onClick={() => { setActiveTab('details'); setIsEditing(false); }}
-            className={`flex items-center gap-1.5 pb-3 px-2 border-b-2 transition-all ${activeTab === 'details' ? 'border-orange-500 text-orange-500' : 'border-transparent text-gray-400'}`}
+            className={`flex items-center gap-1.5 pb-3 px-2 border-b-2 transition-all ${activeTab === 'details' ? 'border-(--primary) text-(--primary)' : 'border-transparent text-gray-400'}`}
           >
             <FiUser size={12} /> Details
           </button>
           <button 
             type="button"
             onClick={() => setActiveTab('email')}
-            className={`flex items-center gap-1.5 pb-3 px-2 border-b-2 transition-all ${activeTab === 'email' ? 'border-orange-500 text-orange-500' : 'border-transparent text-gray-400'}`}
+            className={`flex items-center gap-1.5 pb-3 px-2 border-b-2 transition-all ${activeTab === 'email' ? 'border-(--primary) text-(--primary)' : 'border-transparent text-gray-400'}`}
           >
             <FiMail size={12} /> Email 
           </button>
           <button 
             type="button"
             onClick={() => setActiveTab('password')}
-            className={`flex items-center gap-1.5 pb-3 px-2 border-b-2 transition-all ${activeTab === 'password' ? 'border-orange-500 text-orange-500' : 'border-transparent text-gray-400'}`}
+            className={`flex items-center gap-1.5 pb-3 px-2 border-b-2 transition-all ${activeTab === 'password' ? 'border-(--primary) text-(--primary)' : 'border-transparent text-gray-400'}`}
           >
             <FiLock size={12} /> Security
           </button>
@@ -281,7 +281,7 @@ const UserProfile = ({ currentUser }) => {
                       type="button"
                       onClick={handleSaveProfileDetails}
                       disabled={loading}
-                      className="flex-1 bg-orange-500 text-white py-2.5 rounded-lg hover:bg-orange-600 font-bold uppercase text-xs tracking-wider transition-all disabled:opacity-50"
+                      className="flex-1 bg-(--primary) text-white py-2.5 rounded-lg hover:bg-orange-600 font-bold uppercase text-xs tracking-wider transition-all disabled:opacity-50"
                     >
                       {loading ? "Saving Changes..." : "Save Changes"}
                     </button>
@@ -316,7 +316,7 @@ const UserProfile = ({ currentUser }) => {
                   <button
                     type="button"
                     onClick={() => setIsEditing(true)}
-                    className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2.5 rounded-lg font-bold uppercase text-xs tracking-widest transition-all shadow-md shadow-orange-500/10"
+                    className="w-full bg-(--primary) hover:bg-orange-600 text-white py-2.5 rounded-lg font-bold uppercase text-xs tracking-widest transition-all shadow-md shadow-(--primary)/10"
                   >
                     Edit Profile Details
                   </button>
@@ -328,7 +328,7 @@ const UserProfile = ({ currentUser }) => {
           {/* TAB 2: EMAIL SYNC */}
           {activeTab === 'email' && (
             <form onSubmit={handleUpdateEmail} className="space-y-4">
-              <div className="bg-orange-500/10 border border-orange-500/20 p-3 rounded-lg text-xs text-orange-600 dark:text-orange-400 leading-relaxed">
+              <div className="bg-(--primary)/10 border border-(--primary)/20 p-3 rounded-lg text-xs text-orange-600 dark:text-orange-400 leading-relaxed">
                 Notice: Altering your email updates your access credentials. For security verification, you will be prompted to authenticate your session.
               </div>
 
@@ -374,7 +374,7 @@ const UserProfile = ({ currentUser }) => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2.5 rounded-lg font-bold uppercase text-xs tracking-wider disabled:opacity-50 transition-all"
+                className="w-full bg-(--primary) hover:bg-orange-600 text-white py-2.5 rounded-lg font-bold uppercase text-xs tracking-wider disabled:opacity-50 transition-all"
               >
                 {loading ? "Verifying..." : "Update Registered Email"}
               </button>
@@ -395,7 +395,7 @@ const UserProfile = ({ currentUser }) => {
                     href="https://myaccount.google.com/signin-options" 
                     target="_blank" 
                     rel="noreferrer"
-                    className="mt-2 text-xs font-semibold text-orange-500 hover:underline"
+                    className="mt-2 text-xs font-semibold text-(--primary) hover:underline"
                   >
                     Go to Google Account Manager &rarr;
                   </a>
@@ -470,7 +470,7 @@ const UserProfile = ({ currentUser }) => {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2.5 rounded-lg font-bold uppercase text-xs tracking-wider disabled:opacity-50 transition-all"
+                    className="w-full bg-(--primary) hover:bg-orange-600 text-white py-2.5 rounded-lg font-bold uppercase text-xs tracking-wider disabled:opacity-50 transition-all"
                   >
                     {loading ? "Saving Changes..." : "Save New Password"}
                   </button>

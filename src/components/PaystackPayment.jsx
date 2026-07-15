@@ -21,8 +21,10 @@ const PaystackPayment = ({
   const buyerEmail = currentUser?.email || guestEmail;
   const buyerName = currentUser?.fullName || currentUser?.name || currentUser?.displayName || guestName;
 
-  const totalAmount = Number(ticket.amount || 0) * Number(ticket.num || 0);
-  const isFreeTicket = totalAmount === 0;
+  const totalAmount =
+  Number(ticket.price || 0) * Number(ticket.num || 0);
+  const isFreeTicket =
+  ticket.type === "free";
 
   const [showAttendees, setShowAttendees] = useState(false);
 
@@ -33,6 +35,15 @@ const purchaserTicket = Array.isArray(ticketData)
 const attendeeTickets = Array.isArray(ticketData)
   ? ticketData.filter(t => !t.isBuyer)
   : [];
+
+  const currencySymbols = {
+  NGN: "₦",
+  USD: "$",
+  GBP: "£",
+};
+
+
+const symbol = currencySymbols[ticket.currency] || "₦";
 
   const payWithPaystack = async () => {
     if (!buyerEmail || !buyerName) {
@@ -84,6 +95,24 @@ const attendeeTickets = Array.isArray(ticketData)
     ];
   }
 
+  if (ticket.num > ticket.maxPerPerson) {
+  return alert(
+    `Maximum ${ticket.maxPerPerson} ticket(s) per purchase.`
+  );
+}
+
+const remaining = ticket.quantity - ticket.sold;
+
+if (remaining <= 0) {
+  return alert("This ticket is sold out.");
+}
+
+if (ticket.num > remaining) {
+  return alert(
+    `Only ${remaining} ticket(s) remaining.`
+  );
+}
+
     try {
       setLoading(true);
 
@@ -93,8 +122,12 @@ const attendeeTickets = Array.isArray(ticketData)
           email: buyerEmail,
           name: buyerName,
           eventId: events.id,
-          ticketLabel: ticket.label,
-          ticketNumber: ticket.num,
+          ticketId: ticket.id,
+          ticketName: ticket.name,
+          ticketCurrency: ticket.currency,
+          ticketType: ticket.type,
+          ticketQuantity: ticket.num,
+          ticketPrice: ticket.price,
           userId: currentUser?.uid || null,
           attendees: attendeesPayload // Send attendee list if multiple
         }
@@ -121,11 +154,20 @@ useEffect(() => {
   if (!reference) return;
 
   // Query: find all tickets with this reference (one per attendee)
-  const q = query(
-    collection(db, "tickets"),
-    where("reference", "==", reference),
+const constraints = [
+  where("reference", "==", reference),
+];
+
+if (currentUser?.uid) {
+  constraints.push(
     where("userId", "==", currentUser.uid)
   );
+}
+
+const q = query(
+  collection(db, "tickets"),
+  ...constraints
+);
 
   const unsub = onSnapshot(q, (snap) => {
     if (!snap.empty) {
@@ -163,7 +205,7 @@ if (success && ticketData) {
         Thank you for registering for <b>{events.name}</b>
       </p>
 
-      <p className="text-xs text-orange-500 mt-1 font-medium">
+      <p className="text-xs text-(--primary) mt-1 font-medium">
         {isMultiple ? (
           <>
             Your ticket has been generated and{" "}
@@ -218,7 +260,7 @@ if (success && ticketData) {
 
           <button
             onClick={() => setShowAttendees(!showAttendees)}
-            className="mt-4 bg-orange-500 hover:bg-orange-600 transition text-white px-5 py-2 rounded-lg font-semibold"
+            className="mt-4 bg-(--primary) hover:bg-orange-600 transition text-white px-5 py-2 rounded-lg font-semibold"
           >
             {showAttendees
               ? "Hide Attendee Tickets"
@@ -268,13 +310,13 @@ if (success && ticketData) {
     <button
       disabled={loading}
       onClick={payWithPaystack}
-      className="bg-orange-500 p-2 rounded-lg text-white font-medium tracking-wide active:scale-90 hover:bg-orange-600 disabled:opacity-60 transition"
+      className="bg-(--primary) w-full p-2 rounded-lg text-white font-medium tracking-wide active:scale-90 hover:bg-orange-600 disabled:opacity-60 transition"
     >
       {loading
         ? "Processing..."
         : isFreeTicket
         ? `Claim Free Ticket (${ticket.num})`
-        : `Pay for ${ticket.label} – ${ticket.currency || "₦"}${Number(totalAmount).toLocaleString()}`}
+        : `Pay for ${ticket.name} – ${symbol}${Number(totalAmount).toLocaleString()}`}
     </button>
   );
 };

@@ -4,8 +4,6 @@ import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
 import { FaCalendar, FaCaretDown, FaCaretUp, FaCircle, FaClock, FaLocationArrow } from "react-icons/fa6";
 import { useAdmin } from "../hooks/useAdmin";
 import walkGif from "../assets/dog.gif";
-import EditModal from "../components/EditModal";
-import DeleteModal from "../components/DeleteModal";
 import { formatEventStatus } from "../utils/formatEventRange";
 import naijaStateLocalGov from "naija-state-local-government";
 import SearchModal from "../components/SearchModal";
@@ -97,15 +95,6 @@ const Event = ({ currentUser, events, setEvents }) => {
     setOpenTicket(true);
   };
 
-  const handleEdit = (event) => {
-    setEditEvent(event);
-    setIsEditing(true);
-  };
-
-  const handleDelete = (event) => {
-    setSelectedEvent(event);
-    setIsDeleting(true);
-  }
 
   const handleCate = () => {
     setIsCategory(!isCategory);
@@ -165,29 +154,6 @@ const Event = ({ currentUser, events, setEvents }) => {
       data-aos="fade-out"
       className="relative min-h-screen w-full flex flex-col lg:mt-5 mt-4 flex-1 custom-scrollbar z-10"
     >
-      {/* DELETE MODAL */}
-      {isDeleting && selectedEvent && (
-        <DeleteModal
-          selectedEvent={selectedEvent}
-          setSelectedEvent={setSelectedEvent}
-          setIsDeleting={setIsDeleting}
-          setEvents={setEvents}
-        />
-      )}
-
-      {/* EDIT MODAL */}
-      {isEditing && editEvent && (
-        <EditModal
-          currentUser={currentUser}
-          editEvent={editEvent}
-          setEditEvent={setEditEvent}
-          setIsEditing={setIsEditing}
-          events={events}
-          setEvents={setEvents}
-        />
-      )}
-
-
       {/* EVENT LIST */}
       <div className="flex flex-col space-y-3 p-4">
         <div className="space-y-6">
@@ -218,7 +184,7 @@ const Event = ({ currentUser, events, setEvents }) => {
                   <div
                     key={index}
                     onClick={() => { setFilters({ ...filters, state: st }); handleState(); }}
-                    className="px-3 py-2 text-sm text-gray-700 hover:bg-orange-500 hover:text-[#eeeeee] cursor-pointer transition-colors duration-200"
+                    className="px-3 py-2 text-sm text-gray-700 hover:bg-(--primary) hover:text-[#eeeeee] cursor-pointer transition-colors duration-200"
                   >
                     {st}
                   </div>
@@ -239,7 +205,7 @@ const Event = ({ currentUser, events, setEvents }) => {
                   >
                     <div className="flex justify-center overflow-hidden rounded-2xl">
                       <OptimizedImage
-                        src={event.photoURL}
+                        src={event.photoURL || event.photo}
                         alt={event.title}
                         loading="lazy"
                         className="w-full object-contain hover:scale-105  duration-500"
@@ -248,7 +214,7 @@ const Event = ({ currentUser, events, setEvents }) => {
                     <div className="absolute p-4 top-1/2 flex-1 flex flex-col">
                       <h3 className="text-3xl adaptive-text text-gray-600 font-bold line-clamp-2 mb-2">{event.name}</h3>
                       <p className="text-gray-600 adaptive-text text-sm line-clamp-2 mb-3">{event.description}</p>
-                      <p className="text-sm adaptive-text text-gray-400 mb-4">{event.location}</p>
+                      <p className="text-sm adaptive-text text-gray-400 mb-4">{event.location || event.venue.name}</p>
                     </div>
                     {/* ⭐ Highlight Tag */}
                     {event.highlighted && (
@@ -286,7 +252,7 @@ const Event = ({ currentUser, events, setEvents }) => {
                             onClick={() => {
                               setFilters({ ...filters, category: cat });
                             }}
-                            className="px-3 py-2 text-sm hover:bg-orange-500 hover:text-white cursor-pointer"
+                            className="px-3 py-2 text-sm hover:bg-(--primary) hover:text-white cursor-pointer"
                           >
                             {cat}
                           </a>
@@ -313,13 +279,13 @@ const Event = ({ currentUser, events, setEvents }) => {
                     <li className='flex flex-col space-y-2 text-sm text-gray-500 hover:text-[#333333] duration-1000 w-full'>
                       <a
                         onClick={() => setFilters({ ...filters, priceOrder: "lowtohigh" })}
-                        className="hover:bg-orange-500 rounded-sm cursor-pointer px-2 py-1"
+                        className="hover:bg-(--primary) rounded-sm cursor-pointer px-2 py-1"
                       >
                         Low to High
                       </a>
                       <a
                         onClick={() => setFilters({ ...filters, priceOrder: "hightolow" })}
-                        className="hover:bg-orange-500 rounded-sm cursor-pointer px-2 py-1"
+                        className="hover:bg-(--primary) rounded-sm cursor-pointer px-2 py-1"
                       >
                         High to Low
                       </a>
@@ -359,7 +325,7 @@ const Event = ({ currentUser, events, setEvents }) => {
                           setFilters({ ...filters, date: dat });
                           setIsDate(false);
                         }}
-                        className="px-3 py-2 text-sm hover:bg-orange-500 hover:text-white rounded cursor-pointer transition"
+                        className="px-3 py-2 text-sm hover:bg-(--primary) hover:text-white rounded cursor-pointer transition"
                       >
                         {dat}
                       </li>
@@ -367,7 +333,7 @@ const Event = ({ currentUser, events, setEvents }) => {
 
                     {/* Custom DatePicker */}
                     <li
-                      className="relative px-3 py-2 text-sm flex items-center gap-2 hover:text-orange-500"
+                      className="relative px-3 py-2 text-sm flex items-center gap-2 hover:text-(--primary)"
                       onClick={(e) => e.stopPropagation()} // prevent closing dropdown
                     >
                       <FaCalendar
@@ -440,7 +406,7 @@ const Event = ({ currentUser, events, setEvents }) => {
                   <p className="md:text-lg text-md w-[180px] lg:w-[300px] font-normal text-gray-500 flex gap-2 items-center">
                     <FaLocationArrow />
                     <span className="truncate ">
-                      {event.location}
+                      {event.location || event.venue.name}
                     </span>
                   </p>
                   <div>
@@ -449,17 +415,17 @@ const Event = ({ currentUser, events, setEvents }) => {
                       ) : Array.isArray(event.price) ? (
                         event.price.map((priceOption, index) => (
                           <p key={index}>
-                            <span className="text-orange-500 text-lg font-semibold">
+                            <span className="text-(--primary) text-lg font-semibold">
                               {priceOption.currency} {" "}
-                              {Number(priceOption.amount)}
+                              {Number(priceOption.price)}
                             </span>
                           </p>
                         ))
                       ) : (
                         <p>
-                          <span className="text-orange-500 text-lg font-semibold">
+                          <span className="text-(--primary) text-lg font-semibold">
                             {event.currency} {" "}
-                            {Number(event.price?.amount) + ((1.5 / 100) * Number(event.price?.amount) + 100)}
+                            {Number(event.price?.price) + ((1.5 / 100) * Number(event.price?.price) + 100)}
                           </span>
                         </p>
                       )}
@@ -468,7 +434,7 @@ const Event = ({ currentUser, events, setEvents }) => {
 
                 <span className="overflow-hidden rounded-xl">
                   <OptimizedImage
-                    src={event.photoURL}
+                    src={event.photoURL || event.photo}
                     alt={event.name}
                     className="object-contain w-[150px] hover:scale-105 duration-500 rounded-2xl"
                   />

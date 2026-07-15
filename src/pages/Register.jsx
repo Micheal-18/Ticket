@@ -42,14 +42,14 @@ const Register = ({ step, setStep }) => {
   const account = [
     {
       id: 'personal',
-      icon: <RiUserLine className='text-5xl text-orange-500' />,
+      icon: <RiUserLine className='text-5xl text-(--primary)' />,
       header: 'User',
       writeup:
         'Creating an account for personal use? This is the account type for you'
     },
     {
       id: 'organization',
-      icon: <RiBriefcaseLine className='text-5xl text-orange-500' />,
+      icon: <RiBriefcaseLine className='text-5xl text-(--primary)' />,
       header: 'Organization',
       writeup:
         'Selling tickets as a registered business? This is the account type for you'
@@ -207,7 +207,7 @@ const Register = ({ step, setStep }) => {
     >
       <div className='flex flex-col flex-1  custom-scrollbar space-y-10 px-10 py-6 '>
         <a className='text-lg font-semibold '>
-          Airticks<span className='text-orange-500'>.events</span>
+          Airticks<span className='text-(--primary)'>.events</span>
         </a>
         {/* Progress Indicator */}
         <div className='flex justify-between mb-6'>
@@ -215,7 +215,7 @@ const Register = ({ step, setStep }) => {
             <div
               key={s}
               className={`flex-1 h-2 mx-1 rounded ${
-                idx <= currentStep ? 'bg-orange-500' : 'bg-gray-300'
+                idx <= currentStep ? 'bg-(--primary)' : 'bg-gray-300'
               }`}
             />
           ))}
@@ -244,7 +244,7 @@ const Register = ({ step, setStep }) => {
                     className={`flex flex-1 flex-col items-center space-y-6 py-6 lg:px-0 px-5 shadow-lg   md:w-[300px] h-[320px] rounded-lg border cursor-pointer transition 
                   ${
                     selected === acc.id
-                      ? 'text-orange-500 border-orange-500 bg-white'
+                      ? 'text-(--primary) border-(--primary) bg-white'
                       : 'border-gray-200 '
                   }`}
                   >
@@ -257,7 +257,7 @@ const Register = ({ step, setStep }) => {
                     {/*Radio indicator */}
                     <div>
                       {selected === acc.id ? (
-                        <RiCheckboxCircleLine className='text-2xl text-orange-500' />
+                        <RiCheckboxCircleLine className='text-2xl text-(--primary)' />
                       ) : (
                         <RiCircleLine className='text-2xl text-gray-400' />
                       )}
@@ -268,15 +268,15 @@ const Register = ({ step, setStep }) => {
               <div className='flex gap-4 mt-6'>
                 <button
                   onClick={() => navigate('/')}
-                  className='bg-orange-500/50  rounded-xl active:scale-90 hover:bg-orange-600 py-4 w-full text-white'
+                  className='bg-(--primary)/50  rounded-xl active:scale-90 hover:bg-(--primary-hover) py-4 w-full text-white'
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleContinue}
-                  className={`rounded-xl active:scale-90 hover:bg-orange-600 py-4 w-full ${
+                  className={`rounded-xl active:scale-90 hover:bg-(--primary-hover) py-4 w-full ${
                     selected
-                      ? 'bg-orange-500 text-white'
+                      ? 'bg-(--primary) text-white'
                       : 'bg-gray-300 text-gray-600 cursor-not-allowed'
                   }`}
                   disabled={!selected}
@@ -290,7 +290,7 @@ const Register = ({ step, setStep }) => {
                   {' '}
                   Already created an account?
                   <button
-                    className='text-orange-500 underline cursor-pointer'
+                    className='text-(--primary) underline cursor-pointer'
                     onClick={() => navigate('/Login')}
                   >
                     {' '}
@@ -362,7 +362,7 @@ const Register = ({ step, setStep }) => {
                 )}
               </div>
               {passwordError && (
-                <div className='h-auto text-white text-lg  border-2 bg-orange-600 rounded-md border-orange-500'>
+                <div className='h-auto text-white text-lg  border-2 bg-(--primary-hover) rounded-md border-(--primary)'>
                   {passwordError}
                 </div>
               )}
@@ -395,7 +395,7 @@ const Register = ({ step, setStep }) => {
               </div>
 
               {confirmPasswordError && (
-                <div className='h-auto text-white text-lg  border-2 bg-orange-600 rounded-md border-orange-500'>
+                <div className='h-auto text-white text-lg  border-2 bg-(--primary-hover) rounded-md border-(--primary)'>
                   {confirmPasswordError}
                 </div>
               )}
@@ -439,13 +439,13 @@ const Register = ({ step, setStep }) => {
               <div className='flex gap-3'>
                 <button
                   onClick={() => setStep('select')}
-                  className='w-full bg-orange-500/40 active:scale-90 hover:bg-orange-600 text-white rounded-xl py-3 '
+                  className='w-full bg-(--primary)/40 active:scale-90 hover:bg-(--primary-hover) text-white rounded-xl py-3 '
                 >
                   Go back 👈🏾
                 </button>
                 <button
                   type='submit'
-                  className='w-full flex items-center justify-center bg-orange-500 text-white rounded-xl py-3 active:scale-90 hover:bg-orange-600'
+                  className='w-full flex items-center justify-center bg-(--primary) text-white rounded-xl py-3 active:scale-90 hover:bg-(--primary-hover)'
                 >
                   {registerLoading ? (
                     <>
@@ -463,7 +463,7 @@ const Register = ({ step, setStep }) => {
                   {' '}
                   Already created an account?
                   <button
-                    className='text-orange-500 underline cursor-pointer'
+                    className='text-(--primary) underline cursor-pointer'
                     onClick={() => navigate('/Login')}
                   >
                     {' '}

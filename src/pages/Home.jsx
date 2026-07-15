@@ -119,7 +119,7 @@ const Home = ({ currentUser }) => {
           className='flex flex-1 flex-col items-center justify-center uppercase space-y-3'
         >
           <h1 className='lg:text-9xl md:text-8xl text-5xl tracking-tighter font-bold'>
-            airticks<span className='text-orange-500'>event</span>
+            airticks<span className='text-(--primary)'>event</span>
           </h1>
           <div className='border-y-2 py-4'>
             <p className='lg:text-6xl md:text-5xl text-2xl font-semibold'>
@@ -127,7 +127,7 @@ const Home = ({ currentUser }) => {
             </p>
           </div>
           <a href='/event'>
-            <button className='bg-orange-500 p-2 rounded-lg hover:bg-orange-600 active:scale-90'>
+            <button className='bg-(--primary) p-3  hover:bg-(--primary-hover) active:scale-90'>
               Discover Events
             </button>
           </a>
@@ -278,7 +278,7 @@ const Home = ({ currentUser }) => {
         </div>
       </section>
 
-      <section className='relative w-full min-h-screen bg-(--step) dark:bg-(--step) p-4 z-40'>
+      <section className='relative w-full min-h-screen bg-(--surface) dark:bg-(--surface) p-4 z-40'>
         <h1 className='uppercase md:text-6xl  text-5xl font-bold p-4'>Steps</h1>
         <div
           data-aos='fade-out'
@@ -286,7 +286,7 @@ const Home = ({ currentUser }) => {
         >
           <div
             data-aos='fade-up'
-            className='flex lg:flex-row flex-col  lg:justify-between items-center w-full  bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) flex-1 gap-10 relative py-10 px-8   rounded-3xl'
+            className='flex lg:flex-row flex-col  lg:justify-between items-center w-full  bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) shadow flex-1 gap-10 relative py-10 px-8   rounded-3xl'
           >
             <div className='space-y-4 flex flex-col justify-center items-center'>
               <h1 className='uppercase text-center  md:text-6xl text-4xl font-bold mt-4'>
@@ -308,7 +308,7 @@ const Home = ({ currentUser }) => {
           </div>
           <div
             data-aos='fade-up'
-            className='flex lg:flex-row flex-col  lg:justify-between items-center w-full  bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) flex-1 gap-10 relative py-10 px-8   rounded-3xl'
+            className='flex lg:flex-row flex-col  lg:justify-between items-center w-full  bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) shadow flex-1 gap-10 relative py-10 px-8   rounded-3xl'
           >
             <div className='space-y-4 flex flex-col justify-center items-center'>
               <h1 className='uppercase text-center  md:text-6xl text-4xl font-bold mt-4'>
@@ -330,7 +330,7 @@ const Home = ({ currentUser }) => {
           </div>
           <div
             data-aos='fade-up'
-            className='flex lg:flex-row flex-col  lg:justify-between items-center w-full  bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) flex-1 gap-10 relative py-10 px-8   rounded-3xl'
+            className='flex lg:flex-row flex-col  lg:justify-between items-center w-full  bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) shadow flex-1 gap-10 relative py-10 px-8   rounded-3xl'
           >
             <div className='space-y-4 flex flex-col justify-center items-center'>
               <h1 className='uppercase text-center   md:text-6xl text-4xl font-bold mt-4'>
@@ -357,7 +357,7 @@ const Home = ({ currentUser }) => {
       <section className='flex flex-col justify-center items-center pt-10 w-full h-[50vh]'>
         <div data-aos='fade-out' className='border-t-2 border-gray-400'>
           <h1 className='lg:text-9xl md:text-8xl mt-15 text-6xl font-bold'>
-            airticks<span className='text-orange-500'>.event</span>
+            airticks<span className='text-(--primary)'>.event</span>
           </h1>
         </div>
         <footer className='mt-10'>

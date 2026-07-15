@@ -180,7 +180,7 @@ const Dashevents = ({ currentUser, events, setEvents }) => {
           <h1 className="text-2xl font-semibold">My Events</h1>
           <Link
             to="/dashboard/create"
-            className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+            className="bg-(--primary) hover:bg-(--primary-hover) text-white px-4 py-2  font-medium transition-colors"
           >
             Create Event
           </Link>
@@ -213,19 +213,19 @@ const Dashevents = ({ currentUser, events, setEvents }) => {
 
                 {/* 🛠️ FIXED DATE PARSING FALLBACK CONTAINER */}
                 <p className="text-sm font-normal text-gray-400 flex gap-2 items-center">
-                  <FaCalendar className="text-orange-500 shrink-0" />{" "}
+                  <FaCalendar className="text-(--primary) shrink-0" />{" "}
                   <span className="truncate">{displayEventDate(event.date)}</span>
                 </p>
                 
                 <p className="text-sm text-gray-400 flex items-center gap-2">
-                  <FaClock className="text-orange-500 shrink-0" />
+                  <FaClock className="text-(--primary) shrink-0" />
                   <span className="truncate">
                     {formatEventStatus(event.startTime, event.endTime)}
                   </span>
                 </p>
                 
                 <p className="text-sm font-normal text-gray-400 flex gap-2 items-center">
-                  <FaLocationArrow className="text-orange-500 shrink-0" />
+                  <FaLocationArrow className="text-(--primary) shrink-0" />
                   <span className="truncate">{event.location}</span>
                 </p>
 
@@ -235,13 +235,13 @@ const Dashevents = ({ currentUser, events, setEvents }) => {
                     <span className="text-green-500 text-sm font-bold bg-green-500/10 px-2 py-0.5 rounded-md">🆓 Free Admission</span>
                   ) : Array.isArray(event.price) ? (
                     event.price.map((priceOption, index) => (
-                      <p key={index} className="text-sm font-semibold text-orange-500">
+                      <p key={index} className="text-sm font-semibold text-(--primary)">
                         {priceOption.label || "Regular"}: {priceOption.currency || "₦"}{" "}
                         {Number(priceOption.amount || 0).toLocaleString()}
                       </p>
                     ))
                   ) : (
-                    <p className="text-sm font-semibold text-orange-500">
+                    <p className="text-sm font-semibold text-(--primary)">
                       {event.currency || "₦"} {Number(event.price?.amount || 0).toLocaleString()}
                     </p>
                   )}
@@ -255,7 +255,7 @@ const Dashevents = ({ currentUser, events, setEvents }) => {
                         e.stopPropagation();
                         handleDelete(event);
                       }}
-                      className="bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all"
+                      className="bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-white px-3 py-1.5  text-xs font-bold transition-all"
                     >
                       Delete
                     </button>
@@ -266,7 +266,7 @@ const Dashevents = ({ currentUser, events, setEvents }) => {
                         e.stopPropagation();
                         handleEdit(event);
                       }}
-                      className="bg-green-500/20 text-green-500 hover:bg-green-500 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all"
+                      className="bg-green-500/20 text-green-500 hover:bg-green-500 hover:text-white px-3 py-1.5  text-xs font-bold transition-all"
                     >
                       Edit
                     </button>
@@ -277,7 +277,7 @@ const Dashevents = ({ currentUser, events, setEvents }) => {
                         e.stopPropagation();
                         toggleHighlight(event.id, event.highlighted);
                       }}
-                      className={`p-2 rounded-lg transition-colors ${
+                      className={`p-2  transition-colors ${
                         event.highlighted ? "text-yellow-400 bg-yellow-400/10" : "text-gray-500 bg-gray-800"
                       }`}
                     >
@@ -292,7 +292,7 @@ const Dashevents = ({ currentUser, events, setEvents }) => {
                           handleApprove(event);
                         }}
                         disabled={approvingEventId === event.id}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm"
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5  text-xs font-bold transition-all shadow-sm"
                       >
                         {approvingEventId === event.id ? "Approving..." : "Approve"}
                       </button>

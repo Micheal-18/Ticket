@@ -56,8 +56,8 @@ const UserEventsAndTickets = () => {
                   ...ticket,
                   eventDate: targetEventDoc.date,
                   eventTime: targetEventDoc.startTime,
-                  location: targetEventDoc.location || "Venue Confirmed",
-                  photoURL: targetEventDoc.photoURL,
+                  location: targetEventDoc.venue.name,
+                  photoURL: targetEventDoc.photoURL || targetEventDoc.photo,
                   slug: targetEventDoc.slug || ""
                 };
               }

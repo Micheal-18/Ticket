@@ -29,13 +29,13 @@ const LoadingScreen = ({ onComplete }) => {
     return (<>
         <Layout />
 
-        <div className='fixed inset-0 z-50  bg-(--bg-color) dark:bg-(--bg-color)  text-orange-500 flex flex-col items-center justify-center'>
+        <div className='fixed inset-0 z-50  bg-(--bg-color) dark:bg-(--bg-color)  text-(--primary) flex flex-col items-center justify-center'>
             <div className='mb-4 text-center text-4xl font-mono font-bold'>
                 {text} <span className='animate-blink ml-1'>|</span>
             </div>
 
             <div className='w-[200px] h-[2px] bg-gray-800 rounded relative over flow-hidden'>
-                <div className='w-[40%] h-full bg-orange-500 shadow-[0_0_15px_#3b82f6] animate-loading-bar'>
+                <div className='w-[40%] h-full bg-(--primary) shadow-[0_0_15px_#3b82f6] animate-loading-bar'>
                 </div>
             </div>
 

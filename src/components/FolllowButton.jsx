@@ -80,11 +80,11 @@ const FollowButton = ({ currentUser, ownerId }) => {
     <button
       disabled={loading}
       onClick={toggleFollow}
-      className={`px-4 py-2 rounded-lg font-semibold transition
+      className={`px-4 py-2 rounded-sm font-semibold transition
         ${
           isFollowing
             ? 'bg-gray-300 text-gray-800 hover:bg-gray-400'
-            : 'bg-orange-500 text-white hover:bg-orange-600'
+            : 'bg-(--primary) text-white hover:bg-(--primary-hover)'
         }`}
     >
       {isFollowing ? 'Following ✓' : 'Follow'}

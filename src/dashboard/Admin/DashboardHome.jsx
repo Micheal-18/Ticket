@@ -150,7 +150,7 @@ const DashboardHome = () => {
                   key={index}
                   className='flex gap-3 border-b border-gray-700 pb-4'
                 >
-                  <div className='text-orange-500 mt-1'>
+                  <div className='text-(--primary) mt-1'>
                     {activity.type === 'event' ? (
                       <FaCalendarPlus />
                     ) : activity.type === 'ticket' ? (
@@ -191,7 +191,7 @@ const DashboardHome = () => {
       {/* ================= UPCOMING EVENTS SECTION ================= */}
       <div className='p-4 rounded-2xl shadow '>
         <h2 className='text-xl font-semibold mb-4 flex items-center gap-2'>
-          <FaCalendarPlus className='text-orange-500' /> Upcoming Events
+          <FaCalendarPlus className='text-(--primary)' /> Upcoming Events
         </h2>
         <div className='space-y-4 max-h-80 overflow-y-auto custom-scrollbar'>
           {events

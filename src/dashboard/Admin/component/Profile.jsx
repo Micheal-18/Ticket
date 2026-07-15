@@ -211,21 +211,21 @@ const Profile = () => {
           <button 
             type="button"
             onClick={() => { setActiveTab('details'); setIsEditing(false); }}
-            className={`flex items-center gap-1.5 pb-3 px-2 border-b-2 transition-all font-bold uppercase text-xs tracking-wider ${activeTab === 'details' ? 'border-orange-500 text-orange-500' : 'border-transparent text-gray-400'}`}
+            className={`flex items-center gap-1.5 pb-3 px-2 border-b-2 transition-all font-bold uppercase text-xs tracking-wider ${activeTab === 'details' ? 'border-(--primary) text-(--primary)' : 'border-transparent text-gray-400'}`}
           >
             <FiUser size={12} /> Details
           </button>
           <button 
             type="button"
             onClick={() => setActiveTab('email')}
-            className={`flex items-center gap-1.5 pb-3 px-2 border-b-2 transition-all font-bold uppercase text-xs tracking-wider ${activeTab === 'email' ? 'border-orange-500 text-orange-500' : 'border-transparent text-gray-400'}`}
+            className={`flex items-center gap-1.5 pb-3 px-2 border-b-2 transition-all font-bold uppercase text-xs tracking-wider ${activeTab === 'email' ? 'border-(--primary) text-(--primary)' : 'border-transparent text-gray-400'}`}
           >
             <FiMail size={12} /> Email 
           </button>
           <button 
             type="button"
             onClick={() => setActiveTab('password')}
-            className={`flex items-center gap-1.5 pb-3 px-2 border-b-2 transition-all font-bold uppercase text-xs tracking-wider ${activeTab === 'password' ? 'border-orange-500 text-orange-500' : 'border-transparent text-gray-400'}`}
+            className={`flex items-center gap-1.5 pb-3 px-2 border-b-2 transition-all font-bold uppercase text-xs tracking-wider ${activeTab === 'password' ? 'border-(--primary) text-(--primary)' : 'border-transparent text-gray-400'}`}
           >
             <FiLock size={12} /> Security
           </button>
@@ -238,7 +238,7 @@ const Profile = () => {
               <img
                 src={profileData.profilePicPreview || logo}
                 alt="User Profile"
-                className="w-28 h-28 md:w-32 md:h-32 rounded-full object-cover shadow-inner border border-gray-100 dark:border-gray-800"
+                className="w-50 h-50 md:w-54 md:h-54  object-cover shadow-inner border border-gray-100 dark:border-gray-800"
               />
               {isEditing && (
                 <label className="absolute inset-0 bg-black/60 rounded-full flex flex-col items-center justify-center text-[10px] text-white font-bold uppercase tracking-wider opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
@@ -264,7 +264,7 @@ const Profile = () => {
                       name="fullName"
                       value={profileData.fullName}
                       onChange={handleInputChange}
-                      className="w-full mt-1 p-3 bg-(--bg-color) border dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-orange-400 focus:outline-none text-sm"
+                      className="w-full mt-1 p-3 bg-(--bg-color) border dark:border-gray-700  focus:ring-2 focus:ring-orange-400 focus:outline-none text-sm"
                     />
                   </div>
 
@@ -276,7 +276,7 @@ const Profile = () => {
                       placeholder="+234..."
                       value={profileData.phoneNumber}
                       onChange={handleInputChange}
-                      className="w-full mt-1 p-3 bg-(--bg-color) border dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-orange-400 focus:outline-none text-sm"
+                      className="w-full mt-1 p-3 bg-(--bg-color) border dark:border-gray-700  focus:ring-2 focus:ring-orange-400 focus:outline-none text-sm"
                     />
                   </div>
 
@@ -287,7 +287,7 @@ const Profile = () => {
                       value={profileData.bio}
                       onChange={handleInputChange}
                       rows="4"
-                      className="w-full mt-1 p-3 bg-(--bg-color) border dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-orange-400 focus:outline-none text-sm custom-scrollbar"
+                      className="w-full mt-1 p-3 bg-(--bg-color) border dark:border-gray-700  focus:ring-2 focus:ring-orange-400 focus:outline-none text-sm custom-scrollbar"
                     />
                   </div>
 
@@ -296,14 +296,14 @@ const Profile = () => {
                       type="button"
                       onClick={handleSaveProfileDetails}
                       disabled={loading}
-                      className="flex-1 bg-orange-500 text-white py-2.5 rounded-lg hover:bg-orange-600 font-bold uppercase text-xs tracking-wider transition-all disabled:opacity-50"
+                      className="flex-1 bg-(--primary) text-white py-2.5  hover:bg-(--primary-hover) font-bold uppercase text-xs tracking-wider transition-all disabled:opacity-50"
                     >
                       {loading ? "Saving Changes..." : "Save Changes"}
                     </button>
                     <button
                       type="button"
                       onClick={() => setIsEditing(false)}
-                      className="flex-1 bg-gray-100 dark:bg-gray-800 py-2.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 font-bold uppercase text-xs tracking-wider transition-all"
+                      className="flex-1 bg-gray-100 dark:bg-gray-800 py-2.5  hover:bg-gray-200 dark:hover:bg-gray-700 font-bold uppercase text-xs tracking-wider transition-all"
                     >
                       Cancel
                     </button>
@@ -336,7 +336,7 @@ const Profile = () => {
                   <button
                     type="button"
                     onClick={() => setIsEditing(true)}
-                    className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2.5 rounded-lg font-bold uppercase text-xs tracking-widest transition-all shadow-md shadow-orange-500/10"
+                    className="w-full bg-(--primary) hover:bg-(--primary-hover) text-white py-2.5  font-bold uppercase text-xs tracking-widest transition-all shadow-md shadow-(--primary)/10"
                   >
                     Edit Profile Details
                   </button>
@@ -348,7 +348,7 @@ const Profile = () => {
           {/* TAB 2: EMAIL SYNC */}
           {activeTab === 'email' && (
             <form onSubmit={handleUpdateEmail} className="space-y-4">
-              <div className="bg-orange-500/10 border border-orange-500/20 p-3 rounded-lg text-xs text-orange-600 dark:text-orange-400 leading-relaxed">
+              <div className="bg-(--primary)/10 border border-(--primary)/20 p-3  text-xs text-(--primary-hover) dark:text-orange-400 leading-relaxed">
                 Notice: Altering your email updates your access credentials. For security verification, you will be prompted to authenticate your session.
               </div>
 
@@ -359,7 +359,7 @@ const Profile = () => {
                   type="email"
                   value={newEmail}
                   onChange={(e) => setNewEmail(e.target.value)}
-                  className="w-full mt-1 p-3 bg-(--bg-color) border dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm"
+                  className="w-full mt-1 p-3 bg-(--bg-color) border dark:border-gray-700  focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm"
                 />
               </div>
 
@@ -373,7 +373,7 @@ const Profile = () => {
                       placeholder="••••••••"
                       value={currentPassword}
                       onChange={(e) => setCurrentPassword(e.target.value)}
-                      className="w-full p-3 pr-10 bg-(--bg-color) border dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm"
+                      className="w-full p-3 pr-10 bg-(--bg-color) border dark:border-gray-700  focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm"
                     />
                     <button
                       type="button"
@@ -385,7 +385,7 @@ const Profile = () => {
                   </div>
                 </div>
               ) : (
-                <div className="flex items-center gap-2 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg text-xs text-gray-500">
+                <div className="flex items-center gap-2 p-3 bg-gray-50 dark:bg-gray-800/50  text-xs text-gray-500">
                   <FaGoogle className="text-red-500" /> Verify change via Google profile prompt upon submission.
                 </div>
               )}
@@ -393,7 +393,7 @@ const Profile = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2.5 rounded-lg font-bold uppercase text-xs tracking-wider disabled:opacity-50 transition-all"
+                className="w-full bg-(--primary) hover:bg-(--primary-hover) text-white py-2.5  font-bold uppercase text-xs tracking-wider disabled:opacity-50 transition-all"
               >
                 {loading ? "Verifying..." : "Update Registered Email"}
               </button>
@@ -414,7 +414,7 @@ const Profile = () => {
                     href="https://myaccount.google.com/signin-options" 
                     target="_blank" 
                     rel="noreferrer"
-                    className="mt-2 text-xs font-semibold text-orange-500 hover:underline"
+                    className="mt-2 text-xs font-semibold text-(--primary) hover:underline"
                   >
                     Go to Google Account Manager &rarr;
                   </a>
@@ -430,7 +430,7 @@ const Profile = () => {
                         placeholder="••••••••"
                         value={currentPassword}
                         onChange={(e) => setCurrentPassword(e.target.value)}
-                        className="w-full p-3 pr-10 bg-(--bg-color) border dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm"
+                        className="w-full p-3 pr-10 bg-(--bg-color) border dark:border-gray-700  focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm"
                       />
                       <button
                         type="button"
@@ -453,7 +453,7 @@ const Profile = () => {
                         placeholder="6 characters minimum"
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
-                        className="w-full p-3 pr-10 bg-(--bg-color) border dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm"
+                        className="w-full p-3 pr-10 bg-(--bg-color) border dark:border-gray-700  focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm"
                       />
                       <button
                         type="button"
@@ -474,7 +474,7 @@ const Profile = () => {
                         placeholder="••••••••"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
-                        className="w-full p-3 pr-10 bg-(--bg-color) border dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm"
+                        className="w-full p-3 pr-10 bg-(--bg-color) border dark:border-gray-700  focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm"
                       />
                       <button
                         type="button"
@@ -489,7 +489,7 @@ const Profile = () => {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2.5 rounded-lg font-bold uppercase text-xs tracking-wider disabled:opacity-50 transition-all"
+                    className="w-full bg-(--primary) hover:bg-(--primary-hover) text-white py-2.5  font-bold uppercase text-xs tracking-wider disabled:opacity-50 transition-all"
                   >
                     {loading ? "Saving Changes..." : "Save New Password"}
                   </button>

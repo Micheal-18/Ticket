@@ -89,7 +89,7 @@ const OrgEvent = () => {
           <h1 className="text-2xl font-semibold">My Events</h1>
           <Link
             to="/dashboard/organization/create"
-            className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+            className="bg-(--primary) hover:bg-(--primary-hover) text-white px-4 py-2 rounded-xs font-medium transition-colors"
           >
             Create Event
           </Link>
@@ -104,9 +104,9 @@ const OrgEvent = () => {
                 setStatus(tab);
                 setSelectedDropdown(null); // Clear dropdown selections when switching categories
               }}
-              className={`px-4 py-2 rounded-lg text-sm font-medium capitalize transition-colors ${
+              className={`px-4 py-2  text-sm font-medium rounded-xs capitalize transition-colors ${
                 status === tab
-                  ? "bg-orange-600 text-white"
+                  ? "bg-(--primary) text-white"
                   : " shadow"
               }`}
             >
@@ -197,7 +197,7 @@ const OrgEvent = () => {
                       <Link
                         to={`/dashboard/organization/event/${event.slug}`}
                         onClick={(e) => e.stopPropagation()}
-                        className="bg-orange-600 text-white hover:bg-orange-700 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-center shadow-sm"
+                        className="bg-(--primary) text-white hover:bg-(--primary-hover) px-3 py-1.5  text-xs font-bold transition-all text-center shadow-sm"
                       >
                         Manage →
                       </Link>
@@ -208,7 +208,7 @@ const OrgEvent = () => {
                           e.stopPropagation();
                           toggleHighlight(event.id, event.highlighted);
                         }}
-                        className={`p-2 rounded-lg transition-colors ${
+                        className={`p-2  transition-colors ${
                           event.highlighted 
                             ? "text-yellow-400 bg-yellow-400/10" 
                             : "text-gray-500 bg-gray-100 dark:bg-zinc-800 hover:text-yellow-500"

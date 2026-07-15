@@ -194,21 +194,21 @@ const UserMain = () => {
           >
             <div className="w-20 h-20 shrink-0 rounded-xl overflow-hidden aspect-square">
               <OptimizedImage 
-                src={event.photoURL || "/fallback.jpg"} 
+                src={event.photoURL || event.photo || "/fallback.jpg"} 
                 alt={event.name} 
                 className="w-full h-full object-cover group-hover:scale-105 duration-300" 
               />
             </div>
             <div className="min-w-0 flex-1 flex flex-col justify-between py-0.5">
-              <h4 className="font-bold text-sm text-(--text-color) truncate group-hover:text-orange-500 transition-colors uppercase tracking-wide">
+              <h4 className="font-bold text-sm text-(--text-color) truncate group-hover:text-(--primary) transition-colors uppercase tracking-wide">
                 {event.name}
               </h4>
               <p className="text-xs text-gray-400 flex items-center gap-1.5 truncate">
-                <FaCalendar className="text-orange-500 shrink-0" size={12} /> 
+                <FaCalendar className="text-(--primary) shrink-0" size={12} /> 
                 {getFormattedDateString(event.date)} at {getFormattedTimeString(event)}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1.5 truncate">
-                <FaLocationArrow className="text-orange-500 shrink-0" size={11} /> {event.location}
+                <FaLocationArrow className="text-(--primary) shrink-0" size={11} /> {event.venue.name}
               </p>
             </div>
           </Link>
@@ -221,13 +221,13 @@ const UserMain = () => {
     <div  className="space-y-14">
       
       {/* 👥 FOLLOWERS OVERVIEW SECTION */}
-      <section className="bg-gradient-to-r from-orange-500/5 via-transparent to-transparent p-4 rounded-2xl border border-gray-200/10">
+      <section className="bg-gradient-to-r from-(--primary)/5 via-transparent to-transparent p-4 rounded-2xl border border-gray-200/10">
         <div className="flex items-center justify-between  mb-4">
           <h2 className="text-lg font-extrabold uppercase tracking-wide flex items-center gap-2">
-            <FaUsers className="text-orange-500" size={20} />
+            <FaUsers className="text-(--primary)" size={20} />
             Following
           </h2>
-          <span className="text-xs font-bold text-orange-500 uppercase tracking-wider bg-orange-500/10 px-2.5 py-1 rounded-full">
+          <span className="text-xs font-bold text-(--primary) uppercase tracking-wider bg-(--primary)/10 px-2.5 py-1 rounded-full">
             {followers.length} Following
           </span>
         </div>
@@ -250,7 +250,7 @@ const UserMain = () => {
       {/* 🌟 HIGHLIGHTED EXPERIENCE EXPERIENCES */}
       {sortedEvents.highlighted.length > 0 && (
         <section>
-          <h2 className="text-xl font-black uppercase tracking-wider text-orange-500 mb-4">🌟 Featured Highlights</h2>
+          <h2 className="text-xl font-black uppercase tracking-wider text-(--primary) mb-4">🌟 Featured Highlights</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {sortedEvents.highlighted.slice(0, 2).map(event => (
               <Link 
@@ -267,7 +267,7 @@ const UserMain = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
                 </div>
                 <div className="relative z-10 text-white space-y-1.5 min-w-0 w-full">
-                  <span className="text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 bg-orange-500 text-white rounded-md">Featured</span>
+                  <span className="text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 bg-(--primary) text-white rounded-md">Featured</span>
                   <h3 className="text-xl font-extrabold truncate uppercase tracking-tight">{event.name}</h3>
                   <p className="text-xs text-zinc-300 flex items-center gap-2">
                     <FaLocationArrow size={10} /> {event.location}

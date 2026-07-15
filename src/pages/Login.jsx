@@ -76,17 +76,17 @@ const Login = () => {
       {/* Passing the routing execution function down directly here */}
       <GoogleAuth 
         onAuthSuccess={handleNavigationRedirect} 
-        className="mb-4 hover:scale-105 active:scale-90 shadow"
+        className="mb-4 hover:scale-105 active:scale-90 shadow w-full max-w-lg "
       />
       
-      <form onSubmit={handleLogin} className="flex flex-col space-y-4 w-full max-w-lg mx-6 lg:mx-0">
+      <form onSubmit={handleLogin} className="flex flex-col space-y-4 w-full shadow p-4 items-center justify-center max-w-lg mx-6 lg:mx-0">
         <h1 className="font-bold text-5xl ">Login</h1>
         {error && <div className="bg-orange-100 text-red-600 p-2 rounded mb-4">{error}</div>}
         
-        <input name="email" type="email" placeholder="Email Address" required className="border p-3 rounded-lg " />
+        <input name="email" type="email" placeholder="Email Address" required className="border p-3 w-full " />
         
         <div className="relative w-full">
-          <input name="password" type={click ? "text" : "password"} placeholder="Password" required className="border w-full p-3 rounded-lg " />
+          <input name="password" type={click ? "text" : "password"} placeholder="Password" required className="border w-full p-3 " />
           {click ? (
             <FaEye onClick={handleClick} color="gray" className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"/>
           ) : (
@@ -94,23 +94,23 @@ const Login = () => {
           )}
         </div>
         
-        <div className='flex gap-3 items-center'>
+        <div className='relative flex gap-3 justify-start items-center w-full'>
           <input type="checkbox" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} />
-          <p>Remember Me</p>
+          <p>Remember me</p>
         </div>
         
-        <button type="submit" className="w-full flex items-center justify-center bg-orange-500 text-white rounded-xl py-3 active:scale-90 hover:bg-orange-600 hover:scale-105">
+        <button type="submit" className="w-full flex items-center justify-center bg-(--primary) text-white  py-3 active:scale-90 hover:bg-(--primary-hover) hover:scale-105">
           {loginLoading ? <><div className='loading'></div><p className='ml-2'>Logging In...</p></> : "Login"}
         </button>
         
         <p className="text-sm">
           Don’t have an account?{" "}
-          <button type="button" onClick={() => navigate("/Register")} className="text-orange-500 cursor-pointer underline">
+          <button type="button" onClick={() => navigate("/Register")} className="text-(--primary) cursor-pointer underline">
             Register
           </button>
         </p>
         
-        <footer className='mt-10'>
+        <footer className='mt-2'>
           <img src={walkGif} alt='walking gif' className='w-20 h-20 animation-walk' />
         </footer>
       </form>

@@ -65,7 +65,7 @@ const TransactionHistory = () => {
     return (
       <div className="w-full min-h-[400px] flex items-center justify-center text-gray-400 text-sm">
         <div className="animate-pulse flex flex-col items-center gap-2">
-          <div className="w-8 h-8 rounded-full border-2 border-orange-500 border-t-transparent animate-spin" />
+          <div className="w-8 h-8 rounded-full border-2 border-(--primary) border-t-transparent animate-spin" />
           <p className="font-medium tracking-wide">Syncing payment records...</p>
         </div>
       </div>
@@ -87,14 +87,14 @@ const TransactionHistory = () => {
           <button 
             type="button"
             onClick={() => setActiveTab('payments')}
-            className={`flex items-center gap-1.5 pb-3 px-2 border-b-2 transition-all ${activeTab === 'payments' ? 'border-orange-500 text-orange-500' : 'border-transparent text-gray-400'}`}
+            className={`flex items-center gap-1.5 pb-3 px-2 border-b-2 transition-all ${activeTab === 'payments' ? 'border-(--primary) text-(--primary)' : 'border-transparent text-gray-400'}`}
           >
             <FiDollarSign size={15} /> Payment Receipts
           </button>
           <button 
             type="button"
             onClick={() => setActiveTab('events')}
-            className={`flex items-center gap-1.5 pb-3 px-2 border-b-2 transition-all ${activeTab === 'events' ? 'border-orange-500 text-orange-500' : 'border-transparent text-gray-400'}`}
+            className={`flex items-center gap-1.5 pb-3 px-2 border-b-2 transition-all ${activeTab === 'events' ? 'border-(--primary) text-(--primary)' : 'border-transparent text-gray-400'}`}
           >
             <HiOutlineTicket size={16} /> My Event Passes
           </button>
@@ -138,7 +138,7 @@ const TransactionHistory = () => {
                           <button 
                             type="button"
                             onClick={() => alert(`Pulling full metadata schema invoice for order sequence ${record.id}`)}
-                            className="inline-flex items-center gap-1 text-orange-500 hover:text-orange-600 font-medium transition-colors"
+                            className="inline-flex items-center gap-1 text-(--primary) hover:text-(--primary) font-medium transition-colors"
                           >
                             <FiDownload size={13} /> <span className="hidden sm:inline">Download</span>
                           </button>
@@ -165,7 +165,7 @@ const TransactionHistory = () => {
                   >
                     {/* Badge Flag indicators */}
                     <div className="absolute top-4 right-4 flex gap-1.5">
-                      <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider ${ticket.amount === 0 ? 'bg-sky-500/10 text-sky-500' : 'bg-orange-500/10 text-orange-500'}`}>
+                      <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider ${ticket.amount === 0 ? 'bg-sky-500/10 text-sky-500' : 'bg-(--primary)/10 text-(--primary)'}`}>
                         {ticket.amount === 0 ? 'Free Pass' : 'Paid Admission'}
                       </span>
                     </div>
@@ -190,7 +190,7 @@ const TransactionHistory = () => {
                       <button
                         type="button"
                         onClick={() => alert(`Launching digital ticket modal view for item: ${ticket.id}`)}
-                        className="flex items-center gap-1 text-xs font-bold text-orange-500 hover:text-orange-600 uppercase tracking-wider transition-colors"
+                        className="flex items-center gap-1 text-xs font-bold text-(--primary) hover:text-(--primary) uppercase tracking-wider transition-colors"
                       >
                         View Ticket <FiExternalLink size={12} />
                       </button>

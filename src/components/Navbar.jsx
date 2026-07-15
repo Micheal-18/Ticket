@@ -48,7 +48,7 @@ const Navbar = ({ currentUser }) => {
     <section className='sticky w-full flex top-0 z-50'>
       <div className='flex w-full  bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color)  opacity-90 items-center lg:justify-center flex-1 border border-x-transparent  border-b-transparent  justify-between px-6 font-bold '>
         <div className='lg:border py-10 lg:py-5.5  lg:px-20 border-t-transparent  '>
-          <a href='/' className='flex items-center space-x-2 cursor-pointer  text-lg'><SiEagle className='text-orange-500 text-xl' />Airticks<span className='text-orange-500'>Event</span></a>
+          <a href='/' className='flex items-center space-x-2 cursor-pointer  text-lg'><SiEagle className='text-(--primary) text-xl' />Airticks<span className='text-(--primary)'>Event</span></a>
         </div>
         <div className='hidden lg:flex'>
           {navItems.map((item, idx) => (
@@ -60,14 +60,14 @@ const Navbar = ({ currentUser }) => {
           {!currentUser ? (
             <a
               href="/Login"
-              className="bg-orange-500 flex items-center py-3 px-16  cursor-pointer active:scale-90 hover:bg-orange-600"
+              className="bg-(--primary) flex items-center py-3 px-16  cursor-pointer active:scale-90 hover:bg-(-primary)"
             >
               Login
             </a>
           ) : (
            <div 
   onClick={() => setDropdown(!dropdown)} 
-  className="relative cursor-pointer flex items-center bg-orange-500 active:scale-90 py-3 px-16"
+  className="relative cursor-pointer flex items-center bg-(--primary) active:scale-90 py-3 px-16"
 >
   <h1 className='text-gray-700'>{currentUser?.fullName?.slice(0, 2)}</h1>
   <RiUser3Line className="text-3xl cursor-pointer hover:scale-105" />
@@ -82,7 +82,7 @@ const Navbar = ({ currentUser }) => {
   >
     <ul className="flex flex-col py-2">  
       {currentUser?.isAdmin && (
-        <li onClick={() => navigate("/dashboard")} className="flex items-center gap-2 px-4 py-2 text-orange-600 hover:bg-gray-100 cursor-pointer">
+        <li onClick={() => navigate("/dashboard")} className="flex items-center gap-2 px-4 py-2 text-(-primary) hover:bg-gray-100 cursor-pointer">
           <FaUserPlus />Dashboard
         </li>
       )}
@@ -90,13 +90,13 @@ const Navbar = ({ currentUser }) => {
       <Darkmode />
 
       {currentUser?.accountType === "user" && (
-        <li onClick={() => navigate("/dashboard/users")} className="flex items-center gap-2 px-4 py-2 text-orange-600 hover:bg-gray-100 cursor-pointer">
+        <li onClick={() => navigate("/dashboard/users")} className="flex items-center gap-2 px-4 py-2 text-(-primary) hover:bg-gray-100 cursor-pointer">
           <RiDashboard2Line />Dashboard
         </li>
       )}
 
       {currentUser?.accountType === "organization" && (
-        <li onClick={() => navigate("/dashboard/organization")} className="flex items-center gap-2 px-4 py-2 text-orange-600 hover:bg-gray-100 cursor-pointer">
+        <li onClick={() => navigate("/dashboard/organization")} className="flex items-center gap-2 px-4 py-2 text-(-primary) hover:bg-gray-100 cursor-pointer">
           <RiDashboard2Line />Dashboard
         </li>
       )}
@@ -138,7 +138,7 @@ const Navbar = ({ currentUser }) => {
         }`}>
         <div className='p-6 flex flex-col gap-8 '>
           {navItems.map((item, idx) => (
-            <a key={idx} href={item.href} className="hover:text-orange-500 active:scale-90 ">
+            <a key={idx} href={item.href} className="hover:text-(--primary) active:scale-90 ">
               {item.id}
             </a>
           ))}
@@ -147,7 +147,7 @@ const Navbar = ({ currentUser }) => {
           {!currentUser ? (
             <a
               href="/Login"
-              className="bg-orange-500  px-6 py-2 rounded-md active:scale-90 hover:bg-orange-600"
+              className="bg-(--primary)  px-6 py-2  active:scale-90 hover:bg-(-primary)"
             >
               Login
             </a>
@@ -157,7 +157,7 @@ const Navbar = ({ currentUser }) => {
               {currentUser?.isAdmin && (
                 <button
                   onClick={() => navigate("/dashboard")}
-                  className="px-4 py-2 bg-(--bg-color) dark:bg-(--bg-color)  rounded-md active:scale-90 hover:bg-gray-200 dark:hover:bg-gray-400"
+                  className="px-4 py-2 bg-(--bg-color) dark:bg-(--bg-color)   active:scale-90 hover:bg-gray-200 dark:hover:bg-gray-400"
                 >
                   Dashboard
                 </button>
@@ -167,7 +167,7 @@ const Navbar = ({ currentUser }) => {
                 {currentUser?.accountType === "user" && (
                   <button
                     onClick={() => navigate("/dashboard/users")}
-                    className="px-4 py-2 bg-(--bg-color) dark:bg-(--bg-color)  rounded-md active:scale-90 hover:bg-gray-200 dark:hover:bg-gray-400"
+                    className="px-4 py-2 bg-(--bg-color) dark:bg-(--bg-color)   active:scale-90 hover:bg-gray-200 dark:hover:bg-gray-400"
                   >
                     Dashboard
                   </button>
@@ -176,7 +176,7 @@ const Navbar = ({ currentUser }) => {
               {currentUser?.accountType === "organization" && (
                 <button
                   onClick={() => navigate("/dashboard/organization")}
-                  className="px-4 py-2 bg-(--bg-color) dark:bg-(--bg-color)  rounded-md active:scale-90 hover:bg-gray-200 dark:hover:bg-gray-400"
+                  className="px-4 py-2 bg-(--bg-color) dark:bg-(--bg-color)   active:scale-90 hover:bg-gray-200 dark:hover:bg-gray-400"
                 >
                  Dashboard
                 </button>
@@ -184,7 +184,7 @@ const Navbar = ({ currentUser }) => {
 
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 bg-(--bg-color) dark:bg-(--bg-color) text-red-600 rounded-md active:scale-90 hover:bg-red-200"
+                className="px-4 py-2 bg-(--bg-color) dark:bg-(--bg-color) text-red-600  active:scale-90 hover:bg-red-200"
               >
                 Logout
               </button>

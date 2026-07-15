@@ -1,10 +1,39 @@
 @import "tailwindcss";
 
 :root {
-  --bg-color: #eeeeee;
-  --text-color: #333333;
+  /* Brand */
+  --primary: #F59E0B;
+  --primary-hover: #D97706;
+
+  /* Backgrounds */
+  --bg-color: #F8FAFC;
+  --surface: #FFFFFF;
+  --surface-hover: #F1F5F9;
+
+  /* Text */
+  --text-color: #0F172A;
+  --text-secondary: #64748B;
+  --text-muted: #94A3B8;
+
+  /* Borders */
+  --border: #E2E8F0;
+
+  /* States */
+  --success: #10B981;
+  --warning: #F59E0B;
+  --danger: #EF4444;
+  --info: #3B82F6;
   --brandMoon: #fbbf24;
-  --step: #e0d9d9;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.05);
+  --shadow-md: 0 8px 20px rgba(0,0,0,.08);
+  --shadow-lg: 0 15px 40px rgba(0,0,0,.12);
+
+  /* Radius */
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
 }
 
 html,body {
@@ -16,10 +45,19 @@ html,body {
 }
 
 .dark {
-  --bg-color: #333333;
-  --text-color: #f0f0f0;
-  --brandMoon: #374151;
-  --step: #615e5e;
+  --bg-color: #020512;
+  --surface: #111827;
+  --surface-hover: #1F2937;
+
+  --text-color: #F8FAFC;
+  --text-secondary: #CBD5E1;
+  --text-muted: #94A3B8;
+
+  --border: #334155;
+  --brandMoon: #F8FAFC;
+
+  --primary: #F59E0B;
+  --primary-hover: #F59E0B;
 }
 
 
@@ -147,4 +185,82 @@ html, body {
     animation: walk-across 10s linear infinite;
 }
 
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
 
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee {
+  animation: marquee 25s linear infinite;
+}
+
+/* ===========================
+   React Quill Theme
+=========================== */
+
+.quill-editor .ql-toolbar .ql-placeholder {
+  background: var(--bg-color);
+  border: 1px solid rgba(128,128,128,.2);
+}
+
+.quill-editor .ql-container {
+  background: var(--bg-color);
+  color: var(--text-color);
+  border: 1px solid rgba(128,128,128,.2);
+  min-height: 250px;
+}
+
+.quill-editor .ql-editor {
+  color: var(--text-color);
+  min-height: 250px;
+  font-size: 16px;
+}
+
+.quill-editor .ql-editor::before {
+  color: gray !important;
+  font-style: normal;
+}
+
+/* Toolbar icons */
+
+.quill-editor .ql-stroke {
+  stroke: var(--text-color);
+}
+
+.quill-editor .ql-fill {
+  fill: var(--text-color);
+}
+
+.quill-editor .ql-picker {
+  color: var(--text-color);
+}
+
+.quill-editor .ql-picker-label {
+  color: var(--text-color);
+}
+
+.quill-editor .ql-picker-options {
+  background: var(--bg-color);
+  color: var(--text-color);
+}
+
+/* Active buttons */
+
+.quill-editor .ql-active .ql-stroke {
+  stroke: var(--primary);
+}
+
+.quill-editor .ql-active .ql-fill {
+  fill: var(--primary);
+}
+
+.quill-editor .ql-toolbar button:hover .ql-stroke,
+.quill-editor .ql-toolbar button:hover .ql-fill {
+  stroke: var(--primary);
+  fill: var(--primary);
+}
