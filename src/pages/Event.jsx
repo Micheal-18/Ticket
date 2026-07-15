@@ -416,7 +416,7 @@ const Event = ({ currentUser, events, setEvents }) => {
                         event.price.map((priceOption, index) => (
                           <p key={index}>
                             <span className="text-(--primary) text-lg font-semibold">
-                              {priceOption.currency} {" "}
+                              {priceOption.name}: {priceOption.currency} {" "}
                               {Number(priceOption.price)}
                             </span>
                           </p>

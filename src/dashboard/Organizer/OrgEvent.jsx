@@ -180,13 +180,13 @@ const OrgEvent = () => {
                     ) : Array.isArray(event.price) ? (
                       event.price.map((priceOption, index) => (
                         <p key={index} className="text-sm font-semibold text-orange-500">
-                          {priceOption.label || "Regular"}: {priceOption.currency || "₦"}{" "}
+                          {priceOption.name || "Regular"}: {priceOption.currency || "₦"}{" "}
                           {Number(priceOption.amount || 0).toLocaleString()}
                         </p>
                       ))
                     ) : (
                       <p className="text-sm font-semibold text-orange-500">
-                        {event.currency || "₦"} {Number(event.price?.amount || 0).toLocaleString()}
+                        {event.currency || "₦"} {Number(event.price?.price || 0).toLocaleString()}
                       </p>
                     )}
                   </div>
