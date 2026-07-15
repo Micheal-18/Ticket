@@ -73,25 +73,6 @@ const Dashevents = ({ currentUser, events, setEvents }) => {
     }
   };
 
-  const handleShare = async (event) => {
-  const shareUrl = `${window.location.origin}/share/event/${event.slug}`;
-
-  try {
-    if (navigator.share) {
-      await navigator.share({
-        title: event.name,
-        text: `Check out this event on Airticks: ${event.name}`,
-        url: shareUrl,
-      });
-    } else {
-      await navigator.clipboard.writeText(shareUrl);
-      alert("✅ Share link copied to clipboard!");
-    }
-  } catch (error) {
-    console.error("Share failed:", error);
-  }
-};
-
   // Admin approve event
   const handleApprove = async (event) => {
     setApprovingEventId(event.id);
@@ -245,7 +226,7 @@ const Dashevents = ({ currentUser, events, setEvents }) => {
                 
                 <p className="text-sm font-normal text-gray-400 flex gap-2 items-center">
                   <FaLocationArrow className="text-(--primary) shrink-0" />
-                  <span className="truncate">{event.venue?.name}</span>
+                  <span className="truncate">{event.location}</span>
                 </p>
 
                 {/* Pricing Rules Wrapper */}
@@ -261,7 +242,7 @@ const Dashevents = ({ currentUser, events, setEvents }) => {
                     ))
                   ) : (
                     <p className="text-sm font-semibold text-(--primary)">
-                      {event.currency || "₦"} {Number(event.price?.amount || 0).toLocaleString()}
+                      {event.currency || "₦"} {Number(event.price?.price || 0).toLocaleString()}
                     </p>
                   )}
                 </div>
@@ -301,17 +282,6 @@ const Dashevents = ({ currentUser, events, setEvents }) => {
                       }`}
                     >
                       <RiStarFill size={14} />
-                    </button>
-
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        handleShare(event);
-                      }}
-                      className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 text-xs font-bold transition-all shadow-sm"
-                    >
-                      Share
                     </button>
 
                     {isAdmin && event.status !== "approved" && (

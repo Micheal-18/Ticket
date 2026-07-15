@@ -1,12 +1,5 @@
 {
   "rewrites": [
-    {
-      "source": "/share/event/:slug",
-      "destination": "/api/share-event?slug=:slug"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/"
-    }
+    { "source": "/(.*)", "destination": "/" }
   ]
 }
