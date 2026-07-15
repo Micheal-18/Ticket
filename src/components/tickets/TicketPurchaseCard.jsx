@@ -24,7 +24,7 @@ const TicketPurchaseCard = ({
   const maxQuantity = Math.min(10, remaining, ticket.maxPerPurchase || 10)
 
   return (
-    <div className='rounded-3xl border border-zinc-800 bg-zinc-950 p-6 space-y-6'>
+    <div className='rounded-3xl border bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) border-(--border) p-6 space-y-6'>
       {/* Header */}
 
       <div className='flex justify-between items-start'>
@@ -53,12 +53,12 @@ const TicketPurchaseCard = ({
         <div className='space-y-2'>
           <label className='text-sm text-zinc-400'>Quantity</label>
 
-          <div className='flex items-center justify-between rounded-2xl border border-zinc-700 bg-zinc-900 p-2'>
+          <div className='flex items-center justify-between rounded-2xl border bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) border-(--border) p-2'>
             <button
               type='button'
               onClick={() => onQuantityChange(Math.max(0, quantity - 1))}
               disabled={quantity <= 0}
-              className='w-12 h-12 rounded-xl bg-zinc-800 hover:bg-zinc-700 disabled:opacity-40 disabled:cursor-not-allowed text-xl font-bold transition'
+              className='w-12 h-12 rounded-xl bg-zinc-400 hover:bg-zinc-700 disabled:opacity-40 disabled:cursor-not-allowed text-xl font-bold transition'
             >
               −
             </button>
@@ -134,7 +134,7 @@ const TicketPurchaseCard = ({
           SOLD OUT
         </button>
       ) : quantity === 0 ? (
-        <button disabled className='w-full rounded-xl bg-zinc-800 py-4'>
+        <button disabled className='w-full rounded-xl bg-zinc-400 py-4'>
           Select Quantity
         </button>
       ) : !currentUser ? (

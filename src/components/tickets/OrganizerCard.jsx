@@ -24,7 +24,7 @@ const OrganizerSection = ({ organizer, owner, currentUser, currentUserId }) => {
         </p>
       </div>
 
-      <div className='rounded-3xl border bg-white dark:bg-zinc-900 p-8'>
+      <div className='rounded-3xl border bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) border-(--border) p-8'>
         <div className='flex flex-col lg:flex-row justify-between gap-8'>
           <div className='flex gap-5'>
             {owner?.photoURL ? (
@@ -81,7 +81,7 @@ const OrganizerSection = ({ organizer, owner, currentUser, currentUserId }) => {
 
             <Link
               to={`/organizer/${owner.id}`}
-              className='border rounded-xl px-6 py-3 flex items-center gap-2 justify-center hover:bg-(--primary) hover:text-white transition'
+              className='border border-(--border) rounded-xl px-6 py-3 flex items-center gap-2 justify-center hover:bg-(--primary) hover:text-white transition'
             >
               View Profile
               <FiArrowRight />

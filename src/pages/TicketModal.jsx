@@ -179,14 +179,15 @@ const TicketModal = ({ currentUser }) => {
   }
 
   return (
-    <div className='fixed left-0 top-0 w-full h-full backdrop-blur-md bg-black/40 flex justify-center items-center z-[9999] overflow-hidden'>
-      <div className='relative w-full h-full max-w-7xl flex flex-col bg-(--bg-color) dark:bg-zinc-950 text-(--text-color) dark:text-zinc-100 shadow-2xl md:rounded-2xl md:h-[92vh] overflow-y-auto custom-scrollbar'>
+    <div className='fixed left-0 top-0 w-full h-full backdrop-blur-md bg-(--bg-color)/40 flex justify-center items-center z-[9999] overflow-hidden'>
+      <div className='relative w-full h-full max-w-7xl flex flex-col bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) shadow-2xl md:rounded-2xl md:h-[92vh] overflow-y-auto custom-scrollbar'>
         
         {/* Close Window Button */}
         <button
           type="button"
           aria-label="Close modal"
-          className='text-2xl absolute top-4 right-4 md:right-8 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full cursor-pointer hover:scale-105 transition-all z-50 flex items-center justify-center'
+          className='text-2xl absolute top-4 right-4 md:right-8 bg-black/40 hover:bg-black/60 text-(
+          --bg-color) p-2 rounded-full cursor-pointer hover:scale-105 transition-all z-50 flex items-center justify-center'
           onClick={() => window.history.back()}
         >
           <CloseIcon />
@@ -196,7 +197,8 @@ const TicketModal = ({ currentUser }) => {
         <div className='relative flex flex-col'>
           <EventHero event={selectedEvent} currentUser={currentUser} />
 
-          <div className='absolute top-0 left-0 w-full flex justify-center max-w-7xl  p-4 md:p-6 text-white space-y-2'>
+          <div className='absolute top-0 left-0 w-full flex justify-center max-w-7xl  p-4 md:p-6 text-(
+          --bg-color) space-y-2'>
             <Countdown
             startTime={selectedEvent.startTime}
             endTime={selectedEvent.endTime}
@@ -232,8 +234,9 @@ const TicketModal = ({ currentUser }) => {
 
             {/* Right Column - Booking & Ticket Selector Panel */}
             <div className="space-y-6 lg:sticky lg:top-6">
-              <div className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-3xl p-6 shadow-xs">
-                <h3 className="font-bold text-xl mb-4 text-zinc-900 dark:text-zinc-50">Select Tickets</h3>
+              <div className="bg-(
+              --bg-color) dark:bg-(--bg-color) border border-(--border) rounded-3xl p-6 shadow-xs">
+                <h3 className="font-bold text-xl mb-4 text-(--bg-color) dark:text-zinc-50">Select Tickets</h3>
                 
                 <div className="space-y-4">
                   {selectedEvent.tickets?.map(ticket => {
@@ -291,7 +294,7 @@ const TicketModal = ({ currentUser }) => {
 
                 {/* Dynamic Checkout Action Container */}
                 {selectedTicket && !selectedTicket.requiresAuth && (
-                  <div className="mt-6 pt-6 border-t border-zinc-100 dark:border-zinc-800">
+                  <div className="mt-6 pt-6 border-t border-(--border) ">
                     <PaystackPayment 
                       currentUser={currentUser}
                       event={selectedEvent}

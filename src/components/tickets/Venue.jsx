@@ -25,16 +25,16 @@ const VenueCard = ({ event }) => {
   )}`;
 
   return (
-    <section className="rounded-3xl bg-white dark:bg-zinc-900 shadow border border-zinc-100 dark:border-zinc-800 overflow-hidden">
+    <section className="rounded-3xl bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) border-(--border) shadow borderoverflow-hidden">
 
       {/* Header */}
-      <div className="p-6 border-b border-zinc-100 dark:border-zinc-800">
-        <h2 className="text-xl font-bold flex items-center gap-2 text-zinc-900 dark:text-zinc-100">
+      <div className="p-6 border-b border-(--border)">
+        <h2 className="text-xl font-bold flex items-center uppercase gap-2 ">
           <FiMapPin className="text-(--primary)" />
           Venue
         </h2>
 
-        <p className="text-sm opacity-70 mt-1 text-zinc-500 dark:text-zinc-400">
+        <p className="text-sm opacity-70 mt-1 text-zinc-300 dark:text-zinc-400">
           Event location & directions
         </p>
       </div>
@@ -42,27 +42,27 @@ const VenueCard = ({ event }) => {
       {/* Venue Information */}
       <div className="p-6 space-y-4">
         <div>
-          <h3 className="font-semibold text-lg text-zinc-900 dark:text-zinc-100">
+          <h3 className="font-semibold text-lg ">
             {event.venue.name}
           </h3>
 
-          <p className="opacity-70 text-zinc-600 dark:text-zinc-400">
+          <p className="opacity-70 text-zinc-300 dark:text-zinc-400">
             {event.venue.address}
           </p>
         </div>
 
         {event.venue.type && (
-          <div className="inline-flex rounded-full bg-orange-100 dark:bg-orange-950/30 text-orange-600 dark:text-orange-400 px-3 py-1 text-sm font-medium">
+          <div className="inline-flex rounded-full bg-amber-100 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 px-3 py-1 text-sm font-medium">
             {event.venue.type}
           </div>
         )}
 
         {event.venue.parking && (
           <div>
-            <h4 className="font-semibold mb-1 text-zinc-900 dark:text-zinc-100">
+            <h4 className="font-semibold uppercase mb-1 ">
               Parking
             </h4>
-            <p className="opacity-70 text-zinc-600 dark:text-zinc-400">
+            <p className="opacity-70 text-zinc-300 dark:text-zinc-400">
               {event.venue.parking}
             </p>
           </div>
@@ -70,10 +70,10 @@ const VenueCard = ({ event }) => {
 
         {event.venue.directions && (
           <div>
-            <h4 className="font-semibold mb-1 text-zinc-900 dark:text-zinc-100">
+            <h4 className="font-semibold uppercase mb-1 ">
               Directions
             </h4>
-            <p className="opacity-70 text-zinc-600 dark:text-zinc-400">
+            <p className="opacity-70 text-zinc-300 dark:text-zinc-400">
               {event.venue.directions}
             </p>
           </div>
@@ -81,7 +81,7 @@ const VenueCard = ({ event }) => {
       </div>
 
       {/* Google Map Embed (Uses text-based address searching) */}
-      <div className="h-[350px] w-full border-t border-b border-zinc-100 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950">
+      <div className="h-[350px] w-full border-t border-b bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) border-(--border)">
         <iframe
           title="Google Map Venue Location"
           width="100%"
@@ -118,7 +118,7 @@ const VenueCard = ({ event }) => {
         >
           <button 
             type="button" 
-            className="rounded-xl border border-zinc-200 dark:border-zinc-700 px-4 py-3 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 transition-colors"
+            className="rounded-xl border border-(--border) px-4 py-3 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 transition-colors"
           >
             <FiMap size={20} />
           </button>

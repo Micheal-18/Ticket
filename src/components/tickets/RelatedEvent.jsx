@@ -26,7 +26,7 @@ const RelatedEvents = ({ events = [] }) => {
 
                 <Link
                     to="/event"
-                    className="text-orange-500 font-semibold"
+                    className="text-(--primary) font-semibold"
                 >
                     View all →
                 </Link>
@@ -40,7 +40,7 @@ const RelatedEvents = ({ events = [] }) => {
                     <Link
                         key={event.id}
                         to={`/event/${event.slug}`}
-                        className="rounded-3xl overflow-hidden border bg-white dark:bg-zinc-900 hover:-translate-y-1 transition"
+                        className="rounded-3xl overflow-hidden bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) border-(--border) hover:-translate-y-1 transition"
                     >
 
                         <OptimizedImage

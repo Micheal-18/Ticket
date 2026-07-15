@@ -29,7 +29,7 @@ const SponsorsSection = ({ sponsors = [] }) => {
           >
 
             
-            <div className="rounded-3xl border bg-white dark:bg-zinc-900 h-36 flex items-center justify-center p-6 hover:shadow-xl transition">
+            <div className="rounded-3xl border bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) border-(--border) h-36 flex items-center justify-center p-6 hover:shadow-xl transition">
 
               {sponsor.logo ? (
                 <div className="overflow-hidden">

@@ -44,7 +44,7 @@ const GuestCard = ({ guest }) => {
 
   return (
 
-    <div className="group rounded-3xl overflow-hidden border bg-white dark:bg-zinc-900 shadow-sm hover:shadow-xl duration-300">
+    <div className="group rounded-3xl overflow-hidden bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) border-(--border) shadow-sm hover:shadow-xl duration-300">
 
       <div className="relative h-72">
 

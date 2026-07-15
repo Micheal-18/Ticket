@@ -91,7 +91,7 @@ const Countdown = ({ startTime, endTime }) => {
   }
 
   return (
-    <div className="rounded-3xl border p-6 shadow bg-white dark:bg-zinc-900">
+    <div className="rounded-3xl border p-6 shadow bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) border-(--border)">
 
       <div className="flex items-center gap-2 mb-6">
 

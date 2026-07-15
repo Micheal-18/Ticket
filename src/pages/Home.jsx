@@ -187,7 +187,7 @@ const Home = ({ currentUser }) => {
                 <div className='relative flex flex-col cursor-pointer group  bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) rounded-2xl p-2'>
                   <div className='overflow-hidden rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300'>
                     <img
-                      src={event.photoURL || '/fallback.jpg'}
+                      src={event.photoURL || event.photo || '/fallback.jpg'}
                       alt='event'
                       className='object-cover h-[220px] w-full hover:scale-105 duration-500 rounded-2xl'
                     />
@@ -196,9 +196,10 @@ const Home = ({ currentUser }) => {
                     <h1 className='font-bold text-gray-700 uppercase text-2xl truncate w-[250px] '>
                       {event.name || 'Untitled Event'}
                     </h1>
-                    <p className='text-gray-600 text-sm line-clamp-2 mb-3 w-[300px] truncate'>
-                      {event.description}
-                    </p>
+                    <p
+                      dangerouslySetInnerHTML={{ __html: event.description }}
+                      className='prose line-clamp-1 text-gray-600 text-sm  mb-3 w-[200px] truncate'
+                    ></p>
                     <p className='text-xs text-gray-500 flex items-center gap-2'>
                       <FaCalendar />{' '}
                       {new Date(event.date).toLocaleDateString('en-US', {
@@ -215,7 +216,8 @@ const Home = ({ currentUser }) => {
                       </span>
                     </p>
                     <p className='line-clamp-2 text-sm text-gray-600 flex items-center gap-2'>
-                      <FaLocationArrow /> {event.location || 'No location'}
+                      <FaLocationArrow />{' '}
+                      {event.location || event.venue.name || 'No location'}
                     </p>
                   </div>
                 </div>

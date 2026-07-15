@@ -7,7 +7,7 @@ const EventHero = ({ event, currentUser }) => {
   if (!event) return null;
   
   return (
-    <section className="relative w-full h-[500px] overflow-hidden rounded-b-3xl">
+    <section className="relative w-full h-[500px] overflow-hidden ">
 
       {/* Background Image */}
       <OptimizedImage
@@ -18,7 +18,7 @@ const EventHero = ({ event, currentUser }) => {
       />
 
       {/* Dark Overlay */}
-      <div className="absolute inset-0 bg-black/60 z-10" />
+      <div className="absolute inset-0 bg-(--bg-color)/30 z-10" />
 
       {/* Gradient */}
       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-10" />
@@ -56,7 +56,7 @@ const EventHero = ({ event, currentUser }) => {
 
           <div className="flex flex-col gap-2">
 
-            <div className="flex items-center gap-2 ">
+            <div className="flex items-center gap-2 text-white">
               <FiCalendar />
               <span>
                 {new Date(event.date).toLocaleDateString()}

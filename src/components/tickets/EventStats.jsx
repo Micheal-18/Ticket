@@ -71,9 +71,9 @@ const StatCard = ({
   value,
   subtitle
 }) => (
-  <div className="rounded-3xl border bg-white dark:bg-zinc-900 p-6 shadow-sm hover:shadow-xl transition">
+  <div className="rounded-3xl border border-(--border) bg-(--bg-color) p-6 shadow-sm hover:shadow-xl transition">
 
-    <div className="w-12 h-12 rounded-full bg-orange-100 text-(--primary) flex items-center justify-center text-xl mb-4">
+    <div className="w-12 h-12 rounded-full bg-amber-100 text-(--primary) flex items-center justify-center text-xl mb-4">
 
       {icon}
 

@@ -61,7 +61,7 @@ const TimelineCard = ({ schedule }) => {
 
       {/* Card */}
 
-      <div className="flex-1 rounded-3xl border bg-white dark:bg-zinc-900 p-6 shadow-sm hover:shadow-lg transition">
+      <div className="flex-1 rounded-3xl bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) border-(--border)p-6 shadow-sm hover:shadow-lg transition">
 
         <div className="flex justify-between items-start gap-4 flex-wrap">
 
