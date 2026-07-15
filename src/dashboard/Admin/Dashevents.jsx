@@ -73,6 +73,25 @@ const Dashevents = ({ currentUser, events, setEvents }) => {
     }
   };
 
+  const handleShare = async (event) => {
+  const shareUrl = `${window.location.origin}/share/event/${event.slug}`;
+
+  try {
+    if (navigator.share) {
+      await navigator.share({
+        title: event.name,
+        text: `Check out this event on Airticks: ${event.name}`,
+        url: shareUrl,
+      });
+    } else {
+      await navigator.clipboard.writeText(shareUrl);
+      alert("✅ Share link copied to clipboard!");
+    }
+  } catch (error) {
+    console.error("Share failed:", error);
+  }
+};
+
   // Admin approve event
   const handleApprove = async (event) => {
     setApprovingEventId(event.id);
@@ -226,7 +245,7 @@ const Dashevents = ({ currentUser, events, setEvents }) => {
                 
                 <p className="text-sm font-normal text-gray-400 flex gap-2 items-center">
                   <FaLocationArrow className="text-(--primary) shrink-0" />
-                  <span className="truncate">{event.location}</span>
+                  <span className="truncate">{event.venue.name}</span>
                 </p>
 
                 {/* Pricing Rules Wrapper */}
@@ -236,8 +255,8 @@ const Dashevents = ({ currentUser, events, setEvents }) => {
                   ) : Array.isArray(event.price) ? (
                     event.price.map((priceOption, index) => (
                       <p key={index} className="text-sm font-semibold text-(--primary)">
-                        {priceOption.label || "Regular"}: {priceOption.currency || "₦"}{" "}
-                        {Number(priceOption.amount || 0).toLocaleString()}
+                        {priceOption.name || "Regular"}: {priceOption.currency || "₦"}{" "}
+                        {Number(priceOption.price || 0).toLocaleString()}
                       </p>
                     ))
                   ) : (
@@ -284,6 +303,17 @@ const Dashevents = ({ currentUser, events, setEvents }) => {
                       <RiStarFill size={14} />
                     </button>
 
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleShare(event);
+                      }}
+                      className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 text-xs font-bold transition-all shadow-sm"
+                    >
+                      Share
+                    </button>
+
                     {isAdmin && event.status !== "approved" && (
                       <button
                         onClick={(e) => {
@@ -302,7 +332,7 @@ const Dashevents = ({ currentUser, events, setEvents }) => {
               </span>
 
               <OptimizedImage
-                src={event.photoURL}
+                src={event.photoURL || event.photo}
                 alt={event.name}
                 className="object-cover w-28 h-28 lg:w-32 lg:h-32 shrink-0 rounded-2xl shadow-sm border border-gray-700/20"
               />
