@@ -206,9 +206,22 @@ const TicketModal = ({ currentUser }) => {
           </div>
 
         <div className='max-w-6xl w-full mx-auto px-4 md:px-8 py-6 space-y-8'>
-          
+
           <EventStats event={selectedEvent} />
 
+          <div >
+            <h2 className="text-3xl font-bold uppercase">What to Expect</h2>
+            <p className="opacity-70">
+              All you need to know about the event
+            </p>
+
+            <div
+              className="prose prose-sm md:prose-base max-w-none mt-4 font-mono"
+              dangerouslySetInnerHTML={{
+                __html: selectedEvent?.description || "",
+              }}
+            />
+          </div>
           {/* Core Info & Ticket Purchase Grid Layout */}
           <div className="grid lg:grid-cols-3 gap-8 items-start">
             
