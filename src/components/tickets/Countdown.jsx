@@ -115,17 +115,17 @@ const Countdown = ({ startTime, endTime }) => {
 
         <TimeCard
           value={time.hours}
-          label="Hours"
+          label="Hrs"
         />
 
         <TimeCard
           value={time.minutes}
-          label="Minutes"
+          label="Mins"
         />
 
         <TimeCard
           value={time.seconds}
-          label="Seconds"
+          label="Secs"
         />
 
       </div>
