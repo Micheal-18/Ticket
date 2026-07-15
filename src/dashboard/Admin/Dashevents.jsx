@@ -245,7 +245,7 @@ const Dashevents = ({ currentUser, events, setEvents }) => {
                 
                 <p className="text-sm font-normal text-gray-400 flex gap-2 items-center">
                   <FaLocationArrow className="text-(--primary) shrink-0" />
-                  <span className="truncate">{event.venue.name}</span>
+                  <span className="truncate">{event.venue?.name}</span>
                 </p>
 
                 {/* Pricing Rules Wrapper */}
