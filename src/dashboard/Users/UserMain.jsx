@@ -247,6 +247,26 @@ const UserMain = () => {
         )}
       </section>
 
+      {/* Become Organizer */}
+<section className="rounded-2xl border border-orange-500/20 bg-orange-500/5 p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+  <div>
+    <h2 className="text-xl font-bold text-(--text-color)">
+      Ready to host your own event?
+    </h2>
+
+    <p className="text-sm text-gray-500 mt-1">
+      Upgrade your account and start creating, selling and managing tickets with Airticks.
+    </p>
+  </div>
+
+  <Link
+    to="/become-organizer"
+    className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-xl font-semibold transition"
+  >
+    Become an Organizer
+  </Link>
+</section>
+
       {/* 🌟 HIGHLIGHTED EXPERIENCE EXPERIENCES */}
       {sortedEvents.highlighted.length > 0 && (
         <section>

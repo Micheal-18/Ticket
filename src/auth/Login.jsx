@@ -6,7 +6,8 @@ import walkGif from "../assets/dog.gif"
 import { auth, db } from '../firebase/firebase';
 import { FaEye, FaEyeSlash } from 'react-icons/fa6';
 import { useNavigate } from "react-router-dom";
-import GoogleAuth from '../components/GoogleAuth';
+import GoogleAuth from './GoogleAuth';
+
 
 const Login = () => {
   const [rememberMe, setRememberMe] = useState(false);

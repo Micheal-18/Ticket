@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react'
-import GoogleAuth from '../GoogleAuth'
+import GoogleAuth from '../../auth/GoogleAuth'
 import PaystackPayment from '../PaystackPayment'
 
 const TicketPurchaseCard = ({
