@@ -116,14 +116,14 @@ const TicketPurchaseCard = ({
               value={person.name}
               placeholder='Full Name'
               onChange={e => onAttendeeChange(index, 'name', e.target.value)}
-              className='w-full rounded-xl p-3 bg-zinc-900'
+              className='w-full rounded-xl p-3  border border-(--border)'
             />
 
             <input
               value={person.email}
               placeholder='Email'
               onChange={e => onAttendeeChange(index, 'email', e.target.value)}
-              className='w-full rounded-xl p-3 bg-zinc-900'
+              className='w-full rounded-xl p-3 border border-(--border)'
             />
           </div>
         ))}
@@ -138,7 +138,7 @@ const TicketPurchaseCard = ({
           SOLD OUT
         </button>
       ) : quantity === 0 ? (
-        <button disabled className='w-full rounded-xl bg-zinc-400 py-4'>
+        <button disabled className='w-full rounded-xl  border border-(--border) py-4'>
           Select Quantity
         </button>
       ) : !currentUser ? (

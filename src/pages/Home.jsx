@@ -18,6 +18,7 @@ import eventImg from '../assets/event.png'
 import walkGif from '../assets/dog.gif'
 import birdGif from '../assets/lilbirdie.gif'
 import flySound from '../audio/fly.mp3'
+import event from "../assets/unbox.JPG";
 
 const Home = ({ currentUser }) => {
   const { log } = useParams()
@@ -56,7 +57,6 @@ const Home = ({ currentUser }) => {
               y: [0, -18, 0],
               rotate: [0, -8, 8, 0],
               scale: [1, 1.18, 1],
-              color: ['#ffffff', '#fb923c', '#ffffff'],
               transition: {
                 duration: 0.45
               }
@@ -160,9 +160,9 @@ const Home = ({ currentUser }) => {
       <section className='relative min-h-screen bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) w-full flex items-center justify-center z-10 overflow-hidden'>
         <header
           data-aos='zoom-out'
-          className='flex flex-1 flex-col items-center justify-center uppercase space-y-6 text-center px-4'
+          className='h-[50vh] md:min-h-screen flex flex-1 flex-col items-center justify-center uppercase space-y-6 text-center px-4'
         >
-          <motion.h1 className='relative lg:text-8xl md:text-8xl text-5xl font-black tracking-tight'>
+          <motion.h1 className='relative lg:text-8xl md:text-8xl text-3xl font-black tracking-tight'>
             {text.split('').map((letter, index) => (
               <motion.span
                 key={index}
@@ -213,8 +213,8 @@ const Home = ({ currentUser }) => {
 
           {/* Ambient Blurred Background Elements */}
           <div className='absolute top-10 left-10 w-80 h-80 rounded-full bg-(--primary)/20 blur-[150px] animate-pulse pointer-events-none' />
-          <div className='absolute bottom-10 right-10 w-96 h-96 rounded-full bg-yellow-400/10 blur-[180px] animate-pulse pointer-events-none' />
-
+          <div className='absolute bottom-0 right-10 w-96 h-96 rounded-full bg-yellow-400/10 blur-[180px] animate-pulse pointer-events-none' />
+        
           {/* Particle Effects */}
           <div className='absolute inset-0 overflow-hidden pointer-events-none'>
             {[...Array(15)].map((_, i) => (
@@ -222,7 +222,7 @@ const Home = ({ currentUser }) => {
                 key={i}
                 className='absolute rounded-full bg-amber-400/70'
                 style={{
-                  width: Math.random() * 10 + 2,
+                  width: Math.random() * 14 + 2,
                   height: Math.random() * 10 + 2,
                   left: `${Math.random() * 100}%`,
                   top: `${Math.random() * 100}%`
@@ -262,6 +262,7 @@ const Home = ({ currentUser }) => {
               </motion.button>
             </Link>
           </div>
+
         </header>
       </section>
 
