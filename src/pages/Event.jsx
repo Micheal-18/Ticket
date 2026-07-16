@@ -413,11 +413,17 @@ const Event = ({ currentUser, events, setEvents }) => {
                       {event.isFree ? (
                         <span className="text-green-500 text-sm font-bold bg-green-500/10 px-2 py-0.5 rounded-md">🆓 Free Admission</span>
                       ) : Array.isArray(event.price) ? (
-                        event.price.map((priceOption, index) => (
+                        event.price.slice(0, 2).map((priceOption, index) => (
                           <p key={index}>
                             <span className="text-(--primary) text-lg font-semibold">
-                              {priceOption.name}: {priceOption.currency} {" "}
-                              {Number(priceOption.price)}
+                            {priceOption.name}:
+                            {Number(priceOption.price) > 0 ? (priceOption.currency + " " +
+                              priceOption.price.toLocaleString()
+                            ) : (
+                              <span className="text-green-500 text-sm font-bold bg-green-500/10 px-2 py-0.5 rounded-md">
+                                Free Admission
+                              </span>
+                            )}
                             </span>
                           </p>
                         ))

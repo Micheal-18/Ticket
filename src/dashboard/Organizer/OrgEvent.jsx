@@ -153,13 +153,13 @@ const OrgEvent = () => {
 
                   {/* CALENDAR METADATA CONTAINER */}
                   <p className="text-sm font-normal text-gray-400 flex gap-2 items-center">
-                    <FaCalendar className="text-orange-500 shrink-0" />{" "}
+                    <FaCalendar className="text-(--primary) shrink-0" />{" "}
                     <span className="truncate">{displayEventDate(event.date)}</span>
                   </p>
                   
                   {/* TIME CONSTRAINT CONTAINER */}
                   <p className="text-sm text-gray-400 flex items-center gap-2">
-                    <FaClock className="text-orange-500 shrink-0" />
+                    <FaClock className="text-(--primary) shrink-0" />
                     <span className="truncate">
                       {formatEventStatus(event.startTime, event.endTime)}
                     </span>
@@ -167,28 +167,37 @@ const OrgEvent = () => {
                   
                   {/* POSITION ROUTE CONTAINER */}
                   <p className="text-sm font-normal text-gray-400 flex gap-2 items-center">
-                    <FaLocationArrow className="text-orange-500 shrink-0" />
+                    <FaLocationArrow className="text-(--primary) shrink-0" />
                     <span className="truncate">{event.location}</span>
                   </p>
 
                   {/* PRICING SCHEDULER MATRIX */}
                   <div className="pt-1">
                     {event.isFree ? (
-                      <span className="text-green-500 text-sm font-bold bg-green-500/10 px-2 py-0.5 rounded-md">
-                        Free Admission
-                      </span>
-                    ) : Array.isArray(event.price) ? (
-                      event.price.map((priceOption, index) => (
-                        <p key={index} className="text-sm font-semibold text-orange-500">
-                          {priceOption.name || "Regular"}: {priceOption.currency || "₦"}{" "}
-                          {Number(priceOption.amount || 0).toLocaleString()}
+                        <span className="text-green-500 text-sm font-bold bg-green-500/10 px-2 py-0.5 rounded-md">🆓 Free Admission</span>
+                      ) : Array.isArray(event.price) ? (
+                        event.price.slice(0, 2).map((priceOption, index) => (
+                          <p key={index}>
+                            <span className="text-(--primary) text-lg font-semibold">
+                            {priceOption.name}:
+                            {Number(priceOption.price) > 0 ? (priceOption.currency + " " +
+                              priceOption.price.toLocaleString()
+                            ) : (
+                              <span className="text-green-500 text-sm font-bold bg-green-500/10 px-2 py-0.5 rounded-md">
+                                Free Admission
+                              </span>
+                            )}
+                            </span>
+                          </p>
+                        ))
+                      ) : (
+                        <p>
+                          <span className="text-(--primary) text-lg font-semibold">
+                            {event.currency} {" "}
+                            {Number(event.price?.price) + ((1.5 / 100) * Number(event.price?.price) + 100)}
+                          </span>
                         </p>
-                      ))
-                    ) : (
-                      <p className="text-sm font-semibold text-orange-500">
-                        {event.currency || "₦"} {Number(event.price?.price || 0).toLocaleString()}
-                      </p>
-                    )}
+                      )}
                   </div>
 
                   {/* INTERACTIVE CONTROLS TRAY */}

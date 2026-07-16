@@ -1,24 +1,75 @@
 import React, { useEffect, useState } from 'react'
-import register from '../assets/register.png'
-import create from '../assets/create.png'
-import event from '../assets/event.png'
-import { FaCalendar, FaClock, FaLocationArrow } from 'react-icons/fa6'
-import walkGif from '../assets/dog.gif'
+import { Link, useParams } from 'react-router-dom'
 import { collection, getDocs, query, where, orderBy } from 'firebase/firestore'
-
 import { db } from '../firebase/firebase'
-import { FaEllipsisV } from 'react-icons/fa'
+import { motion, useAnimation } from 'framer-motion'
+
+// Icons & Components
+import { FaCalendar, FaClock, FaLocationArrow } from 'react-icons/fa6'
 import OptimizedImage from '../components/OptimizedImage'
 import Spinner from '../components/Spinner'
-import { Link, useParams } from 'react-router-dom'
 import Adsense from '../components/Adsense'
 import { formatEventStatus } from '../utils/formatEventRange'
+
+// Assets
+import register from '../assets/register.png'
+import create from '../assets/create.png'
+import eventImg from '../assets/event.png'
+import walkGif from '../assets/dog.gif'
+import birdGif from '../assets/lilbirdie.gif'
+import flySound from '../audio/fly.mp3'
 
 const Home = ({ currentUser }) => {
   const { log } = useParams()
   const [events, setEvents] = useState([])
   const [blog, setBlog] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
   const [selectedCategory, setSelectedCategory] = useState('All')
+
+  const text = 'airticks'
+
+  const letterControls = text.split('').map(() => useAnimation())
+  const birdControls = useAnimation()
+
+  useEffect(() => {
+    const animate = async () => {
+      while (true) {
+        // Reset bird
+        await birdControls.set({
+          x: -200,
+          y: 0
+        })
+
+        // Bird flies across
+        birdControls.start({
+          x: window.innerWidth + 200,
+          transition: {
+            duration: 8,
+            ease: 'linear'
+          }
+        })
+
+        // Animate letters one after another
+        for (let i = 0; i < text.length; i++) {
+          setTimeout(() => {
+            letterControls[i].start({
+              y: [0, -18, 0],
+              rotate: [0, -8, 8, 0],
+              scale: [1, 1.18, 1],
+              color: ['#ffffff', '#fb923c', '#ffffff'],
+              transition: {
+                duration: 0.45
+              }
+            })
+          }, i * 420)
+        }
+
+        await new Promise(resolve => setTimeout(resolve, 9000))
+      }
+    }
+
+    animate()
+  }, [])
 
   const categories = [
     'Arts',
@@ -34,52 +85,45 @@ const Home = ({ currentUser }) => {
     'Workshops'
   ]
 
-  // ✅ Fetch Events
+  // ✅ Consolidated Safe Fetch API with Loading State
   useEffect(() => {
-    const fetchEvents = async () => {
+    const fetchData = async () => {
+      setIsLoading(true)
       try {
-        const querySnapshot = await getDocs(collection(db, 'events'))
-        const eventsData = querySnapshot.docs.map(doc => ({
+        // Fetch Events
+        const eventsSnapshot = await getDocs(collection(db, 'events'))
+        const eventsData = eventsSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
         }))
 
         const isAdmin = currentUser?.isAdmin === true
-
         const visibleEvents = isAdmin
           ? eventsData
           : eventsData.filter(event => event.status === 'approved')
-
         setEvents(visibleEvents)
-      } catch (error) {
-        console.error('Error fetching events:', error)
-      }
-    }
-    fetchEvents()
-  }, [setEvents])
 
-  // ✅ Fetch Blogs
-  useEffect(() => {
-    const fetchBlogs = async () => {
-      try {
-        // Fetch only approved blogs
-        const q = query(
+        // Fetch Blogs (ordered by date)
+        const blogQuery = query(
           collection(db, 'blogs'),
           where('approved', '==', true),
           orderBy('createdAt', 'desc')
         )
-        const querySnapshot = await getDocs(q)
-        const blogsData = querySnapshot.docs.map(doc => ({
+        const blogSnapshot = await getDocs(blogQuery)
+        const blogsData = blogSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
         }))
         setBlog(blogsData)
       } catch (error) {
-        console.error('Error fetching blogs:', error)
+        console.error('Error fetching dashboard data:', error)
+      } finally {
+        setIsLoading(false)
       }
     }
-    fetchBlogs()
-  }, [setBlog])
+
+    fetchData()
+  }, [currentUser?.isAdmin]) // Safeguards admin re-fetches
 
   // ✅ Category Filtering (safe)
   const filteredEvents =
@@ -101,10 +145,10 @@ const Home = ({ currentUser }) => {
             )
         )
 
-  // ✅ Optional Loading UI
-  if (!events.length && !blog.length) {
+  // ✅ Fixed Loading Condition
+  if (isLoading) {
     return (
-      <div className='flex space-x-2 justify-center items-center h-screen'>
+      <div className='flex justify-center items-center h-screen bg-(--bg-color)'>
         <Spinner />
       </div>
     )
@@ -113,24 +157,111 @@ const Home = ({ currentUser }) => {
   return (
     <>
       {/* HERO */}
-      <section className='relative min-h-screen bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) w-full flex flex-col lg:mt-5 mt-4 flex-1 items-center justify-center z-10 '>
+      <section className='relative min-h-screen bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) w-full flex items-center justify-center z-10 overflow-hidden'>
         <header
           data-aos='zoom-out'
-          className='flex flex-1 flex-col items-center justify-center uppercase space-y-3'
+          className='flex flex-1 flex-col items-center justify-center uppercase space-y-6 text-center px-4'
         >
-          <h1 className='lg:text-9xl md:text-8xl text-5xl tracking-tighter font-bold'>
-            airticks<span className='text-(--primary)'>event</span>
-          </h1>
-          <div className='border-y-2 py-4'>
-            <p className='lg:text-6xl md:text-5xl text-2xl font-semibold'>
-              magical meeting places
-            </p>
+          <motion.h1 className='relative lg:text-8xl md:text-8xl text-5xl font-black tracking-tight'>
+            {text.split('').map((letter, index) => (
+              <motion.span
+                key={index}
+                animate={letterControls[index]}
+                whileHover={{
+                  y: -8,
+                  color: '#f97316'
+                }}
+                className='inline-block'
+              >
+                {letter}
+              </motion.span>
+            ))}
+
+            <motion.span
+              initial={{
+                opacity: 0
+              }}
+              animate={{
+                opacity: 1
+              }}
+              transition={{
+                delay: 5
+              }}
+              className='ml-2 bg-gradient-to-r from-orange-400 via-yellow-300 to-orange-600 bg-clip-text text-transparent'
+            >
+              event
+            </motion.span>
+          </motion.h1>
+          <motion.img
+            src={birdGif}
+            alt='bird'
+            animate={birdControls}
+            className='absolute top-0 left-0 w-10 md:w-14 pointer-events-none z-40'
+          />
+
+          <div className='border-y-2 py-4 px-6 border-gray-700/50'>
+            <motion.p
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.5 }}
+              className='text-2xl md:text-5xl font-semibold'
+            >
+              Discover. <span className='text-(--primary)'>Connect.</span>{' '}
+              Experience.
+            </motion.p>
           </div>
-          <a href='/event'>
-            <button className='bg-(--primary) p-3  hover:bg-(--primary-hover) active:scale-90'>
-              Discover Events
-            </button>
-          </a>
+
+          {/* Ambient Blurred Background Elements */}
+          <div className='absolute top-10 left-10 w-80 h-80 rounded-full bg-(--primary)/20 blur-[150px] animate-pulse pointer-events-none' />
+          <div className='absolute bottom-10 right-10 w-96 h-96 rounded-full bg-yellow-400/10 blur-[180px] animate-pulse pointer-events-none' />
+
+          {/* Particle Effects */}
+          <div className='absolute inset-0 overflow-hidden pointer-events-none'>
+            {[...Array(15)].map((_, i) => (
+              <motion.div
+                key={i}
+                className='absolute rounded-full bg-amber-400/70'
+                style={{
+                  width: Math.random() * 10 + 2,
+                  height: Math.random() * 10 + 2,
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`
+                }}
+                animate={{
+                  y: [0, -40, 0],
+                  opacity: [0, 0.8, 0]
+                }}
+                transition={{
+                  duration: Math.random() * 5 + 5,
+                  repeat: Infinity,
+                  delay: Math.random() * 5
+                }}
+              />
+            ))}
+          </div>
+
+          <div className='flex flex-col items-center gap-4'>
+            <Link to='/event'>
+              <motion.button
+                whileHover={{ scale: 1.08 }}
+                whileTap={{ scale: 0.95 }}
+                animate={{
+                  boxShadow: [
+                    '0 0 0px rgba(249, 115, 22, 0)',
+                    '0 0 20px rgba(249, 115, 22, 0.6)',
+                    '0 0 0px rgba(249, 115, 22, 0)'
+                  ]
+                }}
+                transition={{
+                  repeat: Infinity,
+                  duration: 2
+                }}
+                className='bg-(--primary) hover:bg-orange-600 text-white px-8 py-4 rounded-xl font-semibold transition-colors'
+              >
+                Discover Events
+              </motion.button>
+            </Link>
+          </div>
         </header>
       </section>
 
@@ -138,19 +269,19 @@ const Home = ({ currentUser }) => {
         <Adsense />
       </div>
 
-      {/* CATEGORY */}
-      <section className='relative w-full min-h-screen border-t-2 border-gray-900  p-4 z-40'>
-        <div data-aos='fade-out' className='flex flex-col  space-y-2'>
+      {/* CATEGORIES */}
+      <section className='relative w-full min-h-screen border-t border-gray-800 p-4 z-40'>
+        <div data-aos='fade-out' className='flex flex-col space-y-2'>
           <h1 className='uppercase md:text-6xl text-5xl font-bold mt-4'>
             Categories
           </h1>
           <div className='flex custom-scrollbar py-8 space-x-4 overflow-x-auto'>
             <button
               onClick={() => setSelectedCategory('All')}
-              className={`p-4 uppercase rounded-full ${
+              className={`px-6 py-3 uppercase rounded-full font-medium transition-all duration-300 ${
                 selectedCategory === 'All'
-                  ? 'bg-[#333333] text-[#eeeeee]'
-                  : 'bg-[#eeeeee] text-[#333333]'
+                  ? 'bg-(--primary) '
+                  : 'bg-(--surface) hover:bg-(--surface-hover)'
               }`}
             >
               All
@@ -159,10 +290,10 @@ const Home = ({ currentUser }) => {
               <button
                 key={cate}
                 onClick={() => setSelectedCategory(cate)}
-                className={`p-4 flex items-center uppercase rounded-full ${
+                className={`px-6 py-3 flex items-center uppercase rounded-full font-medium transition-all duration-300 whitespace-nowrap ${
                   selectedCategory === cate
-                    ? 'bg-[#333333] text-[#eeeeee]'
-                    : 'bg-[#eeeeee] text-[#333333]'
+                    ? 'bg-(--primary) text-white'
+                    : 'bg-(--surface) hover:bg-(--surface-hover) '
                 }`}
               >
                 {cate}
@@ -171,37 +302,33 @@ const Home = ({ currentUser }) => {
           </div>
         </div>
 
-        {/* EVENTS */}
+        {/* EVENTS SECTION */}
         <h2 className='text-2xl font-bold mb-4 mt-8 uppercase'>🔥 Events</h2>
         <div
           data-aos='fade-up'
-          className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 gap-y-8 my-8 place-items-center '
+          className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 gap-y-8 my-8 place-items-center'
         >
           {filteredEvents.length > 0 ? (
             filteredEvents.map(event => (
-              <a
-                href={`/event/${event.slug}`}
+              <Link
+                to={`/event/${event.slug}`}
                 key={event.id}
                 className='w-full'
               >
-                <div className='relative flex flex-col cursor-pointer group  bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) rounded-2xl p-2'>
+                <div className='relative flex flex-col cursor-pointer group bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) rounded-2xl p-2'>
                   <div className='overflow-hidden rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300'>
                     <img
                       src={event.photoURL || event.photo || '/fallback.jpg'}
-                      alt='event'
+                      alt={event.name || 'event'}
                       className='object-cover h-[220px] w-full hover:scale-105 duration-500 rounded-2xl'
                     />
                   </div>
                   <div className='space-y-2 mt-2'>
-                    <h1 className='font-bold text-gray-700 uppercase text-2xl truncate w-[250px] '>
+                    <h1 className='font-bold  uppercase text-2xl truncate w-[250px]'>
                       {event.name || 'Untitled Event'}
                     </h1>
-                    <p
-                      dangerouslySetInnerHTML={{ __html: event.description }}
-                      className='prose line-clamp-1 text-gray-600 text-sm  mb-3 w-[200px] truncate'
-                    ></p>
                     <p className='text-xs text-gray-500 flex items-center gap-2'>
-                      <FaCalendar />{' '}
+                      <FaCalendar />
                       {new Date(event.date).toLocaleDateString('en-US', {
                         weekday: 'short',
                         month: 'short',
@@ -215,139 +342,178 @@ const Home = ({ currentUser }) => {
                         {formatEventStatus(event.startTime, event.endTime)}
                       </span>
                     </p>
-                    <p className='line-clamp-2 text-sm text-gray-600 flex items-center gap-2'>
-                      <FaLocationArrow />{' '}
-                      {event.location || event.venue.name || 'No location'}
+                    <p className='line-clamp-2 text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2'>
+                      <FaLocationArrow />
+                      {event.location || event.venue?.name || 'No location'}
                     </p>
+
+                    {event.isFree ? (
+                      <span className='text-green-500 text-sm font-bold bg-green-500/10 px-2 py-0.5 rounded-md inline-block'>
+                        🆓 Free Admission
+                      </span>
+                    ) : Array.isArray(event.price) ? (
+                      event.price.slice(0, 1).map((priceOption, index) => (
+                        <p key={index}>
+                          <span className='text-(--primary) text-sm font-semibold'>
+                            {priceOption.name}:{' '}
+                            {Number(priceOption.price) > 0 ? (
+                              `${
+                                priceOption.currency
+                              } ${priceOption.price.toLocaleString()}`
+                            ) : (
+                              <span className='text-green-500 text-sm font-bold bg-green-500/10 px-2 py-0.5 rounded-md'>
+                                Free Admission
+                              </span>
+                            )}
+                          </span>
+                        </p>
+                      ))
+                    ) : (
+                      <p>
+                        <span className='text-(--primary) text-lg font-semibold'>
+                          {event.currency}{' '}
+                          {Number(event.price?.price) +
+                            ((1.5 / 100) * Number(event.price?.price) + 100)}
+                        </span>
+                      </p>
+                    )}
                   </div>
                 </div>
-              </a>
+              </Link>
             ))
           ) : (
-            <p className='text-gray-700 text-lg font-medium col-span-full text-center'>
+            <p className='text-gray-400 text-lg font-medium col-span-full text-center'>
               No events found for this category.
             </p>
           )}
         </div>
 
-        {/* BLOGS */}
+        {/* BLOGS SECTION */}
         <h2 className='text-2xl font-bold mb-4 uppercase'>📰 Blogs</h2>
         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 gap-y-8 sm:gap-4 md:gap-7 my-8 place-items-center'>
           {filteredBlogs.length > 0 ? (
-            filteredBlogs.map(News => (
+            filteredBlogs.map(news => (
               <div
-                key={News.id}
-                className='relative flex flex-col cursor-pointer group'
+                key={news.id}
+                className='relative flex flex-col cursor-pointer group w-full'
               >
-                <FaEllipsisV className='absolute top-2 right-2 z-20 hover:scale-105 active:scale-90' />
                 <div
                   data-aos='fade-out'
                   className='overflow-hidden rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300'
                 >
                   <OptimizedImage
-                    src={News.photoURL || '/fallback.jpg'}
-                    alt='data'
+                    src={news.photoURL || '/fallback.jpg'}
+                    alt={news.title || 'news'}
                     className='object-cover h-[220px] w-full hover:scale-105 duration-500 rounded-2xl'
                   />
                 </div>
-                <div className='space-y-2'>
+                <div className='space-y-2 mt-2'>
                   <p data-aos='fade-up' className='text-xs text-gray-500'>
-                    {News.published || 'Recently'}
+                    {news.published || 'Recently'}
                   </p>
-                  <h1 data-aos='fade-up' className='font-bold line-clamp-1'>
-                    {News.title || 'Untitled Blog'}
+                  <h1
+                    data-aos='fade-up'
+                    className='font-bold line-clamp-1 text-xl'
+                  >
+                    {news.title || 'Untitled Blog'}
                   </h1>
                   <p
                     data-aos='fade-up'
-                    className='line-clamp-2 text-sm text-gray-600'
+                    className='line-clamp-2 text-sm text-gray-600 dark:text-gray-400'
                   >
-                    {News.description || 'No description available'}
+                    {news.description || 'No description available'}
                   </p>
                 </div>
                 <Link
-                  to={`/blogs/${News.log}`}
-                  className='text-orange-500 hover:underline'
+                  to={`/blogs/${news.log}`}
+                  className='text-(--primary) hover:underline mt-2 inline-block'
                 >
                   Read More
                 </Link>
               </div>
             ))
           ) : (
-            <p className='text-gray-700 text-lg font-medium col-span-full text-center'>
+            <p className='text-gray-400 text-lg font-medium col-span-full text-center'>
               No blog posts found for this category.
             </p>
           )}
         </div>
       </section>
 
+      {/* STEPS SECTION */}
       <section className='relative w-full min-h-screen bg-(--surface) dark:bg-(--surface) p-4 z-40'>
-        <h1 className='uppercase md:text-6xl  text-5xl font-bold p-4'>Steps</h1>
+        <h1 className='uppercase md:text-6xl text-5xl font-bold p-4'>Steps</h1>
         <div
           data-aos='fade-out'
           className='flex flex-col space-y-6 justify-center items-center mx-auto w-full max-w-6xl px-4'
         >
+          {/* Step 1 */}
           <div
             data-aos='fade-up'
-            className='flex lg:flex-row flex-col  lg:justify-between items-center w-full  bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) shadow flex-1 gap-10 relative py-10 px-8   rounded-3xl'
+            className='flex lg:flex-row flex-col lg:justify-between items-center w-full bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) shadow-md flex-1 gap-10 relative py-10 px-8 rounded-3xl'
           >
-            <div className='space-y-4 flex flex-col justify-center items-center'>
-              <h1 className='uppercase text-center  md:text-6xl text-4xl font-bold mt-4'>
+            <div className='space-y-4 flex flex-col justify-center items-center text-center lg:text-left lg:items-start max-w-2xl'>
+              <h1 className='uppercase md:text-6xl text-4xl font-bold mt-4'>
                 Register
               </h1>
-              <p className='md:text-lg text-sm text-center max-w-2xl mt-2'>
+              <p className='md:text-lg text-sm text-gray-500 dark:text-gray-400 mt-2'>
                 Join airticks.event today and unlock a world of unforgettable
                 experiences. Create your account now to discover, book, and
                 attend the best events around you!
               </p>
             </div>
-
-            <div className='rounded-xl overflow-hidden'>
+            <div className='rounded-xl overflow-hidden shadow-md flex-shrink-0'>
               <img
                 src={register}
+                alt='Register preview'
                 className='object-cover h-50 w-80 hover:scale-105 duration-500 rounded-2xl'
               />
             </div>
           </div>
+
+          {/* Step 2 */}
           <div
             data-aos='fade-up'
-            className='flex lg:flex-row flex-col  lg:justify-between items-center w-full  bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) shadow flex-1 gap-10 relative py-10 px-8   rounded-3xl'
+            className='flex lg:flex-row flex-col lg:justify-between items-center w-full bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) shadow-md flex-1 gap-10 relative py-10 px-8 rounded-3xl'
           >
-            <div className='space-y-4 flex flex-col justify-center items-center'>
-              <h1 className='uppercase text-center  md:text-6xl text-4xl font-bold mt-4'>
+            <div className='space-y-4 flex flex-col justify-center items-center text-center lg:text-left lg:items-start max-w-2xl'>
+              <h1 className='uppercase md:text-6xl text-4xl font-bold mt-4'>
                 Create Events
               </h1>
-              <p className=' md:text-lg text-sm text-center max-w-2xl mt-2'>
+              <p className='md:text-lg text-sm text-gray-500 dark:text-gray-400 mt-2'>
                 Are you an event organizer? Create and manage your events
                 effortlessly with our user-friendly platform. Reach a wider
                 audience and boost your event's success!
               </p>
             </div>
-
-            <div className='rounded-xl overflow-hidden'>
+            <div className='rounded-xl overflow-hidden shadow-md flex-shrink-0'>
               <img
                 src={create}
+                alt='Create event preview'
                 className='object-cover h-50 w-80 hover:scale-105 duration-500 rounded-2xl'
               />
             </div>
           </div>
+
+          {/* Step 3 */}
           <div
             data-aos='fade-up'
-            className='flex lg:flex-row flex-col  lg:justify-between items-center w-full  bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) shadow flex-1 gap-10 relative py-10 px-8   rounded-3xl'
+            className='flex lg:flex-row flex-col lg:justify-between items-center w-full bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) shadow-md flex-1 gap-10 relative py-10 px-8 rounded-3xl'
           >
-            <div className='space-y-4 flex flex-col justify-center items-center'>
-              <h1 className='uppercase text-center   md:text-6xl text-4xl font-bold mt-4'>
+            <div className='space-y-4 flex flex-col justify-center items-center text-center lg:text-left lg:items-start max-w-2xl'>
+              <h1 className='uppercase md:text-6xl text-4xl font-bold mt-4'>
                 Upcoming Events
               </h1>
-              <p className=' md:text-lg text-sm text-center max-w-2xl mt-2'>
+              <p className='md:text-lg text-sm text-gray-500 dark:text-gray-400 mt-2'>
                 Explore our curated selection of upcoming events, from
-                electrifying concerts to inspiring workshops. Find your next
+                electifying concerts to inspiring workshops. Find your next
                 unforgettable experience here!
               </p>
             </div>
-
-            <div className='rounded-xl overflow-hidden'>
+            <div className='rounded-xl overflow-hidden shadow-md flex-shrink-0'>
               <img
-                src={event}
+                src={eventImg}
+                alt='Upcoming events preview'
                 className='object-cover h-50 w-80 hover:scale-105 duration-500 rounded-2xl'
               />
             </div>
@@ -356,17 +522,27 @@ const Home = ({ currentUser }) => {
       </section>
 
       {/* FOOTER */}
-      <section className='flex flex-col justify-center items-center pt-10 w-full h-[50vh]'>
-        <div data-aos='fade-out' className='border-t-2 border-gray-400'>
+      <section className='flex flex-col justify-center items-center pt-10 w-full h-[50vh] border-t border-gray-800 bg-(--bg-color)'>
+        <div data-aos='fade-out' className='border-t-2 border-gray-500/30 pt-4'>
           <h1 className='lg:text-9xl md:text-8xl mt-15 text-6xl font-bold'>
             airticks<span className='text-(--primary)'>.event</span>
           </h1>
         </div>
-        <footer className='mt-10'>
-          <img
+        <footer className='w-full mt-10 overflow-hidden'>
+          <motion.img
             src={walkGif}
-            alt='walking gif'
-            className='w-20 h-20 animation-walk'
+            alt='dog walking'
+            className='w-20 pointer-events-none '
+            animate={{
+              x: ['-50vw', '100vw'],
+              y: [0, -20, 10, -10, 0]
+            }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              ease: 'linear',
+              repeatDelay: 5
+            }}
           />
         </footer>
       </section>
