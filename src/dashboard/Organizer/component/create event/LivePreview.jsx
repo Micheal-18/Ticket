@@ -11,6 +11,7 @@ const LivePreview = ({
   organizer,
   date,
   startTime,
+  endTime,
   coverStyle,
   schedules = [],
   guests = [],
@@ -43,7 +44,7 @@ const LivePreview = ({
   }, [photo])
 
   return (
-    <aside className='sticky top-24 rounded-3xl overflow-hidden border border-gray-200 dark:border-gray-500 bg-(--bg-color) shadow flex-1'>
+    <aside className=' top-24 rounded-3xl overflow-hidden border border-gray-200 dark:border-gray-500 bg-(--bg-color) shadow flex-1'>
       {/* Hero */}
 
       <div className='relative h-72 overflow-hidden'>
@@ -109,7 +110,21 @@ const LivePreview = ({
 
           <div className='flex items-center gap-3 text-sm opacity-80'>
             <FiClock />
-            {startTime || 'Time'}
+              {startTime
+    ? `${new Date(startTime).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      })}${
+        endTime
+          ? ` - ${new Date(endTime).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false,
+            })}`
+          : ""
+      }`
+    : "Event Time"}
           </div>
 
           {schedules.length > 0 && (

@@ -132,7 +132,7 @@ const OrgEvent = () => {
                     selectedDropdown === event.id ? null : event.id
                   );
                 }}
-                className="flex items-center justify-between gap-4 relative lg:px-8 px-4 w-full py-5 shadow rounded-3xl cursor-default transition-all hover:shadow-lg bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800"
+                className="flex items-center justify-between gap-4 relative lg:px-8 px-4 w-full py-5 shadow rounded-3xl cursor-default transition-all hover:shadow-lg bg-(--bg-color) border border-(--border)"
               >
                 <span className="space-y-2 flex flex-col min-w-0 flex-1">
                   <div className="flex items-center gap-2">
@@ -168,7 +168,7 @@ const OrgEvent = () => {
                   {/* POSITION ROUTE CONTAINER */}
                   <p className="text-sm font-normal text-gray-400 flex gap-2 items-center">
                     <FaLocationArrow className="text-(--primary) shrink-0" />
-                    <span className="truncate">{event.location}</span>
+                    <span className="truncate">{event.venue.name}</span>
                   </p>
 
                   {/* PRICING SCHEDULER MATRIX */}
@@ -178,7 +178,7 @@ const OrgEvent = () => {
                       ) : Array.isArray(event.price) ? (
                         event.price.slice(0, 2).map((priceOption, index) => (
                           <p key={index}>
-                            <span className="text-(--primary) text-lg font-semibold">
+                            <span className="text-(--primary) text-xs font-semibold">
                             {priceOption.name}:
                             {Number(priceOption.price) > 0 ? (priceOption.currency + " " +
                               priceOption.price.toLocaleString()
@@ -231,7 +231,7 @@ const OrgEvent = () => {
 
                 {/* VISUAL COMPONENT PLACEMENT */}
                 <OptimizedImage
-                  src={event.photoURL}
+                  src={event.photoURL || event.photo}
                   alt={event.name}
                   className="object-cover w-28 h-28 lg:w-32 lg:h-32 shrink-0 rounded-2xl shadow-sm border border-gray-700/20 duration-500 hover:scale-105"
                 />

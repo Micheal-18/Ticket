@@ -20,6 +20,13 @@ export const formatEventStatus = (start, end) => {
     return "🔴 Ended";
   }
 
+
+// If end time is before start time,
+// assume the event ends the next day.
+if (endDate && endDate <= startDate) {
+  endDate.setDate(endDate.getDate() + 1);
+}
+
   // ✅ Upcoming
   let prefix = "";
   if (isToday(startDate)) {
@@ -30,10 +37,10 @@ export const formatEventStatus = (start, end) => {
     prefix = format(startDate, "MMM d, yyyy");
   }
 
-  const startTime = format(startDate, "h:mm a");
-  const endTime = endDate ? format(endDate, "h:mm a") : null;
+const startTime = format(startDate, "HH:mm");
+const endTime = endDate ? format(endDate, "HH:mm") : null;
 
-  return endTime
+  return startTime
     ? `${prefix}, ${startTime} → ${endTime}`
     : `${prefix}, ${startTime}`;
 };

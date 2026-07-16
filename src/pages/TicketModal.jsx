@@ -207,7 +207,9 @@ const TicketModal = ({ currentUser }) => {
 
         <div className='max-w-6xl w-full mx-auto px-4 md:px-8 py-6 space-y-8'>
 
-          <EventStats event={selectedEvent} />
+          {currentUser?.accountType === "organization" && (
+            <EventStats event={selectedEvent} />
+          )}
 
           <div >
             <h2 className="text-3xl font-bold uppercase">What to Expect</h2>

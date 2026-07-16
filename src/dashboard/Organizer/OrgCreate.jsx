@@ -293,7 +293,7 @@ const CreateEvent = () => {
         type: 'event_submission',
         title: '📢 New Event Submission',
         message: `Event "${name}" needs admin review and approval.`,
-        userId: "admin",
+        userId: 'admin',
         senderId: currentUser.uid,
         senderName: organizer,
         link: `/event/${slug}`,
@@ -367,6 +367,8 @@ const CreateEvent = () => {
               coverStyle={coverStyle}
               setCoverStyle={setCoverStyle}
             />
+
+            <VenueSection venue={venue} setVenue={setVenue} />
 
             <button
               type='button'
@@ -465,8 +467,6 @@ const CreateEvent = () => {
               </div>
             )}
 
-            <VenueSection venue={venue} setVenue={setVenue} />
-
             <ScheduleBuilder
               schedules={schedules}
               setSchedules={setSchedules}
@@ -482,7 +482,7 @@ const CreateEvent = () => {
               </div>
               <div
                 onClick={handleOpenDate}
-                className='border rounded-xl px-2 space-x-2 flex items-center '
+                className='border rounded-xs px-2 space-x-2 flex items-center '
                 style={{ cursor: 'pointer' }}
               >
                 <FaCalendarCheck className='text-gray-500' />
@@ -495,7 +495,35 @@ const CreateEvent = () => {
               <div className='flex flex-col gap-2 justify-center'>
                 <DatePicker
                   selected={date}
-                  onChange={newDate => setDate(newDate)}
+                  onChange={newDate => {
+                    setDate(newDate)
+
+                    if (startTime) {
+                      const newStart = new Date(startTime)
+                      newStart.setFullYear(
+                        newDate.getFullYear(),
+                        newDate.getMonth(),
+                        newDate.getDate()
+                      )
+                      setStartTime(newStart)
+                    }
+
+                    if (endTime) {
+                      const newEnd = new Date(endTime)
+                      newEnd.setFullYear(
+                        newDate.getFullYear(),
+                        newDate.getMonth(),
+                        newDate.getDate()
+                      )
+
+                      // Handle events that end after midnight
+                      if (newEnd <= startTime) {
+                        newEnd.setDate(newEnd.getDate() + 1)
+                      }
+
+                      setEndTime(newEnd)
+                    }
+                  }}
                   dateFormat='MMMM d, yyyy'
                   className='text-white cursor-pointer bg-gray-800 p-4 rounded-xs'
                 />
@@ -505,7 +533,18 @@ const CreateEvent = () => {
                   </span>
                   <DatePicker
                     selected={startTime}
-                    onChange={time => setStartTime(time)}
+                    onChange={time => {
+                      const newStart = new Date(date)
+
+                      newStart.setHours(
+                        time.getHours(),
+                        time.getMinutes(),
+                        0,
+                        0
+                      )
+
+                      setStartTime(newStart)
+                    }}
                     showTimeSelect
                     showTimeSelectOnly
                     timeIntervals={30}
@@ -520,7 +559,18 @@ const CreateEvent = () => {
                   <span className='text-xs text-gray-400'>End Time (24h)</span>
                   <DatePicker
                     selected={endTime}
-                    onChange={time => setEndTime(time)}
+                    onChange={time => {
+                      const newEnd = new Date(date)
+
+                      newEnd.setHours(time.getHours(), time.getMinutes(), 0, 0)
+
+                      // If end is before start, assume next day
+                      if (startTime && newEnd <= startTime) {
+                        newEnd.setDate(newEnd.getDate() + 1)
+                      }
+
+                      setEndTime(newEnd)
+                    }}
                     showTimeSelect
                     showTimeSelectOnly
                     timeIntervals={30}
@@ -628,22 +678,32 @@ const CreateEvent = () => {
         </div>
       </div>
 
-      <div>
-        <LivePreview
-          name={name}
-          photo={photo}
-          coverStyle={coverStyle}
-          description={description}
-          location={location}
-          date={date}
-          category={category}
-          organizer={organizer}
-          genres={genres}
-          tickets={tickets}
-          schedules={schedules}
-          sponsors={sponsors}
-          theme={theme}
-        />
+      <div className='space-y-6 lg:sticky lg:top-6'>
+        <div
+          className='bg-(
+      --bg-color) dark:bg-(--bg-color) border border-(--border) rounded-3xl p-6 shadow-xs'
+        >
+          <h3 className='font-bold text-xl mb-4 text-(--bg-color) dark:text-zinc-50'>
+            Select Tickets
+          </h3>
+          <LivePreview
+            name={name}
+            photo={photo}
+            coverStyle={coverStyle}
+            description={description}
+            location={location}
+            date={date}
+            startTime={startTime}
+            endTime={endTime}
+            category={category}
+            organizer={organizer}
+            genres={genres}
+            tickets={tickets}
+            schedules={schedules}
+            sponsors={sponsors}
+            theme={theme}
+          />
+        </div>
       </div>
     </div>
   )
