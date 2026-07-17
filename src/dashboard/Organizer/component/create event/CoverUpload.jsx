@@ -40,18 +40,27 @@ const CoverUpload = ({
   const inputRef = useRef(null);
 
 useEffect(() => {
-     if (!photo) {
+  if (!photo) {
     setPreview(null);
     return;
   }
-const url = URL.createObjectURL(photo)
 
-setPreview(url)
+  // If photo is already a URL (Cloudinary/Firebase)
+  if (typeof photo === "string") {
+    setPreview(photo);
+    return;
+  }
 
-return ()=>URL.revokeObjectURL(url)
+  // If photo is a newly uploaded file
+  if (photo instanceof File) {
+    const url = URL.createObjectURL(photo);
 
-},[photo])
+    setPreview(url);
 
+    return () => URL.revokeObjectURL(url);
+  }
+
+}, [photo]);
 const handleChange = (e) => {
   if (!e.target.files?.length) return;
 
@@ -167,7 +176,7 @@ const handleChange = (e) => {
               key={style.id}
               type="button"
               onClick={() => setCoverStyle(style.id)}
-              className={`rounded-2xl border p-5 text-left transition ${
+              className={`rounded-2xl border border-(--border) p-5 text-left transition ${
                 coverStyle === style.id
                   ? "border-(--primary) bg-(--primary) text-white"
                   : "hover:border-(--primary)"

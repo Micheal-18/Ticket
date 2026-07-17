@@ -211,6 +211,13 @@ const OrgEvent = () => {
                         Manage →
                       </Link>
 
+                      <Link
+  to={`/dashboard/organization/studio/${event.id}`}
+  className="bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-zinc-700 px-3 py-1.5 text-xs font-bold transition-all text-center shadow-sm"
+>
+  Studio 💻
+</Link>
+
                       <button
                         onClick={(e) => {
                           e.preventDefault();

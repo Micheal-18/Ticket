@@ -48,7 +48,7 @@ const Navbar = ({ currentUser }) => {
     <section className='sticky w-full flex top-0 z-50'>
       <div className='flex w-full  bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color)  opacity-90 items-center lg:justify-center flex-1 border border-x-transparent  border-b-transparent  justify-between px-6 font-bold '>
         <div className='lg:border py-10 lg:py-5.5  lg:px-20 border-t-transparent  '>
-          <a href='/' className='flex items-center space-x-2 cursor-pointer  text-lg'><SiEagle className='text-(--primary) text-xl' />Airticks<span className='text-(--primary)'>Event</span></a>
+          <a href='/' className='flex items-center space-x-2 cursor-pointer text-lg'><SiEagle className='text-(--primary) text-xl' />Airticks<span className='text-(--primary)'>Event</span></a>
         </div>
         <div className='hidden lg:flex'>
           {navItems.map((item, idx) => (

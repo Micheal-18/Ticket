@@ -66,7 +66,7 @@ const ScheduleBuilder = ({
 
         <div
           key={session.id}
-          className="rounded-3xl border p-6 space-y-5"
+          className="rounded-3xl border border-(--border) p-6 space-y-5"
         >
 
           <div className="flex justify-between">
@@ -95,7 +95,7 @@ const ScheduleBuilder = ({
                 e.target.value
               )
             }
-            className="w-full rounded-xl border p-4"
+            className="w-full rounded-xl border border-(--border) p-4"
           />
 
           <textarea
@@ -108,7 +108,7 @@ const ScheduleBuilder = ({
                 e.target.value
               )
             }
-            className="w-full rounded-xl border p-4"
+            className="w-full rounded-xl border border-(--border) p-4"
           />
 
           <div className="grid md:grid-cols-2 gap-4">
@@ -127,7 +127,7 @@ const ScheduleBuilder = ({
                     e.target.value
                   )
                 }
-                className="mt-2 w-full rounded-xl border p-4"
+                className="mt-2 w-full rounded-xl border border-(--border) p-4"
               />
 
             </div>
@@ -146,7 +146,7 @@ const ScheduleBuilder = ({
                     e.target.value
                   )
                 }
-                className="mt-2 w-full rounded-xl border p-4"
+                className="mt-2 w-full rounded-xl border border-(--border) p-4"
               />
 
             </div>
@@ -163,7 +163,7 @@ const ScheduleBuilder = ({
                 e.target.value
               )
             }
-            className="w-full rounded-xl border p-4"
+            className="w-full rounded-xl border border-(--border) p-4"
           />
 
         </div>

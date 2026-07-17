@@ -50,7 +50,7 @@ const GenreInput = ({
           }
         }}
         placeholder="Afrobeats"
-        className="w-full rounded-xl border p-4"
+        className="w-full rounded-xl border border-(--border) p-4"
       />
 
       <div className="flex flex-wrap gap-2">

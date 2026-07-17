@@ -50,6 +50,10 @@ import CreateEvent from './dashboard/Admin/CreateEvent'
 import TicketPage from './pages/TicketPage'
 import PaymentSuccess from './pages/PaymentSucess'
 import BecomeOrganizer from './auth/BecomeOrg'
+import OrgEdit from './dashboard/Organizer/studio/OrgEdit'
+import AttendeeDrawer from './dashboard/Organizer/studio/OrgAttendees'
+import OrgBuyers from './dashboard/Organizer/studio/OrgBuyers'
+import OrgStudio from './dashboard/Organizer/studio/OrgStudio'
 
 
 const App = () => {
@@ -352,38 +356,38 @@ const App = () => {
         </Route>
 
         {/* Organization Dashboard */}
-        <Route
-          path='/dashboard/organization'
-          element={<OrganizationLayout currentUser={currentUser} />}
-        >
-          <Route index element={<Organization currentUser={currentUser} />} />
+<Route
+  path='/dashboard/organization'
+  element={<OrganizationLayout currentUser={currentUser} />}
+>
+  <Route index element={<Organization currentUser={currentUser} />} />
+  <Route path='create' element={<OrgCreate currentUser={currentUser} />} />
+  <Route path='wallet' element={<OrgWallet currentUser={currentUser} />} />
+  <Route path='profile' element={<OrgProfile currentUser={currentUser} />} />
+  <Route path='scanner' element={<TicketScanner currentUser={currentUser} />} />
+  <Route path='events' element={<OrgEvent currentUser={currentUser} />} />
+  <Route path='event/:slug' element={<TicketModal currentUser={currentUser} />} />
+  <Route path='blog' element={<WriteBlog />} />
 
-          <Route
-            path='create'
-            element={<OrgCreate currentUser={currentUser} />}
-          />
-          <Route
-            path='wallet'
-            element={<OrgWallet currentUser={currentUser} />}
-          />
-          <Route
-            path='profile'
-            element={<OrgProfile currentUser={currentUser} />}
-          />
-          <Route
-            path='scanner'
-            element={<TicketScanner currentUser={currentUser} />}
-          />
-          <Route
-            path='events'
-            element={<OrgEvent currentUser={currentUser} />}
-          />
-          <Route
-            path='event/:slug'
-            element={<TicketModal currentUser={currentUser} />}
-          />
-          <Route path='blog' element={<WriteBlog />} />
-        </Route>
+  {/* ========================================================= */}
+  {/* ORG STUDIO SUB-SUITE                                      */}
+  {/* Grouping these makes path maintenance and linking cleaner */}
+  {/* ========================================================= */}
+  <Route path="studio/:eventId">
+    {/* Base Route: /dashboard/organization/studio/:eventId */}
+    <Route index element={<OrgStudio currentUser={currentUser} />} />
+    
+    {/* Edit Route: /dashboard/organization/studio/:eventId/edit */}
+    <Route path="edit" element={<OrgEdit currentUser={currentUser}/>} />
+    
+    {/* Attendees View: /dashboard/organization/studio/:eventId/attendees */}
+    <Route path="attendees" element={<AttendeeDrawer currentUser={currentUser}/>} />
+    
+    {/* Buyers View: /dashboard/organization/studio/:eventId/buyers */}
+    <Route path="buyers" element={<OrgBuyers currentUser={currentUser}/>} />
+  </Route>
+
+</Route>
 
         <Route
           path='/dashboard/users'

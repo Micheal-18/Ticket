@@ -201,8 +201,10 @@ const LivePreview = ({
             <div className='grid grid-cols-2 gap-4'>
               {guests.map(guest => {
                 const image = guest.photo
-                  ? URL.createObjectURL(guest.photo)
-                  : null
+  ? typeof guest.photo === "string"
+    ? guest.photo
+    : URL.createObjectURL(guest.photo)
+  : null;
 
                 return (
                   <div
@@ -244,11 +246,13 @@ const LivePreview = ({
                   className='flex items-center gap-2 rounded-xl border px-3 py-2'
                 >
                   {sponsor.logo && (
-                    <img
-                      src={URL.createObjectURL(sponsor.logo)}
-                      alt={sponsor.name}
-                      className='w-8 h-8 rounded-full object-cover'
-                    />
+<img
+    src={
+        typeof sponsor.logo === "string"
+            ? sponsor.logo
+            : URL.createObjectURL(sponsor.logo)
+    }
+/>
                   )}
 
                   <span className='text-sm font-medium'>{sponsor.name}</span>

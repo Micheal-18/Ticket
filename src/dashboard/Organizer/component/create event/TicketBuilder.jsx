@@ -36,6 +36,22 @@ const TicketBuilder = ({ tickets, setTickets }) => {
     setTickets(tickets.filter(ticket => ticket.id !== id))
   }
 
+  const safeParseDate = (value) => {
+    if (!value) return new Date();
+    
+    let parsed;
+    if (typeof value.toDate === 'function') {
+      parsed = value.toDate();
+    } else {
+      parsed = new Date(value);
+    }
+
+    if (isNaN(parsed.getTime())) {
+      return new Date();
+    }
+    return parsed;
+  };
+
   return (
     <section className='space-y-6'>
       <div className='flex justify-between items-center'>
@@ -63,7 +79,7 @@ const TicketBuilder = ({ tickets, setTickets }) => {
       {tickets.map(ticket => (
         <div
           key={ticket.id}
-          className='rounded-3xl border p-6 space-y-5 bg-white dark:bg-zinc-900/40'
+          className='rounded-3xl border border-(--border) p-6 space-y-5'
         >
           <div className='flex justify-between items-center'>
             <h3 className='font-bold text-lg text-gray-700 dark:text-zinc-300'>
@@ -81,7 +97,7 @@ const TicketBuilder = ({ tickets, setTickets }) => {
           <div>
             <label className='font-semibold text-sm'>Ticket Name</label>
             <input
-              className='mt-2 w-full border rounded-xl p-3 focus:outline-(--primary)'
+              className='mt-2 w-full border border-(--border) rounded-xl p-3 focus:outline-(--primary)'
               placeholder='VIP, Early Bird, General Admission...'
               value={ticket.name}
               onChange={e => updateTicket(ticket.id, 'name', e.target.value)}
@@ -110,7 +126,7 @@ const TicketBuilder = ({ tickets, setTickets }) => {
                   updateTicket(ticket.id, 'type', 'free')
                   updateTicket(ticket.id, 'price', 0)
                 }}
-                className={`px-5 py-2.5 text-sm font-semibold rounded-xl border transition-all ${
+                className={`px-5 py-2.5 text-sm font-semibold rounded-xl border border-(--border) transition-all ${
                   ticket.type === 'free'
                     ? 'bg-green-600 text-white border-green-600'
                     : 'text-gray-500 hover:bg-gray-50'
@@ -133,7 +149,7 @@ const TicketBuilder = ({ tickets, setTickets }) => {
                   onChange={e =>
                     updateTicket(ticket.id, 'price', e.target.value)
                   }
-                  className='mt-2 w-full border rounded-xl p-3 focus:outline-(--primary)'
+                  className='mt-2 w-full border border-(--border) rounded-xl p-3 focus:outline-(--primary)'
                 />
               </div>
 
@@ -145,7 +161,7 @@ const TicketBuilder = ({ tickets, setTickets }) => {
                   onChange={e =>
                     updateTicket(ticket.id, 'currency', e.target.value)
                   }
-                  className='mt-2 w-full border rounded-xl p-3 bg-transparent focus:outline-(--primary)'
+                  className='mt-2 w-full border border-(--border) rounded-xl p-3 bg-transparent focus:outline-(--primary)'
                 >
                   <option value='NGN'>🇳🇬 Nigerian Naira (₦)</option>
                   <option value='USD'>🇺🇸 US Dollar ($)</option>
@@ -167,7 +183,7 @@ const TicketBuilder = ({ tickets, setTickets }) => {
                 onChange={e =>
                   updateTicket(ticket.id, 'quantity', Number(e.target.value))
                 }
-                className='mt-2 w-full border rounded-xl p-3 focus:outline-(--primary)'
+                className='mt-2 w-full border border-(--border) rounded-xl p-3 focus:outline-(--primary)'
               />
             </div>
 
@@ -186,33 +202,39 @@ const TicketBuilder = ({ tickets, setTickets }) => {
                     Number(e.target.value)
                   )
                 }
-                className='mt-2 w-full border rounded-xl p-3 focus:outline-(--primary)'
+                className='mt-2 w-full border border-(--border) rounded-xl p-3 focus:outline-(--primary)'
               />
             </div>
           </div>
 
-          <div className='grid md:grid-cols-2 gap-5'>
+<div className='grid md:grid-cols-2 gap-5'>
             <div>
               <label className='font-semibold text-sm'>
                 Sales Window Start
               </label>
               <DatePicker
-                selected={ticket.salesStart}
-                onChange={date => updateTicket(ticket.id, 'salesStart', date)}
+                selected={safeParseDate(ticket.salesStart)}
+                onChange={date => {
+                  if (!date || isNaN(date.getTime())) return;
+                  updateTicket(ticket.id, 'salesStart', date);
+                }}
                 showTimeSelect
                 dateFormat='Pp'
-                className='mt-2 w-full border rounded-xl p-3 focus:outline-(--primary) bg-transparent'
+                className='mt-2 w-full border border-(--border) rounded-xl p-3 focus:outline-(--primary) bg-transparent'
               />
             </div>
 
             <div>
               <label className='font-semibold text-sm'>Sales Window End</label>
               <DatePicker
-                selected={ticket.salesEnd}
-                onChange={date => updateTicket(ticket.id, 'salesEnd', date)}
+                selected={safeParseDate(ticket.salesEnd)}
+                onChange={date => {
+                  if (!date || isNaN(date.getTime())) return;
+                  updateTicket(ticket.id, 'salesEnd', date);
+                }}
                 showTimeSelect
                 dateFormat='Pp'
-                className='mt-2 w-full border rounded-xl p-3 focus:outline-(--primary) bg-transparent'
+                className='mt-2 w-full border border-(--border) rounded-xl p-3 focus:outline-(--primary) bg-transparent'
               />
             </div>
           </div>
@@ -226,7 +248,7 @@ const TicketBuilder = ({ tickets, setTickets }) => {
               onChange={e =>
                 updateTicket(ticket.id, 'description', e.target.value)
               }
-              className='mt-2 w-full border rounded-xl p-3 focus:outline-(--primary)'
+              className='mt-2 w-full border border-(--border) rounded-xl p-3 focus:outline-(--primary)'
             />
           </div>
 

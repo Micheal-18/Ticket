@@ -31,7 +31,7 @@ const BasicInfo = ({
           value={name}
           onChange={(e)=>setName(e.target.value)}
           placeholder="ERROR 404"
-          className="mt-2 w-full rounded-xl border p-4"
+          className="mt-2 w-full rounded-xl border border-(--border) p-4"
         />
       </div>
 
@@ -48,7 +48,7 @@ const BasicInfo = ({
               key={type.value}
               type="button"
               onClick={()=>setCategory(type.value)}
-              className={`rounded-2xl border px-10 py-2 transition text-xs flex flex-col justify-center items-center gap-2 flex-1
+              className={`rounded-2xl border border-(--border) px-10 py-2 transition text-xs flex flex-col justify-center items-center gap-2 flex-1
               ${
                 category===type.value
                 ? "border-(--primary) bg-(--primary) text-white"
