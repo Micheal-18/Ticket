@@ -169,7 +169,7 @@ const OrgStudio = ({ currentUser }) => {
       {/* TABLE */}
       <div className='overflow-auto rounded-xl border border-(--border)'>
         <table className='w-full'>
-          <thead className='bg-gray-100 dark:bg-gray-800'>
+          <thead className='border border-(--border)'>
             <tr>
               <th className='p-4 text-left'>No</th>
               <th className='p-4 text-left'>Attendee</th>

@@ -1,133 +1,224 @@
 // src/pages/Guide.jsx
 import React from "react";
+import { Link } from "react-router-dom";
+import {
+  FiCalendar,
+  FiCreditCard,
+  FiMail,
+  FiMapPin,
+  FiShield,
+  FiHelpCircle,
+  FiUsers,
+  FiArrowRight,
+} from "react-icons/fi";
 import walkGif from "../assets/dog.gif";
+
+const steps = [
+  {
+    icon: <FiCalendar size={26} />,
+    title: "Discover Events",
+    description:
+      "Browse concerts, conferences, church programs, sports, festivals, comedy shows, workshops, exhibitions and more. View event details, venue, schedule and ticket prices before booking.",
+  },
+  {
+    icon: <FiCreditCard size={26} />,
+    title: "Purchase Tickets",
+    description:
+      "Choose your preferred ticket type, select the quantity, provide attendee information if required and complete your payment securely.",
+  },
+  {
+    icon: <FiUsers size={26} />,
+    title: "Multiple Attendees",
+    description:
+      "Buying for friends or family? AirTicks lets you register multiple attendees in one purchase. Every attendee receives their own unique ticket.",
+  },
+  {
+    icon: <FiMail size={26} />,
+    title: "Receive Your Ticket",
+    description:
+      "After successful payment, you'll receive a confirmation email containing your ticket details, order reference and unique QR code.",
+  },
+  {
+    icon: <FiMapPin size={26} />,
+    title: "Attend Your Event",
+    description:
+      "Arrive at the venue, present your QR code on your phone or as a printed copy and let the event staff scan it for quick entry.",
+  },
+  {
+    icon: <FiShield size={26} />,
+    title: "Stay Secure",
+    description:
+      "Never share your QR code publicly. Every ticket can only be scanned once. Purchase tickets only through the official AirTicks platform.",
+  },
+];
+
+const faqs = [
+  {
+    question: "I haven't received my ticket.",
+    answer:
+      "Check your Spam or Promotions folder. If you still can't find it, contact our support team.",
+  },
+  {
+    question: "Can I use my phone instead of printing my ticket?",
+    answer:
+      "Yes. Simply present the QR code on your mobile device at the event entrance.",
+  },
+  {
+    question: "Can I buy tickets for other people?",
+    answer:
+      "Absolutely. During checkout, you can add multiple attendees and each person receives their own ticket.",
+  },
+  {
+    question: "What happens if my ticket has already been scanned?",
+    answer:
+      "Tickets can only be used once. If your ticket has already been scanned, entry will be denied.",
+  },
+];
 
 const Guide = () => {
   return (
     <>
-      <section
-        data-aos="fade-out"
-        className="min-h-screenbg-(--bg-color) dark:bg-(--bg-color) flex justify-center items-center py-16 px-4"
-      >
-        <div className="max-w-3xl w-full bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) shadow-2xl rounded-3xl p-8 md:p-12 space-y-10">
-          <h1 className="text-3xl md:text-4xl font-extrabold text-center ">
-            🎟 AirTicks<span className="text-orange-500">Events</span> Guide
-          </h1>
-          <p className="text-center text-gray-500 text-sm md:text-base">
-            Learn how to buy tickets, receive confirmations, and attend your events with ease.
-          </p>
+      <section className="min-h-screen bg-(--bg-color) text-(--text-color) py-16 px-4">
+        <div className="max-w-6xl mx-auto">
 
-          {/* Section 1 */}
-          <section data-aos="fade-up" data-aos-delay="100">
-            <h2 className="text-xl font-semibold  mb-3">
-              1️⃣ Buying a Ticket
-            </h2>
-            <ol className="list-decimal list-inside space-y-2 text-gray-500 leading-relaxed">
-              <li>Visit the <strong>AirTicks Events</strong> website.</li>
-              <li>Select your desired <strong>event</strong>.</li>
-              <li>
-                Choose a ticket type:
-                <ul className="list-disc list-inside ml-6 mt-1">
-                  <li>🎫 Regular</li>
-                  <li>🎫 VIP</li>
-                  <li>🍾 Table for 4</li>
-                  <li>💎 Big Boys Package</li>
-                </ul>
-              </li>
-              <li>Pay securely online.</li>
-              <li>Receive a <strong>confirmation email</strong> after payment.</li>
-            </ol>
-          </section>
+          {/* Hero */}
+          <div className="text-center mb-14">
+            <div className="inline-flex items-center gap-2 bg-orange-100 dark:bg-(--primary)/10 text-orange-600 px-4 py-2 rounded-full text-sm font-semibold">
+              🎟 AirTicks Guide
+            </div>
 
-          {/* Section 2 */}
-          <section data-aos="fade-up" data-aos-delay="200">
-            <h2 className="text-xl font-semibold  mb-3">
-              2️⃣ Receiving Your Ticket
-            </h2>
-            <p className="text-gray-500">Your confirmation email includes:</p>
-            <ul className="list-disc list-inside ml-6 space-y-1 text-gray-500">
-              <li>✅ Ticket details (type, price, reference number)</li>
-              <li>✅ A <strong>QR code</strong> — your entry pass</li>
-            </ul>
-            <p className="mt-3 font-medium text-gray-600">
-              👉 Keep this email safe — no need to log in again.
+            <h1 className="mt-6 text-4xl md:text-5xl font-black">
+              Everything You Need to Know
+            </h1>
+
+            <p className="mt-4 text-zinc-500 dark:text-zinc-400 max-w-2xl mx-auto leading-7">
+              Learn how to discover events, purchase tickets, receive your QR
+              code and enjoy a seamless event experience with AirTicks.
             </p>
-          </section>
-
-          {/* Section 3 */}
-          <section data-aos="fade-up" data-aos-delay="300">
-            <h2 className="text-xl font-semibold text-[#333333] mb-3">
-              3️⃣ At the Event
-            </h2>
-            <ol className="list-decimal list-inside space-y-2 text-gray-500 leading-relaxed">
-              <li>Present your QR code (on phone or printed).</li>
-              <li>Event staff will scan your QR code.</li>
-              <li>
-                Possible results:
-                <ul className="list-disc list-inside ml-6">
-                  <li>✅ <strong>Valid Ticket</strong> → Entry granted 🎉</li>
-                  <li>⚠️ <strong>Already Used</strong> → Previously scanned</li>
-                  <li>❌ <strong>Invalid Ticket</strong> → Not recognized</li>
-                </ul>
-              </li>
-            </ol>
-          </section>
-
-          {/* Section 4 */}
-          <section data-aos="fade-up" data-aos-delay="400">
-            <h2 className="text-xl font-semibold  mb-3">
-              4️⃣ Important Notes
-            </h2>
-            <ul className="list-disc list-inside ml-6 space-y-2 text-gray-500 leading-relaxed">
-              <li>Ticket creation is for users; AirTicks takes <strong>10%</strong> of paid tickets 🤝🏾.</li>
-              <li>Each ticket can only be used <strong>once</strong>.</li>
-              <li>Sharing or reusing a QR code will mark it as <strong>already used</strong>.</li>
-              <li>Always purchase from the official <strong>AirTicks Events website</strong>.</li>
-            </ul>
-          </section>
-
-          {/* Section 5 */}
-          <section data-aos="fade-up" data-aos-delay="500">
-            <h2 className="text-xl font-semibold  mb-3">
-              5️⃣ Need Help?
-            </h2>
-            <p className="text-gray-500">
-              If you have any issues, reach our support team at{" "}
-              <a
-                href='/contact' 
-                className="text-blue-500 hover:text-blue-700 underline"
-              >
-                Contact us
-              </a>.
-            </p>
-          </section>
-
-          {/* Closing Message */}
-          <p
-            data-aos="fade-up"
-            data-aos-delay="600"
-            className="text-center text-lg font-semibold text-green-600"
-          >
-            ✨ That’s it! Enjoy your event 🎶💃🕺
-          </p>
-
-          {/* Back Button */}
-          <div className="flex justify-center">
-            <a
-              href="/event"
-              className="bg-orange-500  font-semibold px-6 py-3 rounded-xl shadow hover:bg-orange-600 transition-transform transform hover:scale-105 active:scale-95"
-            >
-              🔙 Explore Events
-            </a>
           </div>
+
+          {/* Steps */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+            {steps.map((step, index) => (
+              <div
+                key={index}
+                className="rounded-3xl border border-(--border) bg-(--bg-color) p-7 shadow-sm hover:shadow-lg transition"
+              >
+                <div className="w-14 h-14 rounded-2xl bg-(--primary) text-white flex items-center justify-center">
+                  {step.icon}
+                </div>
+
+                <h2 className="mt-5 text-xl font-bold">
+                  {step.title}
+                </h2>
+
+                <p className="mt-3 text-zinc-500 dark:text-zinc-400 leading-7">
+                  {step.description}
+                </p>
+              </div>
+            ))}
+
+          </div>
+
+          {/* Ticket Status */}
+          <div className="mt-16 rounded-3xl border border-(--border) p-8">
+            <h2 className="text-2xl font-bold mb-6">
+              Ticket Status
+            </h2>
+
+            <div className="grid md:grid-cols-3 gap-5">
+
+              <div className="rounded-2xl bg-green-500/10 p-5 border border-green-500/20">
+                <h3 className="font-bold text-green-600">
+                  ✅ Valid
+                </h3>
+
+                <p className="mt-2 text-sm text-zinc-500">
+                  Your ticket is genuine and ready for entry.
+                </p>
+              </div>
+
+              <div className="rounded-2xl bg-yellow-500/10 p-5 border border-yellow-500/20">
+                <h3 className="font-bold text-yellow-600">
+                  ⚠ Already Used
+                </h3>
+
+                <p className="mt-2 text-sm text-zinc-500">
+                  This QR code has already been scanned.
+                </p>
+              </div>
+
+              <div className="rounded-2xl bg-red-500/10 p-5 border border-red-500/20">
+                <h3 className="font-bold text-red-600">
+                  ❌ Invalid
+                </h3>
+
+                <p className="mt-2 text-sm text-zinc-500">
+                  The ticket could not be verified.
+                </p>
+              </div>
+
+            </div>
+          </div>
+
+          {/* FAQ */}
+          <div className="mt-16">
+            <div className="flex items-center gap-3 mb-6">
+              <FiHelpCircle size={28} />
+              <h2 className="text-3xl font-bold">
+                Frequently Asked Questions
+              </h2>
+            </div>
+
+            <div className="space-y-5">
+
+              {faqs.map((faq, index) => (
+                <div
+                  key={index}
+                  className="rounded-2xl border border-(--border) p-6"
+                >
+                  <h3 className="font-semibold text-lg">
+                    {faq.question}
+                  </h3>
+
+                  <p className="mt-2 text-zinc-500 dark:text-zinc-400">
+                    {faq.answer}
+                  </p>
+                </div>
+              ))}
+
+            </div>
+          </div>
+
+          {/* Help */}
+          <div className="mt-16 rounded-3xl bg-(--primary) text-white p-10 text-center">
+            <h2 className="text-3xl font-bold">
+              Need More Help?
+            </h2>
+
+            <p className="mt-4 max-w-2xl mx-auto opacity-90">
+              Our support team is available to help with ticket purchases,
+              payments, missing confirmation emails and other event-related
+              questions.
+            </p>
+
+            <Link
+              to="/contact"
+              className="inline-flex items-center gap-2 mt-8 bg-white text-(--primary) font-semibold px-6 py-3 rounded-xl hover:scale-105 transition"
+            >
+              Contact Support
+              <FiArrowRight />
+            </Link>
+          </div>
+
         </div>
       </section>
 
-      {/* Footer animation */}
-      <footer className="mt-10 flex justify-center">
+      <footer className="flex justify-center py-8">
         <img
           src={walkGif}
-          alt="walking gif"
+          alt="Walking mascot"
           className="w-20 h-20 animation-walk"
         />
       </footer>

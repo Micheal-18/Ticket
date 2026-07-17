@@ -56,6 +56,42 @@ const VenueSection = ({ venue, setVenue }) => {
       </div>
 
       <div>
+        <label className='font-semibold'>Coordinates</label>
+
+        <p className='text-xs opacity-70 mt-1'>
+          Enter the venue latitude and longitude for accurate map positioning.
+        </p>
+
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mt-3'>
+          <div>
+            <label className='text-sm opacity-80'>Latitude</label>
+
+            <input
+              type='number'
+              step='any'
+              value={venue.latitude || ''}
+              onChange={e => updateVenue('latitude', e.target.value)}
+              placeholder='6.524379'
+              className='mt-2 w-full rounded-xl border p-4'
+            />
+          </div>
+
+          <div>
+            <label className='text-sm opacity-80'>Longitude</label>
+
+            <input
+              type='number'
+              step='any'
+              value={venue.longitude || ''}
+              onChange={e => updateVenue('longitude', e.target.value)}
+              placeholder='3.379206'
+              className='mt-2 w-full rounded-xl border p-4'
+            />
+          </div>
+        </div>
+      </div>
+
+      <div>
         <label className='font-medium'>Venue Type</label>
 
         <div className='grid grid-cols-2 md:grid-cols-4 gap-3 mt-3'>
@@ -73,42 +109,6 @@ const VenueSection = ({ venue, setVenue }) => {
               {type}
             </button>
           ))}
-        </div>
-
-        <div>
-          <label className='font-medium'>Coordinates</label>
-
-          <p className='text-xs opacity-70 mt-1'>
-            Enter the venue latitude and longitude for accurate map positioning.
-          </p>
-
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mt-3'>
-            <div>
-              <label className='text-sm opacity-80'>Latitude</label>
-
-              <input
-                type='number'
-                step='any'
-                value={venue.latitude || ''}
-                onChange={e => updateVenue('latitude', e.target.value)}
-                placeholder='6.524379'
-                className='mt-2 w-full rounded-xl border p-4'
-              />
-            </div>
-
-            <div>
-              <label className='text-sm opacity-80'>Longitude</label>
-
-              <input
-                type='number'
-                step='any'
-                value={venue.longitude || ''}
-                onChange={e => updateVenue('longitude', e.target.value)}
-                placeholder='3.379206'
-                className='mt-2 w-full rounded-xl border p-4'
-              />
-            </div>
-          </div>
         </div>
       </div>
 
