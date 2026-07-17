@@ -53,6 +53,8 @@ const OrgEdit = () => {
     name: '',
     address: '',
     map: '',
+    latitude: '',
+    longitude: '',
     type: '',
     parking: '',
     directions: ''

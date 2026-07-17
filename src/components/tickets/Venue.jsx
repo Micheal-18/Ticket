@@ -4,25 +4,32 @@ import { FiMapPin, FiNavigation, FiMap } from "react-icons/fi";
 const VenueCard = ({ event }) => {
   if (!event?.venue) return null;
 
-  // Compile full search query for the map embed and directions
-  const mapSearchQuery = [
-    event.venue.name,
-    event.venue.address,
-    event.location,
-    "Nigeria"
-  ]
-    .filter(Boolean)
-    .join(", ");
+const hasCoordinates =
+  event?.venue?.latitude && event?.venue?.longitude;
 
-  // Create clean Google Maps iframe embed URL using the text address query
-  const embedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(
-    mapSearchQuery
-  )}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+const hasMapLink =
+  event?.venue?.map &&
+  /^https?:\/\//i.test(event.venue.map);
 
-  // Create public Google Maps redirection link
-  const directionsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-    mapSearchQuery
-  )}`;
+const searchQuery = hasCoordinates
+  ? `${event.venue.latitude},${event.venue.longitude}`
+  : [
+      event.venue.name,
+      event.venue.address,
+      "Nigeria",
+    ]
+      .filter(Boolean)
+      .join(", ");
+
+const embedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(
+  searchQuery
+)}&z=16&output=embed`;
+
+const directionsUrl = hasMapLink
+  ? event.venue.map
+  : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+      searchQuery
+    )}`;
 
   return (
     <section className="rounded-3xl bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) border-(--border) shadow borderoverflow-hidden">

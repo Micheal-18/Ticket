@@ -55,6 +55,8 @@ const CreateEvent = () => {
     name: '',
     address: '',
     map: '',
+    latitude: '',
+    longitude: '',
     type: '',
     parking: '',
     directions: ''

@@ -233,8 +233,8 @@ const Dashevents = ({ currentUser, events, setEvents }) => {
                 <div className="pt-1">
                   {event.isFree ? (
                     <span className="text-green-500 text-sm font-bold bg-green-500/10 px-2 py-0.5 rounded-md">🆓 Free Admission</span>
-                  ) : Array.isArray(event.price) ? (
-                    event.price.map((priceOption, index) => (
+                  ) : Array.isArray(event.tickets) ? (
+                    event.tickets.map((priceOption, index) => (
                       <p key={index} className="text-sm font-semibold text-(--primary)">
                         {priceOption.name || "Regular"}: {priceOption.currency || "₦"}{" "}
                         {Number(priceOption.price || 0).toLocaleString()}

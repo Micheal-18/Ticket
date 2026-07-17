@@ -97,6 +97,9 @@ const Home = ({ currentUser }) => {
           ...doc.data()
         }))
 
+        console.log(eventsData);
+        
+
         const isAdmin = currentUser?.isAdmin === true
         const visibleEvents = isAdmin
           ? eventsData
@@ -352,8 +355,8 @@ const Home = ({ currentUser }) => {
                       <span className='text-green-500 text-sm font-bold bg-green-500/10 px-2 py-0.5 rounded-md inline-block'>
                         🆓 Free Admission
                       </span>
-                    ) : Array.isArray(event.price) ? (
-                      event.price.slice(0, 1).map((priceOption, index) => (
+                    ) : Array.isArray(event.tickets) ? (
+                      event.tickets.slice(0, 1).map((priceOption, index) => (
                         <p key={index}>
                           <span className='text-(--primary) text-sm font-semibold'>
                             {priceOption.name}:{' '}
@@ -373,8 +376,8 @@ const Home = ({ currentUser }) => {
                       <p>
                         <span className='text-(--primary) text-lg font-semibold'>
                           {event.currency}{' '}
-                          {Number(event.price?.price) +
-                            ((1.5 / 100) * Number(event.price?.price) + 100)}
+                          {Number(event.tickets?.price) +
+                            ((1.5 / 100) * Number(event.tickets?.price) + 100)}
                         </span>
                       </p>
                     )}
