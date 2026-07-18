@@ -207,7 +207,7 @@ const TicketModal = ({ currentUser }) => {
 
         <div className='max-w-6xl w-full mx-auto px-4 md:px-8 py-6 space-y-8'>
 
-          {currentUser?.accountType === "organization" && (
+          {currentUser?.uid === owner.id && (
             <EventStats event={selectedEvent} />
           )}
 

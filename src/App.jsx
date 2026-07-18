@@ -54,6 +54,7 @@ import OrgEdit from './dashboard/Organizer/studio/OrgEdit'
 import AttendeeDrawer from './dashboard/Organizer/studio/OrgAttendees'
 import OrgBuyers from './dashboard/Organizer/studio/OrgBuyers'
 import OrgStudio from './dashboard/Organizer/studio/OrgStudio'
+import PublicOrganizerProfile from './pages/Profilepage'
 
 
 const App = () => {
@@ -297,6 +298,13 @@ const App = () => {
               <Trending />
             </Layout>
           }
+        />
+        <Route 
+        path='/organizer/:uid'
+        element={
+          <PublicOrganizerProfile currentUser={currentUser}
+      currentUserId={currentUser?.uid}/>
+        }
         />
 
         <Route

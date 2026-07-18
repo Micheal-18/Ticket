@@ -7,7 +7,8 @@ import {
   addDoc,
   collection,
   serverTimestamp,
-  deleteField // 📑 Added to clean up fields on unfollow
+  deleteField, // 📑 Added to clean up fields on unfollow
+  onSnapshot
 } from 'firebase/firestore'
 import { db } from '../firebase/firebase'
 import { useEffect, useState } from 'react'
@@ -16,10 +17,24 @@ const FollowButton = ({ currentUser, ownerId }) => {
   const [isFollowing, setIsFollowing] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    if (!currentUser) return
-    setIsFollowing(currentUser.following?.includes(ownerId))
-  }, [currentUser, ownerId])
+useEffect(() => {
+  if (!currentUser?.uid) return;
+
+  const unsubscribe = onSnapshot(
+    doc(db, "users", currentUser.uid),
+    (snap) => {
+      if (!snap.exists()) return;
+
+      const data = snap.data();
+
+      setIsFollowing(
+        data.following?.includes(ownerId) || false
+      );
+    }
+  );
+
+  return unsubscribe;
+}, [currentUser?.uid, ownerId]);
 
   const toggleFollow = async () => {
     if (!currentUser || currentUser.uid === ownerId) return
@@ -80,7 +95,7 @@ const FollowButton = ({ currentUser, ownerId }) => {
     <button
       disabled={loading}
       onClick={toggleFollow}
-      className={`px-4 py-2 rounded-sm font-semibold transition
+      className={`px-4 py-2 rounded-sm font-semibold transition active:scale-95
         ${
           isFollowing
             ? 'bg-gray-300 text-gray-800 hover:bg-gray-400'

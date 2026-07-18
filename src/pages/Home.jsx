@@ -97,7 +97,7 @@ const Home = ({ currentUser }) => {
           ...doc.data()
         }))
 
-        console.log(eventsData);
+        
         
 
         const isAdmin = currentUser?.isAdmin === true

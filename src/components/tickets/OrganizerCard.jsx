@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   FiCheckCircle,
   FiUsers,
@@ -10,9 +10,46 @@ import {
 import { Link } from 'react-router-dom'
 import FollowButton from '../FolllowButton'
 import OptimizedImage from '../OptimizedImage'
+import { collection, doc, onSnapshot, query, where } from "firebase/firestore";
+import { db } from "../../firebase/firebase";
 
 const OrganizerSection = ({ organizer, owner, currentUser, currentUserId }) => {
-  if (!owner) return null
+ const [ownerData, setOwnerData] = useState(null);
+
+useEffect(() => {
+    if (!owner?.id) return;
+
+    const unsubscribe = onSnapshot(
+        doc(db, "users", owner.id),
+        (docSnap) => {
+            if (docSnap.exists()) {
+                setOwnerData({
+                    id: docSnap.id,
+                    ...docSnap.data(),
+                });
+            }
+        }
+    );
+
+    return unsubscribe;
+}, [owner?.id]);
+
+const [eventsCount, setEventsCount] = useState(0);
+
+useEffect(() => {
+
+    if (!owner?.id) return;
+
+    const q = query(
+        collection(db, "events"),
+        where("ownerId", "==", owner.id)
+    );
+
+    return onSnapshot(q, (snapshot) => {
+        setEventsCount(snapshot.size);
+    });
+
+}, [owner?.id]);
 
   return (
     <section className='space-y-8'>
@@ -52,12 +89,12 @@ const OrganizerSection = ({ organizer, owner, currentUser, currentUserId }) => {
               <div className='flex flex-wrap gap-5 mt-5 text-sm'>
                 <div className='flex items-center gap-2'>
                   <FiCalendar />
-                  {owner.eventsCount || 0} Events
+                  {eventsCount} Events
                 </div>
 
                 <div className='flex items-center gap-2'>
                   <FiUsers />
-                  {owner.followersCount || 0} Followers
+                  {ownerData?.followersCount || 0} Followers
                 </div>
 
                 {owner.location && (
