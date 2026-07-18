@@ -22,7 +22,7 @@ import { formatEventStatus } from '../../../utils/formatEventRange'
 import { uploadToCloudinary } from '../../../utils/cloudinaryUpload'
 import { FaCalendarCheck } from 'react-icons/fa6'
 
-const OrgEdit = () => {
+const OrgEdit = ({currentUser}) => {
   const { eventId } = useParams()
   const navigate = useNavigate()
 
@@ -117,10 +117,7 @@ const OrgEdit = () => {
         }
 
         const event = snap.data()
-        console.log('Event Data:', event)
-        console.log('date:', event.date)
-        console.log('startTime:', event.startTime)
-        console.log('endTime:', event.endTime)
+
 
         setName(event.name || '')
         setCategory(event.category || '')
@@ -174,10 +171,6 @@ const OrgEdit = () => {
 
           return d
         }
-
-        console.log(parseDate(event.date))
-        console.log(parseDate(event.startTime))
-        console.log(parseDate(event.endTime))
 
         setDate(parseDate(event.date))
         setStartTime(parseDate(event.startTime))
