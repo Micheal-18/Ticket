@@ -160,7 +160,7 @@ const Home = ({ currentUser }) => {
   return (
     <>
       {/* HERO */}
-      <section className='relative min-h-screen bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) w-full flex items-center justify-center z-10 overflow-hidden'>
+      <section className='relative min-h-screen bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) w-full flex items-center justify-center z-10 overflow-hidden '>
         <header
           data-aos='zoom-out'
           className='h-[50vh] md:min-h-screen flex flex-1 flex-col items-center justify-center uppercase space-y-6 text-center px-4'
@@ -526,9 +526,9 @@ const Home = ({ currentUser }) => {
       </section>
 
       {/* FOOTER */}
-      <section className='flex flex-col justify-center items-center pt-10 w-full h-[50vh] border-t border-gray-800 bg-(--bg-color)'>
+      <section className='flex flex-col justify-center items-center pt-10 w-full lg:h-[70vh] h-[50vh] border-t border-gray-800 bg-(--bg-color)'>
         <div data-aos='fade-out' className='border-t-2 border-gray-500/30 pt-4'>
-          <h1 className='lg:text-9xl md:text-8xl mt-15 text-6xl font-bold'>
+          <h1 className='lg:text-9xl md:text-7xl mt-15 text-6xl font-bold px-2'>
             airticks<span className='text-(--primary)'>.event</span>
           </h1>
         </div>
