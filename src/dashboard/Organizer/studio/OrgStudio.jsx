@@ -20,6 +20,7 @@ import {
 } from 'react-icons/fa'
 import { motion } from 'framer-motion'
 import AttendeeDrawer from './OrgAttendees'
+import OrgBuyers from './OrgBuyers'
 
 const OrgStudio = ({ currentUser }) => {
   const { eventId } = useParams()
@@ -230,6 +231,8 @@ const OrgStudio = ({ currentUser }) => {
           </tbody>
         </table>
       </div>
+
+      <OrgBuyers />
 
       {/* Renders safely down here inside the return statement */}
       <AttendeeDrawer

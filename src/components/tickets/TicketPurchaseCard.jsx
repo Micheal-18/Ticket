@@ -121,6 +121,14 @@ const TicketPurchaseCard = ({
               onChange={e => onAttendeeChange(index, 'email', e.target.value)}
               className='w-full rounded-xl p-3 border border-(--border)'
             />
+
+            {/* <input
+              value={person.number}
+              type='tel'
+              placeholder='Phone Number'
+              onChange={e => onAttendeeChange(index, 'number', e.target.value)}
+              className='w-full rounded-xl p-3 border border-(--border)'
+            /> */}
           </div>
         ))}
 
