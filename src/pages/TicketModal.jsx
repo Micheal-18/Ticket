@@ -175,17 +175,20 @@ const TicketModal = ({ currentUser }) => {
 
   if (loading) return <LoadingSkeleton />
   if (!selectedEvent) {
-    return <div className='text-center p-10 font-medium text-lg'>Event not found</div>
+    return (
+      <div className='text-center p-10 font-medium text-lg'>
+        Event not found
+      </div>
+    )
   }
 
   return (
     <div className='fixed left-0 top-0 w-full h-full backdrop-blur-md bg-(--bg-color)/40 flex justify-center items-center z-[9999] overflow-hidden'>
       <div className='relative w-full h-full max-w-7xl flex flex-col bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) shadow-2xl md:rounded-2xl md:h-[92vh] overflow-y-auto custom-scrollbar'>
-        
         {/* Close Window Button */}
         <button
-          type="button"
-          aria-label="Close modal"
+          type='button'
+          aria-label='Close modal'
           className='text-2xl absolute top-4 right-4 md:right-8 bg-black/40 hover:bg-black/60 text-(
           --bg-color) p-2 rounded-full cursor-pointer hover:scale-105 transition-all z-50 flex items-center justify-center'
           onClick={() => window.history.back()}
@@ -197,135 +200,156 @@ const TicketModal = ({ currentUser }) => {
         <div className='relative flex flex-col'>
           <EventHero event={selectedEvent} currentUser={currentUser} />
 
-          <div className='absolute top-0 left-0 w-full flex justify-center max-w-7xl  p-4 md:p-6 text-(
-          --bg-color) space-y-2'>
+          <div
+            className='absolute top-0 left-0 w-full flex justify-center max-w-7xl  p-4 md:p-6 text-(
+          --bg-color) space-y-2'
+          >
             <Countdown
-            startTime={selectedEvent.startTime}
-            endTime={selectedEvent.endTime}
-          />
-          </div>
-
-        <div className='max-w-6xl w-full mx-auto px-4 md:px-8 py-6 space-y-8'>
-
-          {currentUser?.uid === owner.id && (
-            <EventStats event={selectedEvent} />
-          )}
-
-          <div >
-            <h2 className="text-3xl font-bold uppercase">What to Expect</h2>
-            <p className="opacity-70">
-              All you need to know about the event
-            </p>
-
-            <div
-              className="prose prose-sm md:prose-base max-w-none mt-4 font-mono"
-              dangerouslySetInnerHTML={{
-                __html: selectedEvent?.description || "",
-              }}
+              startTime={selectedEvent.startTime}
+              endTime={selectedEvent.endTime}
             />
           </div>
-          {/* Core Info & Ticket Purchase Grid Layout */}
-          <div className="grid lg:grid-cols-3 gap-8 items-start">
-            
-            {/* Left/Middle Column - Description and Event Details */}
-            <div className="lg:col-span-2 space-y-8">
-              <GuestList guests={selectedEvent.guests} />
-              
-              <ScheduleTimeline schedules={selectedEvent.schedules} />
-              
-              <VenueCard event={selectedEvent} coordinates={coordinates} />
-              
-              <SponsorsSection sponsors={selectedEvent.sponsors} />
-              
-              <FAQSection faqs={selectedEvent.faqs} />
-              
-              <OrganizerSection
-                organizer={selectedEvent.organizer}
-                owner={owner}
-                currentUser={currentUser}
-                currentUserId={currentUser?.uid}
+
+          <div className='max-w-6xl w-full mx-auto px-4 md:px-8 py-6 space-y-8'>
+            {currentUser?.uid === owner.id && (
+              <EventStats event={selectedEvent} />
+            )}
+
+            <div>
+              <h2 className='text-3xl font-bold uppercase'>What to Expect</h2>
+              <p className='opacity-70'>All you need to know about the event</p>
+
+              <div
+                className='prose prose-sm md:prose-base max-w-none mt-4 font-mono'
+                dangerouslySetInnerHTML={{
+                  __html: selectedEvent?.description || ''
+                }}
               />
             </div>
+            {/* Core Info & Ticket Purchase Grid Layout */}
+            <div className='grid lg:grid-cols-3 gap-8 items-start'>
+              {/* Left/Middle Column - Description and Event Details */}
+              <div className='lg:col-span-2 space-y-8'>
+                <GuestList guests={selectedEvent.guests} />
 
-            {/* Right Column - Booking & Ticket Selector Panel */}
-            <div className="space-y-6 lg:sticky lg:top-6">
-              <div className="bg-(
-              --bg-color) dark:bg-(--bg-color) border border-(--border) rounded-3xl p-6 shadow-xs">
-                <h3 className="font-bold text-xl mb-4 text-(--bg-color) dark:text-zinc-50">Select Tickets</h3>
-                
-                <div className="space-y-4">
-                  {selectedEvent.tickets?.map(ticket => {
-                    const ticketId = ticket.id || ticket.label;
-                    return (
-                      <TicketPurchaseCard
-                        key={ticketId}
-                        ticket={ticket}
-                        event={selectedEvent}
-                        currentUser={currentUser}
-                        quantity={ticketQty[ticketId] || 0}
-                        attendees={attendees}
-                        selected={selectedTicket?.id === ticketId || selectedTicket?.label === ticket.name}
-                        onQuantityChange={qty => {
-                          setTicketQty(prev => ({
-                            ...prev,
-                            [ticketId]: qty
-                          }))
+                <ScheduleTimeline schedules={selectedEvent.schedules} />
 
-                          // Set up secondary attendees arrays (excluding buyer)
-                          setAttendees(
-                            Array(Math.max(0, qty - 1))
-                              .fill(null)
-                              .map(() => ({
-                                name: '',
-                                email: ''
+                <VenueCard event={selectedEvent} coordinates={coordinates} />
+
+                <SponsorsSection sponsors={selectedEvent.sponsors} />
+
+                <FAQSection faqs={selectedEvent.faqs} />
+
+                <OrganizerSection
+                  organizer={selectedEvent.organizer}
+                  owner={owner}
+                  currentUser={currentUser}
+                  currentUserId={currentUser?.uid}
+                />
+              </div>
+
+              {/* Right Column - Booking & Ticket Selector Panel */}
+              <div className='space-y-6 lg:sticky lg:top-6'>
+                <div
+                  className='bg-(
+              --bg-color) dark:bg-(--bg-color) border border-(--border) rounded-3xl p-6 shadow-xs'
+                >
+                  <h3 className='font-bold text-xl mb-4 text-(--bg-color) dark:text-zinc-50'>
+                    Select Tickets
+                  </h3>
+
+                  <div className='space-y-4'>
+                    {[...(selectedEvent.tickets || [])]
+                      .sort((a, b) => {
+                        const priceA = Number(a.price) || 0
+                        const priceB = Number(b.price) || 0
+
+                        // Free tickets first
+                        if (priceA === 0 && priceB !== 0) return -1
+                        if (priceA !== 0 && priceB === 0) return 1
+
+                        // Then sort by lowest price
+                        return priceA - priceB
+                      })
+                      .map(ticket => {
+                        const ticketId = ticket.id || ticket.label
+
+                        return (
+                          <TicketPurchaseCard
+                            key={ticketId}
+                            ticket={ticket}
+                            event={selectedEvent}
+                            currentUser={currentUser}
+                            quantity={ticketQty[ticketId] || 0}
+                            attendees={attendees}
+                            selected={
+                              selectedTicket?.id === ticketId ||
+                              selectedTicket?.label === ticket.name
+                            }
+                            onQuantityChange={qty => {
+                              setTicketQty(prev => ({
+                                ...prev,
+                                [ticketId]: qty
                               }))
-                          )
 
-                          setSelectedTicket(null)
-                        }}
-                        onAttendeeChange={(index, field, value) => {
-                          const copy = [...attendees]
-                          copy[index][field] = value
-                          setAttendees(copy)
-                        }}
-                        onSelect={() => handleCheckoutAction(ticket)}
-                      />
-                    )
-                  })}
-                </div>
+                              setAttendees(
+                                Array(Math.max(0, qty - 1))
+                                  .fill(null)
+                                  .map(() => ({
+                                    name: '',
+                                    email: ''
+                                  }))
+                              )
 
-                {/* Authentication Wall Prompt */}
-                {selectedTicket?.requiresAuth && (
-                  <div className="mt-6 border border-dashed border-orange-300 dark:border-orange-800 bg-orange-50/50 dark:bg-orange-950/20 rounded-2xl p-5 text-center space-y-3">
-                    <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900/50 text-orange-600">
-                      <FiLock size={20} />
+                              setSelectedTicket(null)
+                            }}
+                            onAttendeeChange={(index, field, value) => {
+                              const copy = [...attendees]
+                              copy[index][field] = value
+                              setAttendees(copy)
+                            }}
+                            onSelect={() => handleCheckoutAction(ticket)}
+                          />
+                        )
+                      })}
+                  </div>
+
+                  {/* Authentication Wall Prompt */}
+                  {selectedTicket?.requiresAuth && (
+                    <div className='mt-6 border border-dashed border-orange-300 dark:border-orange-800 bg-orange-50/50 dark:bg-orange-950/20 rounded-2xl p-5 text-center space-y-3'>
+                      <div className='mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900/50 text-orange-600'>
+                        <FiLock size={20} />
+                      </div>
+                      <p className='text-sm text-zinc-600 dark:text-zinc-300'>
+                        You need to secure your profile before securing these
+                        tickets.
+                      </p>
+                      <GoogleAuth className='w-full' />
                     </div>
-                    <p className="text-sm text-zinc-600 dark:text-zinc-300">
-                      You need to secure your profile before securing these tickets.
-                    </p>
-                    <GoogleAuth className="w-full"/>
-                  </div>
-                )}
+                  )}
 
-                {/* Dynamic Checkout Action Container */}
-                {selectedTicket && !selectedTicket.requiresAuth && (
-                  <div className="mt-6 pt-6 border-t border-(--border) ">
-                    <PaystackPayment 
-                      currentUser={currentUser}
-                      event={selectedEvent}
-                      ticket={selectedTicket}
-                      quantity={ticketQty[selectedTicket.id || selectedTicket.label] || 0}
-                      attendees={attendees}
-                    />
-                  </div>
-                )}
+                  {/* Dynamic Checkout Action Container */}
+                  {selectedTicket && !selectedTicket.requiresAuth && (
+                    <div className='mt-6 pt-6 border-t border-(--border) '>
+                      <PaystackPayment
+                        currentUser={currentUser}
+                        event={selectedEvent}
+                        ticket={selectedTicket}
+                        quantity={
+                          ticketQty[
+                            selectedTicket.id || selectedTicket.label
+                          ] || 0
+                        }
+                        attendees={attendees}
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
+            <RelatedEvents events={relatedEvents} />
           </div>
-
-          <RelatedEvents events={relatedEvents} />
-        </div>
         </div>
       </div>
     </div>

@@ -129,11 +129,25 @@ const Home = ({ currentUser }) => {
   }, [currentUser?.isAdmin]) // Safeguards admin re-fetches
 
   // ✅ Category Filtering (safe)
-  const filteredEvents =
-    selectedCategory === 'All'
-      ? events
-      : events.filter(event => event?.category === selectedCategory)
+const filteredEvents = [...events]
+  .sort((a, b) => {
+    const aDate = a.createdAt?.seconds
+      ? a.createdAt.toDate()
+      : new Date(a.createdAt);
 
+    const bDate = b.createdAt?.seconds
+      ? b.createdAt.toDate()
+      : new Date(b.createdAt);
+
+    return bDate - aDate; // newest first
+  })
+  .filter(event =>
+    selectedCategory === "All"
+      ? true
+      : event?.category === selectedCategory
+  );
+
+  
   const filteredBlogs =
     selectedCategory === 'All'
       ? blog

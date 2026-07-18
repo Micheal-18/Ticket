@@ -143,11 +143,39 @@ const Event = ({ currentUser, events, setEvents }) => {
         : true
     )
 
-    .sort((a, b) => {
-      if (filters.priceOrder === "lowtohigh") return a.price - b.price;
-      if (filters.priceOrder === "hightolow") return b.price - a.price;
-      return 0;
-    });
+.sort((a, b) => {
+  // Price sorting takes priority
+  if (filters.priceOrder === "lowtohigh") {
+    const aPrice = Math.min(
+      ...(a.tickets || []).map(t => Number(t.price) || 0)
+    );
+    const bPrice = Math.min(
+      ...(b.tickets || []).map(t => Number(t.price) || 0)
+    );
+    return aPrice - bPrice;
+  }
+
+  if (filters.priceOrder === "hightolow") {
+    const aPrice = Math.min(
+      ...(a.tickets || []).map(t => Number(t.price) || 0)
+    );
+    const bPrice = Math.min(
+      ...(b.tickets || []).map(t => Number(t.price) || 0)
+    );
+    return bPrice - aPrice;
+  }
+
+  // Default: newest events first
+  const aDate = a.createdAt?.seconds
+    ? a.createdAt.toDate()
+    : new Date(a.createdAt);
+
+  const bDate = b.createdAt?.seconds
+    ? b.createdAt.toDate()
+    : new Date(b.createdAt);
+
+  return bDate - aDate;
+});
 
   return (
     <section
