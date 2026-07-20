@@ -475,7 +475,7 @@ const Event = ({ currentUser, events, setEvents }) => {
                         🆓 Free Admission
                       </span>
                     ) : Array.isArray(event.tickets) ? (
-                      event.tickets.slice(0, 2).map((priceOption, index) => (
+                      event.tickets.slice(0, 1).map((priceOption, index) => (
                         <p key={index}>
                           <span className='text-(--primary) text-lg font-semibold'>
                             {priceOption.name}:
