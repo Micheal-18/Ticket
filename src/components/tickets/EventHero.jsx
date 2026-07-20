@@ -33,7 +33,7 @@ const EventHero = ({ event, currentUser }) => {
         </span>
 
         {/* Title */}
-        <h1 className="text-white font-black text-5xl lg:text-7xl mb-4 max-w-3xl">
+        <h1 className="text-white font-black text-4xl lg:text-6xl mb-4 max-w-3xl">
           {event.name}
         </h1>
 

@@ -11,7 +11,6 @@ import { FaCheckCircle } from "react-icons/fa";
 
 const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
-
   const reference = searchParams.get("reference");
 
   const [loading, setLoading] = useState(true);
@@ -28,33 +27,34 @@ const PaymentSuccess = () => {
       where("reference", "==", reference)
     );
 
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        if (!snapshot.empty) {
-          setTicket(snapshot.docs[0].data());
-          setLoading(false);
-        }
-      },
-      (error) => {
-        console.error(error);
-        setLoading(false);
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      if (!snapshot.empty) {
+        setTicket({
+          id: snapshot.docs[0].id,
+          ...snapshot.docs[0].data(),
+        });
+      } else {
+        setTicket(null);
       }
-    );
+      setLoading(false);
+    });
 
     return () => unsubscribe();
   }, [reference]);
 
   if (!reference) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold">
-            Invalid Payment Reference
+      <div className="flex items-center justify-center min-h-screen bg-(--bg-color) text-(--text-color) px-4 text-center">
+        <div className="max-w-sm w-full">
+          <h2 className="text-xl sm:text-2xl font-bold uppercase tracking-wide">
+            Invalid Reference
           </h2>
-          <p className="text-gray-500 mt-2">
-            No payment reference was found.
+          <p className="text-gray-500 text-sm sm:text-base mt-2">
+            No active payment reference was located in this session.
           </p>
+          <Link to="/" className="inline-block mt-6 bg-(--primary) text-white px-6 py-2.5 rounded-xl text-sm font-semibold shadow-xs transition-transform active:scale-95">
+            Return Home
+          </Link>
         </div>
       </div>
     );
@@ -62,16 +62,14 @@ const PaymentSuccess = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen px-5">
-        <div className="text-center max-w-md">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto"></div>
-
-          <h2 className="text-xl font-semibold mt-6">
-            Confirming Payment...
+      <div className="flex items-center justify-center min-h-screen bg-(--bg-color) text-(--text-color) px-5 text-center">
+        <div className="max-w-md w-full">
+          <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-b-2 border-(--primary) mx-auto"></div>
+          <h2 className="text-lg sm:text-xl font-bold uppercase tracking-wider mt-6">
+            Confirming Payment
           </h2>
-
-          <p className="text-gray-500 mt-2">
-            Please wait while we verify your payment and generate your ticket.
+          <p className="text-gray-500 text-sm sm:text-base mt-2">
+            Please hold while we verify your transaction and map your asset matrix.
           </p>
         </div>
       </div>
@@ -80,19 +78,16 @@ const PaymentSuccess = () => {
 
   if (!ticket) {
     return (
-      <div className="flex items-center justify-center min-h-screen px-5">
-        <div className="text-center max-w-md">
-          <h2 className="text-xl font-bold">
+      <div className="flex items-center justify-center min-h-screen bg-(--bg-color) text-(--text-color) px-5 text-center">
+        <div className="max-w-md w-full border border-(--border) bg-(--surface) rounded-2xl p-6 sm:p-8 shadow-xs">
+          <h2 className="text-lg sm:text-xl font-bold uppercase tracking-wider text-(--primary)">
             Payment Received
           </h2>
-
-          <p className="text-gray-500 mt-3">
-            Your payment has been received.
-            We're still generating your ticket.
+          <p className="text-gray-500 text-sm sm:text-base mt-3 leading-relaxed">
+            Your payment has been completed successfully. We are now generating your access keys and ticket profiles.
           </p>
-
-          <p className="text-sm text-orange-500 mt-4">
-            This page updates automatically.
+          <p className="text-xs sm:text-sm text-gray-400 mt-4 font-medium animate-pulse">
+            This workspace updates automatically. Do not refresh.
           </p>
         </div>
       </div>
@@ -100,57 +95,54 @@ const PaymentSuccess = () => {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen px-5">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-8 text-center">
+    <div className="flex items-center justify-center min-h-screen bg-(--bg-color) text-(--text-color) p-4 sm:p-6">
+      <div className="max-w-md w-full bg-(--surface) border border-(--border) rounded-2xl sm:rounded-3xl p-6 sm:p-8 text-center shadow-md">
+        
+        <FaCheckCircle className="text-green-500 text-5xl sm:text-6xl mx-auto mb-4" />
 
-        <FaCheckCircle className="text-green-500 text-6xl mx-auto mb-4" />
-
-        <h1 className="text-3xl font-bold">
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
           Payment Successful 🎉
         </h1>
 
-        <p className="text-gray-500 mt-3">
-          Thank you{" "}
-          <strong>{ticket.name}</strong>
-        </p>
-
-        <p className="mt-2">
-          Your ticket for
-          <br />
-          <strong>{ticket.eventName}</strong>
-        </p>
+        <div className="mt-4 space-y-1 text-sm sm:text-base">
+          <p className="text-gray-500">
+            Thank you, <strong className="text-(--text-color) font-bold">{ticket.name}</strong>
+          </p>
+          <p className="text-gray-500 leading-snug">
+            Your ticket registration for <br className="hidden sm:inline" />
+            <strong className="text-(--text-color) font-bold block mt-1 text-base sm:text-lg">{ticket.eventName}</strong>
+          </p>
+        </div>
 
         {ticket.qr && (
-          <div className="mt-8">
+          <div className="mt-6 sm:mt-8 p-3 bg-white border border-zinc-100 rounded-2xl inline-block shadow-inner max-w-full">
             <img
               src={`data:image/png;base64,${ticket.qr}`}
-              alt="QR Code"
-              className="w-56 h-56 mx-auto"
+              alt="Ticket Pass QR Code"
+              className="w-44 h-44 sm:w-56 sm:h-56 mx-auto object-contain max-w-full"
             />
           </div>
         )}
 
-        <div className="mt-6 space-y-2 text-sm">
-          <p>
-            <strong>Reference</strong>
+        <div className="mt-6 border-t border-dashed border-(--border) pt-5 space-y-1 text-xs sm:text-sm min-w-0">
+          <p className="text-gray-400 uppercase font-semibold tracking-wider">
+            Transaction Reference
           </p>
-
-          <p className="font-mono break-all">
+          <p className="font-mono break-all text-gray-600 dark:text-zinc-400 select-all px-2 bg-(--bg-color) py-1.5 rounded-lg border border-(--border)">
             {reference}
           </p>
         </div>
 
-        <p className="text-sm text-orange-500 mt-6">
-          A copy has also been sent to your email.
+        <p className="text-xs sm:text-sm text-(--primary) font-medium mt-6">
+          A secure backup pass copy has been sent to your email.
         </p>
 
-        <Link
+        {/* <Link
           to="/my-tickets"
-          className="block mt-8 bg-orange-500 text-white rounded-lg py-3 font-semibold hover:bg-orange-600 transition"
+          className="block mt-6 sm:mt-8 bg-(--primary) text-white rounded-xl py-3 font-semibold text-sm sm:text-base hover:bg-orange-600 active:scale-98 transition-all shadow-xs"
         >
           View My Tickets
-        </Link>
-
+        </Link> */}
       </div>
     </div>
   );
