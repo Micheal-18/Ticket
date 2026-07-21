@@ -38,7 +38,7 @@ const Home = ({ currentUser }) => {
         // Reset bird
         await birdControls.set({
           x: -200,
-          y: 50
+          y: 0
         })
 
         // Bird flies across
