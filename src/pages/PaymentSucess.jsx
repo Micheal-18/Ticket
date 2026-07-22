@@ -13,34 +13,41 @@ const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
   const reference = searchParams.get("reference");
 
-  const [loading, setLoading] = useState(true);
-  const [ticket, setTicket] = useState(null);
+const [checking, setChecking] = useState(true);
+const [ticket, setTicket] = useState(null);
 
-  useEffect(() => {
-    if (!reference) {
-      setLoading(false);
-      return;
-    }
+useEffect(() => {
+  if (!reference) {
+    setChecking(false);
+    return;
+  }
 
-    const q = query(
-      collection(db, "tickets"),
-      where("reference", "==", reference)
-    );
+  const q = query(
+    collection(db, "tickets"),
+    where("reference", "==", reference)
+  );
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
+  const unsubscribe = onSnapshot(
+    q,
+    (snapshot) => {
       if (!snapshot.empty) {
         setTicket({
           id: snapshot.docs[0].id,
           ...snapshot.docs[0].data(),
         });
-      } else {
-        setTicket(null);
       }
-      setLoading(false);
-    });
 
-    return () => unsubscribe();
-  }, [reference]);
+      // only after receiving the FIRST snapshot
+      setChecking(false);
+    },
+    (err) => {
+      console.error(err);
+      setChecking(false);
+    }
+  );
+
+  return () => unsubscribe();
+}, [reference]);
 
   if (!reference) {
     return (
