@@ -31,6 +31,7 @@ const DashboardLayout = ({ currentUser }) => {
   const [notifications, setNotifications] = useState([])
   const initialized = useRef(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const shownNotifications = useRef(new Set())
   
   const handleOpenProfile = async () => {
     setProfileOpen(true);
@@ -76,13 +77,23 @@ const DashboardLayout = ({ currentUser }) => {
         snap.docChanges()
           .filter(c => c.type === "added")
           .forEach(c => {
-            const n = c.doc.data();
+                          const id = c.doc.id
+                          const n = c.doc.data()
+            
+                          if (shownNotifications.current.has(id) || n.read) return
+            
+                          shownNotifications.current.add(id)
             toast.custom((t) => (
               <div
-                onClick={() => {
-                  toast.dismiss(t.id);
-                  if (n.link) navigate(n.link);
-                }}
+                    onClick={async () => {
+                      toast.dismiss(t.id)
+
+                      await updateDoc(doc(db, 'notifications', id), {
+                        read: true
+                      })
+
+                      if (n.link) navigate(n.link)
+                    }}
                 className="cursor-pointer bg-white dark:bg-zinc-950 shadow-lg rounded-xl p-4 w-80 border-l-4 border-(--primary) text-black dark:text-white transition-all"
               >
                 <div className="flex items-center gap-2">

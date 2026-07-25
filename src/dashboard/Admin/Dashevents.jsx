@@ -91,7 +91,7 @@ const Dashevents = ({ currentUser, events, setEvents }) => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            business_name: event.name,
+            business_name: event.accountName,
             account_number: event.accountNumber,
             bank_code: event.bankCode,
             percentage_charge: 8,
