@@ -448,7 +448,7 @@ const Event = ({ currentUser, events, setEvents }) => {
                   <h1 className='font-bold  uppercase text-2xl w-[150px] truncate lg:w-[300px] '>
                     {event.name}
                   </h1>
-                  <p className='md:text-md text-sm font-regular text-gray-500 flex gap-2 items-center'>
+                  <p className='md:text-sm text-md font-regular text-gray-500 flex gap-2 items-center'>
                     <FaCalendar />{' '}
                     {new Date(event.date).toLocaleDateString('en-US', {
                       weekday: 'short',
@@ -463,7 +463,7 @@ const Event = ({ currentUser, events, setEvents }) => {
                       {formatEventStatus(event.startTime, event.endTime)}
                     </span>
                   </p>
-                  <p className='md:text-md text-sm w-[180px] lg:w-[300px] font-normal text-gray-500 flex gap-2 items-center'>
+                  <p className='md:text-sm text-md w-[180px] lg:w-[300px] font-normal text-gray-500 flex gap-2 items-center'>
                     <FaLocationArrow />
                     <span className='truncate '>
                       {event.location || event.venue.name}
