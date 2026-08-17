@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import axios from "axios";
+import { doc, onSnapshot } from "firebase/firestore";
+import { db } from "../firebase/firebase";
 
 const TicketPage = () => {
   const { ticketId } = useParams();
@@ -8,23 +9,33 @@ const TicketPage = () => {
   const [ticket, setTicket] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const getTicket = async () => {
-      try {
-        const { data } = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/api/tickets/${ticketId}`
-        );
+useEffect(() => {
+  if (!ticketId) return;
 
-        setTicket(data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
+  const ticketRef = doc(db, "tickets", ticketId);
+
+  const unsubscribe = onSnapshot(
+    ticketRef,
+    (snapshot) => {
+      if (snapshot.exists()) {
+        setTicket({
+          id: snapshot.id,
+          ...snapshot.data(),
+        });
+      } else {
+        setTicket(null);
       }
-    };
 
-    getTicket();
-  }, [ticketId]);
+      setLoading(false);
+    },
+    (error) => {
+      console.error("Ticket listener error:", error);
+      setLoading(false);
+    }
+  );
+
+  return () => unsubscribe();
+}, [ticketId]);
 
   if (loading) {
     return (
