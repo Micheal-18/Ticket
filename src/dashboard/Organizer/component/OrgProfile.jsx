@@ -198,12 +198,12 @@ const OrgProfile = () => {
 
   return (
     <div className="w-full flex justify-center items-center p-4 md:p-8">
-      <div className="flex flex-col bg-(--bg-color) p-6 rounded-xl shadow-md w-full max-w-2xl border border-gray-100 dark:border-gray-800 max-h-[85vh] overflow-y-auto custom-scrollbar">
+      <div className="flex flex-col bg-(--bg-color) p-6 rounded-xl shadow-md w-full max-w-2xl border border-(--border) max-h-[85vh] overflow-y-auto custom-scrollbar">
         
         <h1 className="text-xl font-bold mb-6 uppercase tracking-wider">Organizer Profile</h1>
 
         {/* Tab Selection Row */}
-        <div className="flex gap-2 shadow p-2 mb-6 text-sm font-medium rounded-lg">
+        <div className="flex gap-2 shadow p-2 mb-6 text-sm font-medium rounded-sm">
           <button 
             type="button"
             onClick={() => { setActiveTab('details'); setIsEditing(false); }}
@@ -316,7 +316,7 @@ const OrgProfile = () => {
                   <button
                     type="button"
                     onClick={() => setIsEditing(true)}
-                    className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2.5 rounded-lg font-bold uppercase text-xs tracking-widest transition-all shadow-md shadow-orange-500/10"
+                    className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2.5 rounded-sm font-bold uppercase text-xs tracking-widest transition-all shadow-md shadow-orange-500/10"
                   >
                     Edit Profile Details
                   </button>
@@ -373,7 +373,7 @@ const OrgProfile = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2.5 rounded-lg font-bold uppercase text-xs tracking-wider disabled:opacity-50 transition-all"
+                className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2.5 rounded-sm font-bold uppercase text-xs tracking-wider disabled:opacity-50 transition-all"
               >
                 {loading ? "Verifying..." : "Update Registered Email"}
               </button>
@@ -469,7 +469,7 @@ const OrgProfile = () => {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2.5 rounded-lg font-bold uppercase text-xs tracking-wider disabled:opacity-50 transition-all"
+                    className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2.5 rounded-sm font-bold uppercase text-xs tracking-wider disabled:opacity-50 transition-all"
                   >
                     {loading ? "Saving Changes..." : "Save New Password"}
                   </button>

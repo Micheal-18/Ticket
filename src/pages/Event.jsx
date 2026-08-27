@@ -442,13 +442,13 @@ const Event = ({ currentUser, events, setEvents }) => {
                 to={`/event/${event.slug}`}
                 key={event.id}
                 onClick={() => handleOpenTicket(event)}
-                className='flex items-center justify-between flex-1 lg:gap-8 gap-4  relative lg:px-8 px-2 w-full py-4 shadow rounded-3xl cursor-pointer'
+                className='flex items-center justify-between flex-1 lg:gap-6 gap-4  relative lg:px-6 px-4 w-full py-4 shadow rounded-3xl cursor-pointer'
               >
-                <span className='space-y-2 flex flex-col'>
+                <span className='space-y-3 flex flex-col'>
                   <h1 className='font-bold  uppercase text-2xl w-[150px] truncate lg:w-[300px] '>
                     {event.name}
                   </h1>
-                  <p className='md:text-lg text-sm font-regular text-gray-500 flex gap-2 items-center'>
+                  <p className='text-md font-regular text-gray-500 flex gap-2 items-center'>
                     <FaCalendar />{' '}
                     {new Date(event.date).toLocaleDateString('en-US', {
                       weekday: 'short',
@@ -457,13 +457,13 @@ const Event = ({ currentUser, events, setEvents }) => {
                       year: 'numeric'
                     })}
                   </p>
-                  <p className='text-sm w-[150px] lg:w-[300px] text-gray-500 flex items-center gap-2'>
+                  <p className='text-md w-[150px] lg:w-[300px] text-gray-500 flex items-center gap-2'>
                     <FaClock />
                     <span className='truncate'>
                       {formatEventStatus(event.startTime, event.endTime)}
                     </span>
                   </p>
-                  <p className='md:text-lg text-md w-[180px] lg:w-[300px] font-normal text-gray-500 flex gap-2 items-center'>
+                  <p className='text-md w-[180px] lg:w-[300px] font-normal text-gray-500 flex gap-2 items-center'>
                     <FaLocationArrow />
                     <span className='truncate '>
                       {event.location || event.venue.name}
@@ -471,14 +471,14 @@ const Event = ({ currentUser, events, setEvents }) => {
                   </p>
                   <div>
                     {event.isFree ? (
-                      <span className='text-green-500 text-sm font-bold bg-green-500/10 px-2 py-0.5 rounded-md'>
+                      <span className='text-green-500 md:text-md text-sm font-bold bg-green-500/10 px-2 py-0.5 rounded-md'>
                         🆓 Free Admission
                       </span>
                     ) : Array.isArray(event.tickets) ? (
                       event.tickets.slice(0, 1).map((priceOption, index) => (
                         <p key={index}>
-                          <span className='text-(--primary) text-lg font-semibold'>
-                            {priceOption.name}:
+                          <span className='text-(--primary) md:text-md text-sm  font-semibold'>
+  
                             {Number(priceOption.price) > 0 ? (
                               priceOption.currency +
                               ' ' +
@@ -493,7 +493,7 @@ const Event = ({ currentUser, events, setEvents }) => {
                       ))
                     ) : (
                       <p>
-                        <span className='text-(--primary) text-lg font-semibold'>
+                        <span className='text-(--primary) md:text-md text-sm  font-semibold'>
                           {event.currency}{' '}
                           {Number(event.price?.price) +
                             ((1.5 / 100) * Number(event.price?.price) + 100)}
@@ -507,7 +507,7 @@ const Event = ({ currentUser, events, setEvents }) => {
                   <OptimizedImage
                     src={event.photoURL || event.photo}
                     alt={event.name}
-                    className='object-contain w-[150px] hover:scale-105 duration-500 rounded-2xl'
+                    className='object-contain w-[200px] h-[200px] hover:scale-105 duration-500 rounded-2xl'
                   />
                 </span>
               </Link>
