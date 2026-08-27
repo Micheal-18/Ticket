@@ -448,7 +448,7 @@ const Event = ({ currentUser, events, setEvents }) => {
                   <h1 className='font-bold  uppercase text-2xl w-[150px] truncate lg:w-[300px] '>
                     {event.name}
                   </h1>
-                  <p className='text-md font-regular text-gray-500 flex gap-2 items-center'>
+                  <p className='md:text-lg text-sm font-regular text-gray-500 flex gap-2 items-center'>
                     <FaCalendar />{' '}
                     {new Date(event.date).toLocaleDateString('en-US', {
                       weekday: 'short',
@@ -463,7 +463,7 @@ const Event = ({ currentUser, events, setEvents }) => {
                       {formatEventStatus(event.startTime, event.endTime)}
                     </span>
                   </p>
-                  <p className='text-md w-[180px] lg:w-[300px] font-normal text-gray-500 flex gap-2 items-center'>
+                  <p className='md:text-lg text-md w-[180px] lg:w-[300px] font-normal text-gray-500 flex gap-2 items-center'>
                     <FaLocationArrow />
                     <span className='truncate '>
                       {event.location || event.venue.name}
@@ -477,8 +477,8 @@ const Event = ({ currentUser, events, setEvents }) => {
                     ) : Array.isArray(event.tickets) ? (
                       event.tickets.slice(0, 1).map((priceOption, index) => (
                         <p key={index}>
-                          <span className='text-(--primary) md:text-md text-sm  font-semibold'>
-  
+                          <span className='text-(--primary) text-lg font-semibold'>
+                            {priceOption.name}:
                             {Number(priceOption.price) > 0 ? (
                               priceOption.currency +
                               ' ' +
@@ -493,7 +493,7 @@ const Event = ({ currentUser, events, setEvents }) => {
                       ))
                     ) : (
                       <p>
-                        <span className='text-(--primary) md:text-md text-sm  font-semibold'>
+                        <span className='text-(--primary) text-lg font-semibold'>
                           {event.currency}{' '}
                           {Number(event.price?.price) +
                             ((1.5 / 100) * Number(event.price?.price) + 100)}
