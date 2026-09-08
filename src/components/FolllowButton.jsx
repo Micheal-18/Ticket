@@ -4,37 +4,34 @@ import {
   arrayUnion,
   arrayRemove,
   increment,
-  addDoc,
   collection,
   serverTimestamp,
-  deleteField, // 📑 Added to clean up fields on unfollow
-  onSnapshot
+  deleteField,
+  onSnapshot,
+  getDoc // 📑 Added getDoc to fetch the organizer's email
 } from 'firebase/firestore'
 import { db } from '../firebase/firebase'
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'// 📑 Import your new helper
+import { sendNotification } from '../utils/createNotify'
 
 const FollowButton = ({ currentUser, ownerId }) => {
   const [isFollowing, setIsFollowing] = useState(false)
   const [loading, setLoading] = useState(false)
 
-useEffect(() => {
-  if (!currentUser?.uid) return;
+  useEffect(() => {
+    if (!currentUser?.uid) return;
 
-  const unsubscribe = onSnapshot(
-    doc(db, "users", currentUser.uid),
-    (snap) => {
-      if (!snap.exists()) return;
+    const unsubscribe = onSnapshot(
+      doc(db, "users", currentUser.uid),
+      (snap) => {
+        if (!snap.exists()) return;
+        const data = snap.data();
+        setIsFollowing(data.following?.includes(ownerId) || false);
+      }
+    );
 
-      const data = snap.data();
-
-      setIsFollowing(
-        data.following?.includes(ownerId) || false
-      );
-    }
-  );
-
-  return unsubscribe;
-}, [currentUser?.uid, ownerId]);
+    return unsubscribe;
+  }, [currentUser?.uid, ownerId]);
 
   const toggleFollow = async () => {
     if (!currentUser || currentUser.uid === ownerId) return
@@ -49,7 +46,6 @@ useEffect(() => {
         // ❌ UNFOLLOWING LOGIC
         await updateDoc(userRef, {
           following: arrayRemove(ownerId),
-          // Dynamic path safely removes the specific timestamp tracking key
           [`followingDates.${ownerId}`]: deleteField() 
         })
         await updateDoc(organizerRef, {
@@ -59,28 +55,30 @@ useEffect(() => {
         setIsFollowing(false)
       } else {
         // 🎫 FOLLOWING LOGIC
-        const now = new Date(); // Use local timestamp instance for quick layout mapping fallback compatibility
+        const now = new Date(); 
 
         await updateDoc(userRef, {
           following: arrayUnion(ownerId),
-          // 🛠️ FIX: Track exactly when this user followed this specific organizer id
           [`followingDates.${ownerId}`]: now
         })
         await updateDoc(organizerRef, {
           followersCount: increment(1),
-          followers: arrayUnion(currentUser.uid) // Keep this array populated for UserMain.jsx!
+          followers: arrayUnion(currentUser.uid) 
         })
 
-        // 🔔 CREATE NOTIFICATION
-        await addDoc(collection(db, 'notifications'), {
-          type: 'new_follower',
-          title: '👤 New Follower',
-          message: `${currentUser.fullName || currentUser.displayName || 'Someone'} followed you`,
-          userId: ownerId, // organizer receives it
-          actorId: currentUser.uid, // who followed
-          read: false,
-          createdAt: serverTimestamp()
-        })
+        // 🔔 FETCH ORGANIZER EMAIL & TRIGGER BACKEND NOTIFICATION
+        const organizerSnap = await getDoc(organizerRef);
+        const organizerEmail = organizerSnap.data()?.email;
+
+        if (organizerEmail) {
+          await sendNotification({
+            userId: ownerId,
+            userEmail: organizerEmail,
+            title: '👤 New Follower Alert',
+            message: `${currentUser.fullName || currentUser.displayName || 'Someone'} just started following you!`,
+            link: `/dashboard/organization/profile` // Or wherever you want them routed
+          });
+        }
 
         setIsFollowing(true)
       }

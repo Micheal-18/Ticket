@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { collection, getDocs, updateDoc, doc, addDoc } from 'firebase/firestore';
+import { collection, getDocs, query, where, updateDoc, doc, addDoc } from 'firebase/firestore';
 import { db } from '../../firebase/firebase';
 import OptimizedImage from '../../components/OptimizedImage';
 import { FaEllipsisV, FaCalendar, FaClock, FaLocationArrow } from 'react-icons/fa';
@@ -9,6 +9,7 @@ import DeleteModal from '../../components/DeleteModal';
 import EditModal from '../../components/EditModal';
 import { formatEventStatus } from '../../utils/formatEventRange';
 import { Link } from 'react-router-dom';
+import { sendNotification } from '../../utils/createNotify';
 
 const Dashevents = ({ currentUser, events, setEvents }) => {
   const isAdmin = useAdmin();
@@ -20,21 +21,33 @@ const Dashevents = ({ currentUser, events, setEvents }) => {
   const [approvingEventId, setApprovingEventId] = useState(null);
 
   // Fetch events
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "events"));
-        const eventsData = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setEvents(eventsData);
-      } catch (error) {
-        console.error("Error fetching events:", error);
+useEffect(() => {
+  const fetchEvents = async () => {
+    if (!currentUser?.uid) return; // Guard clause
+
+    try {
+      let q;
+      if (isAdmin) {
+        // Admins fetch everything so they can approve pending events
+        q = collection(db, "events");
+      } else {
+        // Normal organizers only fetch events they created
+        q = query(collection(db, "events"), where("ownerId", "==", currentUser.uid));
       }
-    };
-    fetchEvents();
-  }, [setEvents]);
+      
+      const querySnapshot = await getDocs(q);
+      const eventsData = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setEvents(eventsData);
+    } catch (error) {
+      console.error("Error fetching events:", error);
+    }
+  };
+  
+  fetchEvents();
+}, [setEvents, currentUser, isAdmin]);
 
   // Safe Date string formatter helper function 
   const displayEventDate = (dateField) => {
@@ -107,23 +120,23 @@ const Dashevents = ({ currentUser, events, setEvents }) => {
         subaccountCode = subaccountData.subaccount_code;
       }
 
-      // Update Firestore: approve event & save subaccount code if applicable
+      // 1. Update Firestore: approve event & save subaccount code if applicable
       await updateDoc(eventRef, {
         status: "approved",
         ...(subaccountCode && { subaccountCode }),
       });
 
-      await addDoc(collection(db, "notifications"), {
-        type: "event_approved",
-        title: "✅ Event Approved",
-        message: `Event "${event.name}" has been approved!`,
+      // 2. ⚡ FIRE DUAL NOTIFICATION (Email + In-App) VIA BACKEND ⚡
+      // Note: Ensure `event.organizerEmail` is definitely being saved to your event docs during creation!
+      await sendNotification({
         userId: event.ownerId,
-        link: `/event/${event.id}`,
-        read: false,
-        createdAt: new Date().toISOString(),
+        userEmail: event.organizerEmail, 
+        title: "✅ Event Approved",
+        message: `Congratulations! Your event "${event.name}" has been reviewed and approved.`,
+        link: `/event/${event.id}`
       });
 
-      // Update UI state securely
+      // 3. Update UI state securely
       setEvents((prev) =>
         prev.map((ev) =>
           ev.id === event.id
@@ -136,7 +149,7 @@ const Dashevents = ({ currentUser, events, setEvents }) => {
     } catch (err) {
       console.error("Approval flow crash:", err);
       alert("❌ Failed to approve event: " + err.message);
-    } compression: {
+    } finally { // <-- Don't forget the 'compression' typo fix here!
       setApprovingEventId(null);
     }
   };
