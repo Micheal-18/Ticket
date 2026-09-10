@@ -24,6 +24,7 @@ import VenueSection from './component/create event/VenueSection'
 import RulesSection from './component/create event/RuleSection'
 import ThemeSection from './component/create event/ThemeSection'
 import LivePreview from './component/create event/LivePreview'
+import { sendNotification } from '../../utils/createNotify'
 
 const CreateEvent = () => {
   const navigate = useNavigate()
@@ -291,17 +292,17 @@ const CreateEvent = () => {
         createdAt: new Date().toISOString()
       })
 
-      await setDoc(doc(db, 'notifications', `${Date.now()}_${eventId}`), {
-        type: 'event_submission',
+      await sendNotification({
+        userId: 'admin',
+        userEmail: 'michaeleleke259@gmail.com' || 'sparowdballinbird@gmail.com', // Replace with the actual admin email
         title: '📢 New Event Submission',
         message: `Event "${name}" needs admin review and approval.`,
-        userId: 'admin',
-        senderId: currentUser.uid,
-        senderName: organizer,
         link: `/event/${slug}`,
+        // 👇 Add your specific logic fields back here
         status: 'pending',
-        read: false,
-        createdAt: new Date().toISOString()
+        type: 'event_submission',
+        senderId: currentUser.uid,
+        senderName: organizer
       })
 
       if (currentUser) {
@@ -615,7 +616,9 @@ const CreateEvent = () => {
             {hasPaidTicket && (
               <div className='flex flex-col space-y-4 pt-2'>
                 <h2 className='font-semibold'>Bank Info (for payout)</h2>
-                <p className='text-xs font-semibold text-gray-500'>Airticks charge is 5% of the ticket price</p>
+                <p className='text-xs font-semibold text-gray-500'>
+                  Airticks charge is 5% of the ticket price
+                </p>
                 <input
                   required={hasPaidTicket}
                   placeholder='Account Number'
