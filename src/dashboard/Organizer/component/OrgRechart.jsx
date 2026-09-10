@@ -17,7 +17,7 @@ const CustomTooltip = ({ active, payload, label }) => {
         <p className="text-xs font-medium text-gray-400 mb-1">{label}</p>
         <p className="text-sm font-bold text-orange-500 flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
-          {payload[0].value} {payload[0].value === 1 ? 'Event' : 'Events'}
+          {payload[0].value} {payload[0].value === 1 ? 'Ticket' : 'Tickets'}
         </p>
       </div>
     );
@@ -39,8 +39,8 @@ const EventsChartPanel = ({ chartData }) => {
     /* 🛠️ FIX 1: Enforced a concrete minimum dimensions frame context on the outermost wrapper component */
     <div className="p-5 rounded-3xl backdrop-blur-sm shadow flex flex-col w-full h-[340px]">
       <div className="flex flex-col mb-4">
-        <h2 className="text-lg font-bold tracking-wide ">Events Velocity</h2>
-        <p className="text-xs text-gray-500 dark:text-gray-400">Total verified event distributions per calendar month</p>
+        <h2 className="text-lg font-bold tracking-wide ">Ticket Velocity</h2>
+        <p className="text-xs text-gray-500 dark:text-gray-400">Total ticket sales per calendar month</p>
       </div>
       
       {/* 🛠️ FIX 2: Swapped utility "h-64" for layout absolute explicit flex-1 to keep rendering canvas from collapsing to 0px height */}
@@ -84,7 +84,7 @@ const EventsChartPanel = ({ chartData }) => {
             />
             
             <Bar 
-              dataKey="registrations" 
+              dataKey="tickets" 
               fill="url(#barGradient)" 
               maxBarSize={32}
               radius={[6, 6, 0, 0]}

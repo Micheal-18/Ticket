@@ -40,20 +40,19 @@ const Organization = () => {
   /* ---------------- CHART DATA ---------------- */
   const chartData = (() => {
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    const counts = Object.fromEntries(months.map(m => [m, 0]));
+    const totals = Object.fromEntries(months.map(m => [m, 0]));
 
     orgEvents.forEach((e) => {
-      // e.date refers to event execution day value
       const d = parseToNativeDate(e.date);
       if (d) {
         const m = d.toLocaleString("default", { month: "short" });
-        if (counts[m] !== undefined) {
-          counts[m]++;
+        if (totals[m] !== undefined) {
+          totals[m] += Number(e.ticketSold || 0);
         }
       }
     });
 
-    return months.map(m => ({ name: m, events: counts[m] }));
+    return months.map(m => ({ name: m, tickets: totals[m] }));
   })();
 
   /* ---------------- FOLLOWERS (READ-ONLY) ---------------- */
