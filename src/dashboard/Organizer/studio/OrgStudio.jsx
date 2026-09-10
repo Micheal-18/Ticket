@@ -108,7 +108,7 @@ const OrgStudio = ({ currentUser }) => {
       {/* HEADER */}
       <div className='flex justify-between items-start flex-wrap gap-5'>
         <div>
-          <h1 className='text-4xl font-black'>{event?.name}</h1>
+          <h1 className='text-4xl  font-black'>{event?.name}</h1>
           <p className='opacity-70 uppercase font-bold mt-2'>
             Organizer Studio
           </p>
@@ -119,18 +119,13 @@ const OrgStudio = ({ currentUser }) => {
             onClick={() =>
               navigate(`/dashboard/organization/studio/${eventId}/edit`)
             }
-            className='bg-(--primary) text-white px-5 py-3 rounded-xl flex items-center gap-2 cursor-pointer'
+            className='bg-(--primary) text-white lg:px-5 px-4 lg:py-3 py-2 rounded-xl flex items-center gap-2 cursor-pointer'
           >
             <FaEdit />
             Edit Event
           </button>
 
-          <button className='border px-5 py-3 rounded-xl flex items-center gap-2 cursor-pointer'>
-            <FaCopy />
-            Duplicate
-          </button>
-
-          <button className='border border-red-500 text-red-500 px-5 py-3 rounded-xl flex items-center gap-2 cursor-pointer'>
+          <button className='border border-red-500 text-red-500 lg:px-5 px-4 lg:py-3 py-2 rounded-xl flex items-center gap-2 cursor-pointer'>
             <FaTrash />
             Delete
           </button>

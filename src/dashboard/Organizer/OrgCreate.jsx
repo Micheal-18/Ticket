@@ -687,7 +687,7 @@ const CreateEvent = () => {
       --bg-color) dark:bg-(--bg-color) border border-(--border) rounded-3xl p-6 shadow-xs'
         >
           <h3 className='font-bold text-xl mb-4 text-(--bg-color) dark:text-zinc-50'>
-            Select Tickets
+            Preview Event Flyer
           </h3>
           <LivePreview
             name={name}

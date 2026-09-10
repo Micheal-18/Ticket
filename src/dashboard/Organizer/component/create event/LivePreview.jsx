@@ -110,21 +110,21 @@ const LivePreview = ({
 
           <div className='flex items-center gap-3 text-sm opacity-80'>
             <FiClock />
-              {startTime
-    ? `${new Date(startTime).toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      })}${
-        endTime
-          ? ` - ${new Date(endTime).toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: false,
-            })}`
-          : ""
-      }`
-    : "Event Time"}
+            {startTime
+              ? `${new Date(startTime).toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: false
+                })}${
+                  endTime
+                    ? ` - ${new Date(endTime).toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false
+                      })}`
+                    : ''
+                }`
+              : 'Event Time'}
           </div>
 
           {schedules.length > 0 && (
@@ -201,10 +201,10 @@ const LivePreview = ({
             <div className='grid grid-cols-2 gap-4'>
               {guests.map(guest => {
                 const image = guest.photo
-  ? typeof guest.photo === "string"
-    ? guest.photo
-    : URL.createObjectURL(guest.photo)
-  : null;
+                  ? typeof guest.photo === 'string'
+                    ? guest.photo
+                    : URL.createObjectURL(guest.photo)
+                  : null
 
                 return (
                   <div
@@ -246,13 +246,13 @@ const LivePreview = ({
                   className='flex items-center gap-2 rounded-xl border px-3 py-2'
                 >
                   {sponsor.logo && (
-<img
-    src={
-        typeof sponsor.logo === "string"
-            ? sponsor.logo
-            : URL.createObjectURL(sponsor.logo)
-    }
-/>
+                    <img
+                      src={
+                        typeof sponsor.logo === 'string'
+                          ? sponsor.logo
+                          : URL.createObjectURL(sponsor.logo)
+                      }
+                    />
                   )}
 
                   <span className='text-sm font-medium'>{sponsor.name}</span>

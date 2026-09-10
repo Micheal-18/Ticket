@@ -111,7 +111,7 @@ const Organization = () => {
         <div className="p-4 rounded-2xl shadow border border-gray-800/40">
           <h2 className="text-xl font-semibold mb-4">Recent Activities</h2>
 
-          <div className="space-y-4 max-h-80 overflow-y-auto">
+          <div className="space-y-4 max-h-80 custom-scrollbar">
             {recentActivities.length === 0 && (
               <p className="text-gray-400 text-sm">No activity yet</p>
             )}
@@ -122,7 +122,7 @@ const Organization = () => {
               return (
                 <div
                   key={index}
-                  className="flex gap-3 border-b border-gray-700 pb-4"
+                  className="flex gap-3 border-b border-gray-700 pb-4 "
                 >
                   <div className="text-orange-500 mt-1">
                     {activity.type === "event"
