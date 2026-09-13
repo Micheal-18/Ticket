@@ -34,6 +34,36 @@
   --radius-sm: 10px;
   --radius-md: 16px;
   --radius-lg: 24px;
+
+  /* Login theme */
+  --login-page-bg: radial-gradient(circle at top, rgba(245, 158, 11, 0.18), transparent 38%), linear-gradient(135deg, #fffaf0 0%, #f8fafc 40%, #eef2ff 100%);
+  --login-panel-bg: rgba(255, 255, 255, 0.8);
+  --login-panel-border: rgba(255, 255, 255, 0.4);
+  --login-panel-shadow: rgba(15, 23, 42, 0.12);
+  --login-side-bg: linear-gradient(135deg, #f59e0b 0%, #f97316 45%, #facc15 100%);
+  --login-side-card: rgba(255, 255, 255, 0.1);
+  --login-side-card-border: rgba(255, 255, 255, 0.2);
+  --login-side-caption: rgba(58, 55, 46, 0.8);
+  --login-side-copy: rgba(61, 59, 53, 0.82);
+  --login-title: #0f172a;
+  --login-subtitle: #334155;
+  --login-label: #334155;
+  --login-input-bg: #f8fafc;
+  --login-input-border: #e2e8f0;
+  --login-input-focus: rgba(245, 158, 11, 0.12);
+  --login-form-bg: rgba(255, 255, 255, 0.8);
+  --login-divider: #e2e8f0;
+  --login-ghost-bg: rgba(255, 255, 255, 0.3);
+  --login-ghost-border: #e2e8f0;
+  --login-text: #0f172a;
+  --login-muted: #64748b;
+  --login-brand: #f59e0b;
+  --login-brand-soft: #393633;
+  --login-error-bg: #fef2f2;
+  --login-error-border: #fecaca;
+  --login-error-text: #b91c1c;
+  --login-success-bg: rgba(16, 185, 129, 0.12);
+  --login-success-text: #047857;
 }
 
 html,body {
@@ -58,17 +88,43 @@ html,body {
 
   --primary: #F59E0B;
   --primary-hover: #F59E0B;
-}
 
+  --login-page-bg: radial-gradient(circle at top, rgba(245, 158, 11, 0.12), transparent 30%), linear-gradient(135deg, #020817 0%, #0f172a 50%, #111827 100%);
+  --login-panel-bg: rgba(15, 23, 42, 0.75);
+  --login-panel-border: rgba(148, 163, 184, 0.22);
+  --login-panel-shadow: rgba(2, 6, 23, 0.45);
+  --login-side-bg: linear-gradient(135deg, rgba(245, 158, 11, 0.92) 0%, rgba(249, 115, 22, 0.85) 45%, rgba(250, 204, 21, 0.8) 100%);
+  --login-side-card: rgba(255, 255, 255, 0.08);
+  --login-side-card-border: rgba(255, 255, 255, 0.18);
+  --login-side-caption: rgba(255, 245, 214, 0.82);
+  --login-side-copy: rgba(255, 251, 235, 0.8);
+  --login-title: #f8fafc;
+  --login-subtitle: #e2e8f0;
+  --login-label: #e2e8f0;
+  --login-input-bg: rgba(15, 23, 42, 0.8);
+  --login-input-border: #334155;
+  --login-input-focus: rgba(245, 158, 11, 0.2);
+  --login-form-bg: rgba(15, 23, 42, 0.75);
+  --login-divider: #334155;
+  --login-ghost-bg: #0f172a;
+  --login-ghost-border: #334155;
+  --login-text: #f8fafc;
+  --login-muted: #cbd5e1;
+  --login-brand: #fbbf24;
+  --login-brand-soft: #fff7ed;
+  --login-error-bg: rgba(127, 29, 29, 0.18);
+  --login-error-border: rgba(239, 68, 68, 0.35);
+  --login-error-text: #fecaca;
+  --login-success-bg: rgba(16, 185, 129, 0.15);
+  --login-success-text: #a7f3d0;
+}
 
 option {
   background-color: #444444;
   color: #f0f0f0;
   border: 1px solid #555555;
   overflow: scroll;
-
 }
-
 
 .custom-scrollbar {
   overflow: scroll;
@@ -79,12 +135,12 @@ option {
 }
 
 .loading {
-  width: 20px;
-  height: 20px;
-  border: 2px solid black;
-  border-top: 2px solid orangered;
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255,255,255,0.45);
+  border-top-color: rgba(255,255,255,1);
   border-radius: 50%;
-  animation: spin 2s linear infinite;
+  animation: spin 0.85s linear infinite;
 }
 
 @keyframes spin {
@@ -106,19 +162,8 @@ option {
   animation: spin 2s linear infinite;
 }
 
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 @layer utilities {
   @keyframes blink {
-
     0%,
     100% {
       opacity: 1;
@@ -163,26 +208,32 @@ option {
   mix-blend-mode: difference;
 }
 
-
+.auth-bg-grid {
+  background-image:
+    linear-gradient(rgba(148, 163, 184, 0.15) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.15) 1px, transparent 1px);
+  background-size: 26px 26px;
+  mask-image: radial-gradient(circle at center, black 42%, transparent 100%);
+}
 
 @media (prefers-color-scheme: dark) {
-html, body {
+  html, body {
     color: var(--text-color);
     background-color: var(--bg-color);
   }
 }
 
 @keyframes walk-across {
-    0% {
-      transform: translateX(-50vw);
-    }
-    100% {
-      transform: translateX(50vw);
-    }
+  0% {
+    transform: translateX(-50vw);
+  }
+  100% {
+    transform: translateX(50vw);
+  }
 }
 
 .animation-walk {
-    animation: walk-across 10s linear infinite;
+  animation: walk-across 10s linear infinite;
 }
 
 @keyframes marquee {
@@ -198,10 +249,6 @@ html, body {
 .marquee {
   animation: marquee 25s linear infinite;
 }
-
-/* ===========================
-   React Quill Theme
-=========================== */
 
 .quill-editor .ql-toolbar .ql-placeholder {
   background: var(--bg-color);
@@ -226,8 +273,6 @@ html, body {
   font-style: normal;
 }
 
-/* Toolbar icons */
-
 .quill-editor .ql-stroke {
   stroke: var(--text-color);
 }
@@ -248,8 +293,6 @@ html, body {
   background: var(--bg-color);
   color: var(--text-color);
 }
-
-/* Active buttons */
 
 .quill-editor .ql-active .ql-stroke {
   stroke: var(--primary);

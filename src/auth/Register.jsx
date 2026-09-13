@@ -1,24 +1,21 @@
-import React, { useEffect, useState } from 'react'
-import pictureBg from '../assets/download2.jpeg'
+import React, { useState } from 'react'
 import {
   RiBriefcaseLine,
   RiCheckboxCircleLine,
   RiCircleLine,
   RiUserLine
 } from 'react-icons/ri'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import countries from '../data/countries'
 import {
   createUserWithEmailAndPassword,
-  sendEmailVerification,
-  signInWithEmailAndPassword,
-  signOut
+  sendEmailVerification
 } from 'firebase/auth'
-import { auth, db } from '../firebase/firebase' // make sure firebase.js is set up
-import { doc, getDoc, setDoc } from 'firebase/firestore'
+import { auth, db } from '../firebase/firebase'
+import { doc, setDoc } from 'firebase/firestore'
 import { FaEye, FaEyeSlash } from 'react-icons/fa6'
+import { SiEagle } from 'react-icons/si'
 import Verify from './Verify'
-import walkGif from '../assets/dog.gif'
 
 const Register = ({ step, setStep }) => {
   const [email, setEmail] = useState('')
@@ -28,31 +25,22 @@ const Register = ({ step, setStep }) => {
   const [confirmPasswordError, setConfirmPasswordError] = useState('')
   const [selected, setSelected] = useState(null)
   const [error, setError] = useState('')
-  const [success, setSuccess] = useState(false)
-  const [successMessage, setSuccessMessage] = useState('')
   const [registerLoading, setRegisterLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
   const navigate = useNavigate()
-
-  const [click, setClick] = useState(false)
-
-  const handleClick = () => {
-    setClick(!click)
-  }
 
   const account = [
     {
       id: 'personal',
-      icon: <RiUserLine className='text-5xl text-(--primary)' />,
+      icon: <RiUserLine className='text-5xl text-[var(--login-brand)]' />,
       header: 'User',
-      writeup:
-        'Creating an account for personal use? This is the account type for you'
+      writeup: 'Create an account for personal bookings, saved tickets, and event updates.'
     },
     {
       id: 'organization',
-      icon: <RiBriefcaseLine className='text-5xl text-(--primary)' />,
+      icon: <RiBriefcaseLine className='text-5xl text-[var(--login-brand)]' />,
       header: 'Organization',
-      writeup:
-        'Selling tickets as a registered business? This is the account type for you'
+      writeup: 'Launch and manage events, ticket sales, and attendee access as a business.'
     }
   ]
 
@@ -85,22 +73,10 @@ const Register = ({ step, setStep }) => {
 
   const handleContinue = () => {
     if (selected) {
-      setStep('form') // 👈 go to the right form
+      setStep('form')
     }
   }
 
-  // Auto-redirect to login after success
-  // useEffect(() => {
-  //   if (success) {
-  //     const timer = setTimeout(() => {
-  //       setStep("verify");
-  //       setSuccess(false);
-  //     }, 100000);
-  //     return () => clearTimeout(timer);
-  //   }
-  // }, [success]);
-
-  // Firebase-friendly error messages
   const getErrorMessage = code => {
     switch (code) {
       case 'auth/invalid-email':
@@ -122,27 +98,23 @@ const Register = ({ step, setStep }) => {
     e.preventDefault()
     setError('')
 
-    setRegisterLoading(true)
-
-    // ✅ Check password match
     if (password !== confirmPassword) {
       setError('Passwords do not match.')
-      setRegisterLoading(false)
       return
     }
 
     const formData = new FormData(e.target)
     const fullName = formData.get('fullName')
-    const emailValue = formData.get('email') // use different name
-    setEmail(emailValue) // update state
+    const emailValue = formData.get('email')
     const passwordValue = formData.get('password')
     const address = formData.get('address')
     const country = formData.get('country')
     const phone = formData.get('phone')
     const orgName = formData.get('organization')
 
+    setRegisterLoading(true)
+
     try {
-      // Create user
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         emailValue,
@@ -150,16 +122,8 @@ const Register = ({ step, setStep }) => {
       )
       const user = userCredential.user
 
-      setEmail(emailValue) // ✅ update state so success screen shows email
-      setSuccessMessage(
-        '✅ Almost done! Please check your inbox for a verification link.'
-      )
-      setSuccess(true)
-      setPassword('')
-      setStep('verify')
-      setConfirmPassword('')
+      setEmail(emailValue)
 
-      // Save to Firestore
       await setDoc(doc(db, 'users', user.uid), {
         accountType: selected,
         fullName,
@@ -176,320 +140,319 @@ const Register = ({ step, setStep }) => {
         console.error('profile write failed:', error)
       })
 
-      // 2) Fire off verification email (don’t block UI if Firestore later fails)
-      // Optional: customize redirect URL
-
       const actionCodeSettings = {
-        url: window.location.href, // change if you want a specific page
+        url: window.location.href,
         handleCodeInApp: false
       }
-      await sendEmailVerification(user, actionCodeSettings)
 
-      // 3) Move UI to "verify" screen immediately
+      await sendEmailVerification(user, actionCodeSettings)
       setStep('verify')
     } catch (error) {
-      console.log(error)
-
       setError(getErrorMessage(error.code))
     } finally {
       setRegisterLoading(false)
     }
   }
 
-  // Progress bar
   const steps = ['select', 'form', 'verify']
   const currentStep = steps.indexOf(step)
 
   return (
-    <section
-      data-aos='fade-out'
-      className='relative w-full bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) grid grid-cols-1 md:grid-cols-2 h-screen '
-    >
-      <div className='flex flex-col flex-1  custom-scrollbar space-y-10 px-10 py-6 '>
-        <a className='text-lg font-semibold '>
-          Airticks<span className='text-(--primary)'>.events</span>
-        </a>
-        {/* Progress Indicator */}
-        <div className='flex justify-between mb-6'>
-          {steps.map((s, idx) => (
-            <div
-              key={s}
-              className={`flex-1 h-2 mx-1 rounded ${
-                idx <= currentStep ? 'bg-(--primary)' : 'bg-gray-300'
-              }`}
-            />
-          ))}
+    <section className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-[var(--login-page-bg)] px-4 py-10 text-[var(--login-text)]">
+      <div className="auth-bg-grid absolute inset-0 opacity-60" />
+
+      <div className="relative z-10 grid w-full max-w-6xl overflow-hidden rounded-[28px] border border-[var(--login-panel-border)] bg-[var(--login-panel-bg)] shadow-[0_30px_80px_var(--login-panel-shadow)] backdrop-blur-xl">
+        <div className="hidden items-center justify-center bg-[var(--login-side-bg)] p-8 lg:flex lg:w-[420px] lg:flex-col">
+          <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/15  shadow-lg ring-1 ring-white/30 backdrop-blur-sm">
+            <SiEagle className="text-3xl" />
+          </div>
+
+          <div className="max-w-sm text-center ">
+            <p className="mb-3 text-sm font-medium uppercase tracking-[0.28em] text-[var(--login-side-caption)]">Create your access</p>
+            <h2 className="text-4xl font-black leading-tight">
+              Join <span className="text-[var(--login-brand-soft)]">Airticks</span>
+            </h2>
+            <p className="mt-4 text-base leading-7 text-[var(--login-side-copy)]">
+              Build your profile, organize events, and unlock a better ticketing experience.
+            </p>
+          </div>
+
+          <div className="mt-10 w-full max-w-xs rounded-2xl border border-[var(--login-side-card-border)] bg-[var(--login-side-card)] p-4 text-left backdrop-blur-sm">
+            <p className="text-xs uppercase tracking-[0.2em] text-[var(--login-side-caption)]">Quick stats</p>
+            <div className="mt-3 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-[var(--login-side-copy)]">Verified hosts</span>
+                <span className="text-lg font-bold ">2.4k</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-[var(--login-side-copy)]">Events live</span>
+                <span className="text-lg font-bold ">860+</span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {step === 'select' && (
-          <>
-            <div className='flex flex-col space-y-4'>
-              <h1 className='font-bold md:text-5xl text-3xl'>
-                Create an account
-              </h1>
-              <p className='md:text-lg text-sm'>
-                it's free to create an account and get started with Airticks!
-              </p>
+        <div className="w-full bg-[var(--login-form-bg)] p-6 sm:p-8 lg:p-10">
+          <div className="mx-auto max-w-xl">
+            <div className="mb-8 flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--login-brand)]">Setup portal</p>
+                <h1 className="mt-2 text-3xl font-black tracking-tight text-[var(--login-title)]">Create account</h1>
+              </div>
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--login-brand-soft)] text-[var(--login-brand)] shadow-sm">
+                <SiEagle className="text-xl" />
+              </div>
             </div>
 
-            <div className='flex flex-col space-y-4 '>
-              <h1 className='font-bold md:text-xl text-md'>
-                Choose an account type
-              </h1>
-              <div className='flex items-center lg:flex-row flex-col gap-10'>
-                {account.map(acc => (
-                  <div
-                    key={acc.id}
-                    onClick={() => setSelected(acc.id)}
-                    className={`flex flex-1 flex-col items-center space-y-6 py-6 lg:px-0 px-5 shadow-lg   md:w-[300px] h-[320px] rounded-lg border cursor-pointer transition 
-                  ${
-                    selected === acc.id
-                      ? 'text-(--primary) border-(--primary) bg-white'
-                      : 'border-gray-200 '
-                  }`}
-                  >
-                    <div className='flex flex-col items-center justify-center space-y-6 px-2'>
-                      {acc.icon}
-                      <h1 className='text-2xl font-bold'>{acc.header}</h1>
-                      <p className='text-center text-lg'>{acc.writeup}</p>
-                    </div>
+            <div className="mb-8 flex gap-2">
+              {steps.map((s, idx) => (
+                <div
+                  key={s}
+                  className={`h-2 flex-1 rounded-full ${idx <= currentStep ? 'bg-[var(--login-brand)]' : 'bg-[var(--login-divider)]'}`}
+                />
+              ))}
+            </div>
 
-                    {/*Radio indicator */}
-                    <div>
-                      {selected === acc.id ? (
-                        <RiCheckboxCircleLine className='text-2xl text-(--primary)' />
-                      ) : (
-                        <RiCircleLine className='text-2xl text-gray-400' />
-                      )}
-                    </div>
+            {step === 'select' && (
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <h2 className="text-2xl font-bold text-[var(--login-title)]">Choose account type</h2>
+                  <p className="text-sm text-[var(--login-subtitle)]">
+                    It’s free to create an account and get started with Airticks.
+                  </p>
+                </div>
+
+                <div className="grid gap-4 lg:grid-cols-2">
+                  {account.map(acc => (
+                    <button
+                      key={acc.id}
+                      type="button"
+                      onClick={() => setSelected(acc.id)}
+                      className={`rounded-2xl border p-5 text-left transition-all duration-200 ${
+                        selected === acc.id
+                          ? 'border-[var(--login-brand)]  shadow-[0_12px_30px_rgba(245,158,11,0.12)]'
+                          : 'border-[var(--login-input-border)]  hover:border-[var(--login-brand)]/60'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="mb-5">{acc.icon}</div>
+                        {selected === acc.id ? (
+                          <RiCheckboxCircleLine className="text-2xl text-[var(--login-brand)]" />
+                        ) : (
+                          <RiCircleLine className="text-2xl text-[var(--login-muted)]" />
+                        )}
+                      </div>
+
+                      <h3 className="text-2xl font-bold text-[var(--login-title)]">{acc.header}</h3>
+                      <p className="mt-2 text-sm leading-6 text-[var(--login-subtitle)]">{acc.writeup}</p>
+                    </button>
+                  ))}
+                </div>
+
+                <div className="flex gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => navigate('/')}
+                    className="w-full rounded-2xl border border-[var(--login-input-border)] bg-[var(--login-input-bg)] px-4 py-3.5 font-semibold text-[var(--login-title)] transition hover:border-[var(--login-brand)] hover:text-[var(--login-brand)]"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleContinue}
+                    disabled={!selected}
+                    className={`w-full rounded-2xl px-4 py-3.5 font-semibold  transition ${
+                      selected
+                        ? 'bg-gradient-to-r from-[var(--primary)] to-[var(--primary-hover)] shadow-[0_18px_30px_rgba(245,158,11,0.35)]'
+                        : 'cursor-not-allowed bg-[var(--login-divider)] text-[var(--login-muted)]'
+                    }`}
+                  >
+                    Continue
+                  </button>
+                </div>
+
+                <p className="pt-2 text-center text-sm text-[var(--login-subtitle)]">
+                  Already have an account?{' '}
+                  <button type="button" onClick={() => navigate('/Login')} className="font-semibold text-[var(--login-brand)] underline-offset-4 transition hover:text-[var(--primary-hover)]">
+                    Login
+                  </button>
+                </p>
+              </div>
+            )}
+
+            {step === 'form' && (
+              <form onSubmit={handleSubmitForm} className="space-y-4">
+                <div className="space-y-2">
+                  <h2 className="text-2xl font-bold text-[var(--login-title)]">Tell us about yourself</h2>
+                  <p className="text-sm text-[var(--login-subtitle)]">Fill in your details to create your Airticks profile.</p>
+                </div>
+
+                {error && (
+                  <div className="rounded-xl border border-[var(--login-error-border)] bg-[var(--login-error-bg)] px-4 py-3 text-sm font-medium text-[var(--login-error-text)]">
+                    {error}
                   </div>
-                ))}
-              </div>
-              <div className='flex gap-4 mt-6'>
-                <button
-                  onClick={() => navigate('/')}
-                  className='bg-(--primary)/50  rounded-xl active:scale-90 hover:bg-(--primary-hover) py-4 w-full text-white'
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleContinue}
-                  className={`rounded-xl active:scale-90 hover:bg-(--primary-hover) py-4 w-full ${
-                    selected
-                      ? 'bg-(--primary) text-white'
-                      : 'bg-gray-300 text-gray-600 cursor-not-allowed'
-                  }`}
-                  disabled={!selected}
-                >
-                  Continue
-                </button>
-              </div>
-
-              <div className='mt-2'>
-                <p>
-                  {' '}
-                  Already created an account?
-                  <button
-                    className='text-(--primary) underline cursor-pointer'
-                    onClick={() => navigate('/Login')}
-                  >
-                    {' '}
-                    Login{' '}
-                  </button>
-                </p>
-              </div>
-            </div>
-          </>
-        )}
-
-        {step === 'form' && (
-          <>
-            <form
-              onSubmit={handleSubmitForm}
-              className='flex flex-col space-y-4 mt-10'
-            >
-              <h1 className='font-bold text-3xl mb-4'>
-                Tell us about yourself
-              </h1>
-
-              {error && (
-                <div className='bg-red-100 text-red-600 p-2 rounded mb-4'>
-                  {error}
-                </div>
-              )}
-
-              {/* Full Name */}
-              <input
-                name='fullName'
-                type='text'
-                placeholder='Full Name'
-                className='p-3 border rounded-lg'
-                required
-              />
-
-              {/* Email */}
-              <input
-                name='email'
-                type='email'
-                placeholder='Email Address'
-                className='p-3 border rounded-lg '
-                required
-              />
-
-              {/* Password */}
-              <div className='relative w-full'>
-                <input
-                  onChange={handlePasswordChange}
-                  name='password'
-                  type={click ? 'text' : 'password'}
-                  placeholder='Password'
-                  required
-                  className='border w-full p-3 rounded-lg'
-                />
-
-                {click ? (
-                  <FaEye
-                    onClick={handleClick}
-                    color='gray'
-                    className='absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer'
-                  />
-                ) : (
-                  <FaEyeSlash
-                    onClick={handleClick}
-                    color='gray'
-                    className='absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer'
-                  />
                 )}
-              </div>
-              {passwordError && (
-                <div className='h-auto text-white text-lg  border-2 bg-(--primary-hover) rounded-md border-(--primary)'>
-                  {passwordError}
-                </div>
-              )}
 
-              {/* Confirm Password */}
+                <div className="grid gap-4 md:grid-cols-2">
+                  <label className="block md:col-span-2">
+                    <span className="mb-2 block text-sm font-medium text-[var(--login-label)]">Full name</span>
+                    <input
+                      name="fullName"
+                      type="text"
+                      placeholder="Full Name"
+                      className="w-full rounded-2xl border border-[var(--login-input-border)] bg-[var(--login-input-bg)] px-4 py-3.5 text-base text-[var(--login-text)] placeholder:text-[var(--login-muted)] outline-none transition focus:border-[var(--login-brand)] focus:shadow-[0_0_0_4px_var(--login-input-focus)]"
+                      required
+                    />
+                  </label>
 
-              <div className='relative w-full'>
-                <input
-                  onChange={handlePasswordConfrimChange}
-                  name='confirmPassword'
-                  type={click ? 'text' : 'password'}
-                  placeholder='Confirm Password'
-                  className='p-3 w-full border rounded-lg'
-                  required
-                />
+                  <label className="block md:col-span-2">
+                    <span className="mb-2 block text-sm font-medium text-[var(--login-label)]">Email address</span>
+                    <input
+                      name="email"
+                      type="email"
+                      placeholder="Email Address"
+                      className="w-full rounded-2xl border border-[var(--login-input-border)] bg-[var(--login-input-bg)] px-4 py-3.5 text-base text-[var(--login-text)] placeholder:text-[var(--login-muted)] outline-none transition focus:border-[var(--login-brand)] focus:shadow-[0_0_0_4px_var(--login-input-focus)]"
+                      required
+                    />
+                  </label>
 
-                {click ? (
-                  <FaEye
-                    onClick={handleClick}
-                    color='gray'
-                    className='absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer'
-                  />
-                ) : (
-                  <FaEyeSlash
-                    onClick={handleClick}
-                    color='gray'
-                    className='absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer'
-                  />
-                )}
-              </div>
+                  <label className="block md:col-span-2">
+                    <span className="mb-2 block text-sm font-medium text-[var(--login-label)]">Password</span>
+                    <div className="flex items-center gap-3 rounded-2xl border border-[var(--login-input-border)] bg-[var(--login-input-bg)] px-4 transition focus-within:border-[var(--login-brand)] focus-within:shadow-[0_0_0_4px_var(--login-input-focus)]">
+                      <input
+                        onChange={handlePasswordChange}
+                        name="password"
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder="Password"
+                        required
+                        className="w-full border-0 bg-transparent py-3.5 text-base text-[var(--login-text)] placeholder:text-[var(--login-muted)] outline-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(prev => !prev)}
+                        className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--login-muted)] transition hover:bg-[var(--login-ghost-bg)] hover:text-[var(--login-text)]"
+                        aria-label={showPassword ? 'Hide password' : 'Show password'}
+                      >
+                        {showPassword ? <FaEyeSlash className="text-sm" /> : <FaEye className="text-sm" />}
+                      </button>
+                    </div>
+                  </label>
 
-              {confirmPasswordError && (
-                <div className='h-auto text-white text-lg  border-2 bg-(--primary-hover) rounded-md border-(--primary)'>
-                  {confirmPasswordError}
-                </div>
-              )}
-
-              {/* Phone Number */}
-              <input
-                name='phone'
-                type='tel'
-                placeholder='Phone Number'
-                className='p-3 border rounded-lg'
-              />
-
-              {/* Country dropdown */}
-              <select name='country' className='p-3 border rounded-lg' required>
-                <option value=''>Select Country</option>
-                {countries.map(c => (
-                  <option key={c.code} value={c.name}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
-
-              {/* Address */}
-              <textarea
-                name='address'
-                placeholder='Address'
-                className='p-3 border rounded-lg resize-none h-24'
-              />
-
-              {/* Organization-specific field */}
-              {selected === 'organization' && (
-                <input
-                  name='organization'
-                  type='text'
-                  placeholder='Organization Name'
-                  className='p-3 border rounded-lg'
-                  required
-                />
-              )}
-
-              <div className='flex gap-3'>
-                <button
-                  onClick={() => setStep('select')}
-                  className='w-full bg-(--primary)/40 active:scale-90 hover:bg-(--primary-hover) text-white rounded-xl py-3 '
-                >
-                  Go back 👈🏾
-                </button>
-                <button
-                  type='submit'
-                  className='w-full flex items-center justify-center bg-(--primary) text-white rounded-xl py-3 active:scale-90 hover:bg-(--primary-hover)'
-                >
-                  {registerLoading ? (
-                    <>
-                      <div className='loading'></div>
-                      <p className='ml-2'> Creating Account...</p>{' '}
-                    </>
-                  ) : (
-                    'Register'
+                  {passwordError && (
+                    <div className="md:col-span-2 rounded-xl border border-[var(--login-error-border)] bg-[var(--login-error-bg)] px-4 py-3 text-sm text-[var(--login-error-text)]">
+                      {passwordError}
+                    </div>
                   )}
-                </button>
-              </div>
 
-              <div className='mt-2'>
-                <p>
-                  {' '}
-                  Already created an account?
+                  <label className="block md:col-span-2">
+                    <span className="mb-2 block text-sm font-medium text-[var(--login-label)]">Confirm password</span>
+                    <div className="flex items-center gap-3 rounded-2xl border border-[var(--login-input-border)] bg-[var(--login-input-bg)] px-4 transition focus-within:border-[var(--login-brand)] focus-within:shadow-[0_0_0_4px_var(--login-input-focus)]">
+                      <input
+                        onChange={handlePasswordConfrimChange}
+                        name="confirmPassword"
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder="Confirm Password"
+                        className="w-full border-0 bg-transparent py-3.5 text-base text-[var(--login-text)] placeholder:text-[var(--login-muted)] outline-none"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(prev => !prev)}
+                        className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--login-muted)] transition hover:bg-[var(--login-ghost-bg)] hover:text-[var(--login-text)]"
+                        aria-label={showPassword ? 'Hide password' : 'Show password'}
+                      >
+                        {showPassword ? <FaEyeSlash className="text-sm" /> : <FaEye className="text-sm" />}
+                      </button>
+                    </div>
+                  </label>
+
+                  {confirmPasswordError && (
+                    <div className="md:col-span-2 rounded-xl border border-[var(--login-error-border)] bg-[var(--login-error-bg)] px-4 py-3 text-sm text-[var(--login-error-text)]">
+                      {confirmPasswordError}
+                    </div>
+                  )}
+
+                  <label className="block">
+                    <span className="mb-2 block text-sm font-medium text-[var(--login-label)]">Phone number</span>
+                    <input
+                      name="phone"
+                      type="tel"
+                      placeholder="Phone Number"
+                      className="w-full rounded-2xl border border-[var(--login-input-border)] bg-[var(--login-input-bg)] px-4 py-3.5 text-base text-[var(--login-text)] placeholder:text-[var(--login-muted)] outline-none transition focus:border-[var(--login-brand)] focus:shadow-[0_0_0_4px_var(--login-input-focus)]"
+                    />
+                  </label>
+
+                  <label className="block">
+                    <span className="mb-2 block text-sm font-medium text-[var(--login-label)]">Country</span>
+                    <select name="country" className="w-full rounded-2xl border border-[var(--login-input-border)] bg-[var(--login-input-bg)] px-4 py-3.5 text-base text-[var(--login-text)] outline-none transition focus:border-[var(--login-brand)] focus:shadow-[0_0_0_4px_var(--login-input-focus)]" required>
+                      <option value="">Select Country</option>
+                      {countries.map(c => (
+                        <option key={c.code} value={c.name}>
+                          {c.name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  <label className="block md:col-span-2">
+                    <span className="mb-2 block text-sm font-medium text-[var(--login-label)]">Address</span>
+                    <textarea
+                      name="address"
+                      placeholder="Address"
+                      className="h-24 w-full resize-none rounded-2xl border border-[var(--login-input-border)] bg-[var(--login-input-bg)] px-4 py-3.5 text-base text-[var(--login-text)] placeholder:text-[var(--login-muted)] outline-none transition focus:border-[var(--login-brand)] focus:shadow-[0_0_0_4px_var(--login-input-focus)]"
+                    />
+                  </label>
+
+                  {selected === 'organization' && (
+                    <label className="block md:col-span-2">
+                      <span className="mb-2 block text-sm font-medium text-[var(--login-label)]">Organization name</span>
+                      <input
+                        name="organization"
+                        type="text"
+                        placeholder="Organization Name"
+                        className="w-full rounded-2xl border border-[var(--login-input-border)] bg-[var(--login-input-bg)] px-4 py-3.5 text-base text-[var(--login-text)] placeholder:text-[var(--login-muted)] outline-none transition focus:border-[var(--login-brand)] focus:shadow-[0_0_0_4px_var(--login-input-focus)]"
+                        required
+                      />
+                    </label>
+                  )}
+                </div>
+
+                <div className="flex gap-3 pt-2">
                   <button
-                    className='text-(--primary) underline cursor-pointer'
-                    onClick={() => navigate('/Login')}
+                    type="button"
+                    onClick={() => setStep('select')}
+                    className="w-full rounded-2xl border border-[var(--login-input-border)] bg-[var(--login-input-bg)] px-4 py-3.5 font-semibold text-[var(--login-title)] transition hover:border-[var(--login-brand)] hover:text-[var(--login-brand)]"
                   >
-                    {' '}
-                    Login{' '}
+                    Go back
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={registerLoading}
+                    className="flex w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-[var(--primary)] to-[var(--primary-hover)] px-4 py-3.5 font-semibold  shadow-[0_18px_30px_rgba(245,158,11,0.35)] transition-all duration-200 hover:translate-y-[-1px] hover:shadow-[0_22px_35px_rgba(245,158,11,0.4)] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-75"
+                  >
+                    {registerLoading ? (
+                      <>
+                        <span className="loading"></span>
+                        <span>Creating account...</span>
+                      </>
+                    ) : (
+                      'Register'
+                    )}
+                  </button>
+                </div>
+
+                <p className="pt-2 text-center text-sm text-[var(--login-subtitle)]">
+                  Already created an account?{' '}
+                  <button type="button" onClick={() => navigate('/Login')} className="font-semibold text-[var(--login-brand)] underline-offset-4 transition hover:text-[var(--primary-hover)]">
+                    Login
                   </button>
                 </p>
-              </div>
-            </form>
-          </>
-        )}
+              </form>
+            )}
 
-        {step === 'verify' && (
-          <Verify email={email} step={step} setStep={setStep} />
-        )}
-        <footer className='mt-2'>
-          <img
-            src={walkGif}
-            alt='walking gif'
-            className='w-20 h-20 animation-walk'
-          />
-        </footer>
-      </div>
-
-      {/* Right side - Background Image */}
-      <div className='hidden md:block w-[40%] h-screen fixed right-0 top-0'>
-        <img src={pictureBg} className='object-cover w-full h-full' />
+            {step === 'verify' && <Verify email={email} step={step} setStep={setStep} />}
+          </div>
+        </div>
       </div>
     </section>
   )

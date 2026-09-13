@@ -184,14 +184,13 @@ const Event = ({ currentUser, events, setEvents }) => {
   return (
     <section
       data-aos='fade-out'
-      className='relative min-h-screen w-full flex flex-col lg:mt-5 mt-4 flex-1 custom-scrollbar z-10'
+      className='relative min-h-screen w-full flex flex-col lg:mt-5 mt-4 flex-1 custom-scrollbar z-10 bg-[var(--bg-color)] text-[var(--text-color)]'
     >
-      {/* EVENT LIST */}
-      <div className='flex flex-col space-y-3 p-4'>
+      <div className='flex flex-col space-y-4 p-4 md:p-6'>
         <div className='space-y-6'>
-          <p className='font-regular text-sm '>All Events:</p>
-          <div className='flex items-center space-x-4'>
-            <h1 className='font-bold text-2xl md:text-4xl'>Find Events:</h1>
+          <p className='text-sm font-medium uppercase tracking-[0.18em] text-[var(--text-secondary)]'>All Events</p>
+          <div className='flex flex-col gap-3 md:flex-row md:items-center md:justify-between'>
+            <h1 className='text-2xl font-black md:text-4xl text-[var(--text-color)]'>Find Events</h1>
             <SearchModal
               selectedEvent={selectedEvent}
               setSelectedEvent={setSelectedEvent}
@@ -201,13 +200,13 @@ const Event = ({ currentUser, events, setEvents }) => {
 
         <div className='relative flex flex-col space-y-4'>
           <div onClick={handleState} className='relative w-full group'>
-            <button className=' active:scale-90 border-2 border-gray-500 flex justify-between items-center text-left p-3 rounded-xl'>
+            <button className='active:scale-90 flex w-full items-center justify-between rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-3 text-left text-sm font-medium text-[var(--text-color)] shadow-[var(--shadow-sm)] transition hover:border-[var(--primary)]'>
               {filters.state || 'Select State'}
-              <FaCaretUp className='ml-2 animate-bounce transition-transform duration-300 group-hover:rotate-180' />
+              <FaCaretUp className='ml-2 text-[var(--text-secondary)] transition-transform duration-300 group-hover:rotate-180' />
             </button>
 
             {isStateOpen && (
-              <div className='absolute left-0 mt-1 lg:hidden lg:group-hover:block  max-h-40 overflow-hidden custom-scrollbar rounded-lg bg-white shadow-lg border border-gray-200 z-50'>
+              <div className='absolute left-0 z-50 mt-2 max-h-44 w-full overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-md)]'>
                 {states.map((st, index) => (
                   <div
                     key={index}
@@ -215,7 +214,7 @@ const Event = ({ currentUser, events, setEvents }) => {
                       setFilters({ ...filters, state: st })
                       handleState()
                     }}
-                    className='px-3 py-2 text-sm text-gray-700 hover:bg-(--primary) hover:text-[#eeeeee] cursor-pointer transition-colors duration-200'
+                    className='cursor-pointer px-3 py-2 text-sm text-[var(--text-secondary)] transition hover:bg-[var(--primary)] hover:text-white'
                   >
                     {st}
                   </div>
@@ -225,154 +224,126 @@ const Event = ({ currentUser, events, setEvents }) => {
           </div>
 
           {highlightedEvents.length === 0 ? (
-            <p className='text-gray-500 text-sm'>No highlighted events yet.</p>
+            <p className='text-sm text-[var(--text-secondary)]'>No highlighted events yet.</p>
           ) : (
-            <div className='flex custom-scrollbar space-x-4 py-2'>
+            <div className='flex space-x-4 overflow-x-auto pb-2 custom-scrollbar'>
               {highlightedEvents.map(event => (
-                <Link to={`/event/${event.slug}`} className='flex-shrink-0'>
-                  <div
-                    key={event.id}
-                    className='relative w-75 shadow-lg rounded-2xl overflow-hidden hover:shadow-xl transition duration-300 flex flex-col'
-                  >
-                    <div className='flex justify-center overflow-hidden rounded-2xl'>
-                      <OptimizedImage
-                        src={event.photoURL || event.photo}
-                        alt={event.title}
-                        loading='lazy'
-                        className='w-full object-contain hover:scale-105  duration-500'
-                      />
-                    </div>
-                    <div className='absolute p-4 top-1/2 flex-1 flex flex-col'>
-                      <h3 className='text-3xl adaptive-text text-gray-600 font-bold line-clamp-2 mb-2'>
-                        {event.name}
-                      </h3>
-                      <div
-                        className='prose prose-sm md:prose-base max-w-none mt-4 font-mono'
-                        dangerouslySetInnerHTML={{
-                          __html: selectedEvent?.description || ''
-                        }}
-                      />
-                      <p className='text-sm adaptive-text text-gray-400 mb-4'>
-                        {event.location || event.venue.name}
-                      </p>
-                    </div>
-                    {/* ⭐ Highlight Tag */}
+                <Link key={event.id} to={`/event/${event.slug}`} className='group relative w-[290px] flex-shrink-0 overflow-hidden rounded-[24px] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-md)] transition hover:-translate-y-1 hover:shadow-[var(--shadow-lg)]'>
+                  <div className='relative overflow-hidden rounded-[24px]'>
+                    <OptimizedImage
+                      src={event.photoURL || event.photo}
+                      alt={event.title}
+                      loading='lazy'
+                      className='h-64 w-full object-cover transition duration-500 group-hover:scale-105'
+                    />
+                    <div className='absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-900/25 to-transparent' />
                     {event.highlighted && (
-                      <div className='absolute top-2 right-2 text-yellow-400 text-lg font-bold px-2 py-1 rounded-full shadow-sm'>
+                      <div className='absolute right-3 top-3 inline-flex items-center justify-center rounded-full bg-[var(--primary)] p-2 text-lg text-white shadow-lg'>
                         <RiStarFill />
                       </div>
                     )}
+                    <div className='absolute inset-x-0 bottom-0 p-4'>
+                      <h3 className='mb-2 text-2xl font-bold text-white line-clamp-2'>
+                        {event.name}
+                      </h3>
+                      <div
+                        className='prose prose-sm max-w-none text-xs text-slate-200 prose-p:mb-1 prose-strong:text-white'
+                        dangerouslySetInnerHTML={{
+                          __html: event.description || ''
+                        }}
+                      />
+                      <p className='mt-2 text-sm text-slate-200'>
+                        {event.location || event.venue?.name || 'Venue info coming soon'}
+                      </p>
+                    </div>
                   </div>
                 </Link>
               ))}
             </div>
           )}
-          <p className='fonts-bold text-2xl'>Events</p>
-          <p className='text-gray-500 '>
-            Showing{' '}
-            <span className='font-semibold'>{filteredEvents.length}</span> of{' '}
-            {events.length} events
-          </p>
 
-          <div className='flex flex-row space-x-2'>
-            <div
-              onClick={handleCate}
-              className='relative w-full list-none cursor-pointer outline-none group'
-            >
-              <button className='w-full border-2 border-gray-500 bg-[#eeeeee] active:scale-90 flex justify-between items-center text-[#333333] text-left p-3 rounded-xl'>
+          <div className='flex items-center justify-between gap-2'>
+            <p className='text-2xl font-bold text-[var(--text-color)]'>Events</p>
+            <p className='text-sm text-[var(--text-secondary)]'>
+              Showing <span className='font-semibold text-[var(--text-color)]'>{filteredEvents.length}</span> of {events.length} events
+            </p>
+          </div>
+
+          <div className='flex flex-col gap-2 md:flex-row'>
+            <div onClick={handleCate} className='relative w-full list-none cursor-pointer outline-none group'>
+              <button className='flex w-full items-center justify-between rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-3 text-left text-sm font-medium text-[var(--text-color)] shadow-[var(--shadow-sm)] transition hover:border-[var(--primary)]'>
                 {filters.category || 'Category'}
-                <FaCaretUp className='ml-2 animate-bounce transition-transform duration-300 group-hover:rotate-180' />
+                <FaCaretUp className='ml-2 text-[var(--text-secondary)] transition-transform duration-300 group-hover:rotate-180' />
               </button>
 
               {isCategory && (
-                <div className='absolute z-50 md:hidden md:group-hover:block mt-1 w-full  rounded-md bg-white  shadow-md transition duration-1000 ease-in-out p-2 text-[#333333] '>
-                  <ul className='space-y-2 '>
-                    <li className='flex flex-col  space-y-2 text-sm text-gray-500 hover:text-[#333333] duration-1000 w-full'>
-                      {[
-                        'Art',
-                        'Business',
-                        'Entertainment',
-                        'Food',
-                        'Health',
-                        'Music'
-                      ].map(cat => (
-                        <a
-                          key={cat}
-                          onClick={() => {
-                            setFilters({ ...filters, category: cat })
-                          }}
-                          className='px-3 py-2 text-sm hover:bg-(--primary) hover:text-white cursor-pointer'
-                        >
-                          {cat}
-                        </a>
-                      ))}
-                    </li>
+                <div className='absolute z-50 mt-2 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-2 shadow-[var(--shadow-md)]'>
+                  <ul className='space-y-1'>
+                    {['Art', 'Business', 'Entertainment', 'Food', 'Health', 'Music'].map(cat => (
+                      <li
+                        key={cat}
+                        onClick={() => {
+                          setFilters({ ...filters, category: cat })
+                        }}
+                        className='cursor-pointer rounded-xl px-3 py-2 text-sm text-[var(--text-secondary)] transition hover:bg-[var(--primary)] hover:text-white'
+                      >
+                        {cat}
+                      </li>
+                    ))}
                   </ul>
                 </div>
               )}
             </div>
 
-            <div
-              onClick={handlePrice}
-              className='relative w-full list-none cursor-pointer outline-none  group'
-            >
-              <button className='w-full border-2 border-gray-500 active:scale-90 bg-[#eeeeee] flex justify-between items-center text-[#333333] text-left p-3 rounded-xl'>
+            <div onClick={handlePrice} className='relative w-full list-none cursor-pointer outline-none group'>
+              <button className='flex w-full items-center justify-between rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-3 text-left text-sm font-medium text-[var(--text-color)] shadow-[var(--shadow-sm)] transition hover:border-[var(--primary)]'>
                 {filters.priceOrder
                   ? filters.priceOrder === 'lowtohigh'
                     ? 'Price: Low → High'
                     : 'Price: High → Low'
-                  : 'Price'}{' '}
-                <FaCaretUp className='ml-2 animate-bounce transition-transform duration-300 group-hover:rotate-180' />
+                  : 'Price'}
+                <FaCaretUp className='ml-2 text-[var(--text-secondary)] transition-transform duration-300 group-hover:rotate-180' />
               </button>
 
               {isPrice && (
-                <div className='absolute z-50 lg:hidden w-full lg:group-hover:block  mt-1  rounded-md bg-white  shadow-md transition duration-1000 ease-in-out p-2 text-[#333333] '>
-                  <ul className='space-y-2 '>
-                    <li className='flex flex-col space-y-2 text-sm text-gray-500 hover:text-[#333333] duration-1000 w-full'>
-                      <a
-                        onClick={() =>
-                          setFilters({ ...filters, priceOrder: 'lowtohigh' })
-                        }
-                        className='hover:bg-(--primary) rounded-sm cursor-pointer px-2 py-1'
-                      >
-                        Low to High
-                      </a>
-                      <a
-                        onClick={() =>
-                          setFilters({ ...filters, priceOrder: 'hightolow' })
-                        }
-                        className='hover:bg-(--primary) rounded-sm cursor-pointer px-2 py-1'
-                      >
-                        High to Low
-                      </a>
+                <div className='absolute z-50 mt-2 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-2 shadow-[var(--shadow-md)]'>
+                  <ul className='space-y-1'>
+                    <li
+                      onClick={() => setFilters({ ...filters, priceOrder: 'lowtohigh' })}
+                      className='cursor-pointer rounded-xl px-3 py-2 text-sm text-[var(--text-secondary)] transition hover:bg-[var(--primary)] hover:text-white'
+                    >
+                      Low to High
+                    </li>
+                    <li
+                      onClick={() => setFilters({ ...filters, priceOrder: 'hightolow' })}
+                      className='cursor-pointer rounded-xl px-3 py-2 text-sm text-[var(--text-secondary)] transition hover:bg-[var(--primary)] hover:text-white'
+                    >
+                      High to Low
                     </li>
                   </ul>
                 </div>
               )}
             </div>
 
-            {/* ✅ DATE FILTER DROPDOWN */}
             <div className='relative w-full list-none cursor-pointer outline-none group'>
-              {/* Toggle Button */}
               <button
                 onClick={e => {
-                  e.stopPropagation() // prevent parent click closing it
-                  setIsDate(prev => !prev) // toggle dropdown
+                  e.stopPropagation()
+                  setIsDate(prev => !prev)
                 }}
-                className='w-full bg-[#eeeeee] border-2 border-gray-500 active:scale-90 flex justify-between items-center text-[#333333] text-left p-3 rounded-xl'
+                className='flex w-full items-center justify-between rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-3 text-left text-sm font-medium text-[var(--text-color)] shadow-[var(--shadow-sm)] transition hover:border-[var(--primary)]'
               >
                 {filters.date
                   ? filters.date instanceof Date
                     ? filters.date.toDateString()
                     : filters.date
                   : 'Date'}
-                <FaCaretUp className='ml-2 transition-transform duration-300 group-hover:rotate-180' />
+                <FaCaretUp className='ml-2 text-[var(--text-secondary)] transition-transform duration-300 group-hover:rotate-180' />
               </button>
 
-              {/* Dropdown List */}
               {isDate && (
-                <div className='absolute left-0 mt-2 w-full rounded-md bg-white shadow-md border border-gray-200 z-50 p-2 text-[#333333]'>
-                  <ul className='space-y-2'>
+                <div className='absolute left-0 z-50 mt-2 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-2 shadow-[var(--shadow-md)]'>
+                  <ul className='space-y-1'>
                     {['Today', 'Tomorrow', 'Weekend'].map(dat => (
                       <li
                         key={dat}
@@ -381,27 +352,24 @@ const Event = ({ currentUser, events, setEvents }) => {
                           setFilters({ ...filters, date: dat })
                           setIsDate(false)
                         }}
-                        className='px-3 py-2 text-sm hover:bg-(--primary) hover:text-white rounded cursor-pointer transition'
+                        className='cursor-pointer rounded-xl px-3 py-2 text-sm text-[var(--text-secondary)] transition hover:bg-[var(--primary)] hover:text-white'
                       >
                         {dat}
                       </li>
                     ))}
 
-                    {/* Custom DatePicker */}
                     <li
-                      className='relative px-3 py-2 text-sm flex items-center gap-2 hover:text-(--primary)'
-                      onClick={e => e.stopPropagation()} // prevent closing dropdown
+                      className='relative flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--primary)]'
+                      onClick={e => e.stopPropagation()}
                     >
                       <FaCalendar
                         className='cursor-pointer'
                         onClick={() => setIsOpen(prev => !prev)}
                       />
                       {isOpen && (
-                        <div className='absolute left-0 mt-2 z-50 bg-white shadow-lg rounded-lg border border-gray-200 p-2'>
+                        <div className='absolute left-0 top-full z-50 mt-2 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-2 shadow-[var(--shadow-lg)]'>
                           <DatePicker
-                            selected={
-                              filters.date instanceof Date ? filters.date : null
-                            }
+                            selected={filters.date instanceof Date ? filters.date : null}
                             onChange={date => {
                               setFilters({ ...filters, date })
                               setIsDate(false)
@@ -409,47 +377,43 @@ const Event = ({ currentUser, events, setEvents }) => {
                             }}
                             dateFormat='EEE, MMM d, yyyy'
                             placeholderText='Select date...'
-                            className='border border-gray-300 p-2 rounded-lg text-black w-full'
+                            className='w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] p-2 text-sm text-[var(--text-color)] outline-none focus:border-[var(--primary)]'
                             popperPlacement='bottom-start'
                           />
                         </div>
                       )}
-                      <span className='text-sm'>Pick a date</span>
+                      <span>Pick a date</span>
                     </li>
                   </ul>
                 </div>
               )}
             </div>
           </div>
+
           <p
-            onClick={() =>
-              setFilters({ state: '', category: '', priceOrder: '', date: '' })
-            }
-            className='flex items-center cursor-pointer gap-2'
+            onClick={() => setFilters({ state: '', category: '', priceOrder: '', date: '' })}
+            className='flex cursor-pointer items-center gap-2 text-sm font-medium text-[var(--text-secondary)] transition hover:text-[var(--primary)]'
           >
-            Reset{' '}
-            <FaCircle className='text-red-600 active:scale-90 rounded-full animate-pulse' />
+            Reset <FaCircle className='rounded-full text-red-500 animate-pulse' />
           </p>
         </div>
 
-        <div className='flex justify-center items-center mt-8 w-full max-w-7xl'>
-          <div
-            data-aos='fade-up'
-            className='grid grid-cols-1 md:grid-cols-2 md:gap-10 gap-8 w-full'
-          >
+        <div className='mt-4 flex w-full items-center justify-center'>
+          <div data-aos='fade-up' className='grid w-full grid-cols-1 gap-6 md:grid-cols-2 md:gap-8'>
             {filteredEvents.map(event => (
               <Link
                 to={`/event/${event.slug}`}
                 key={event.id}
                 onClick={() => handleOpenTicket(event)}
-                className='flex items-center justify-between flex-1 lg:gap-6 gap-4  relative lg:px-6 px-4 w-full py-4 shadow rounded-3xl cursor-pointer'
+                className='group flex w-full items-center justify-between gap-4 rounded-[28px] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-[var(--shadow-sm)] transition hover:-translate-y-1 hover:border-[var(--primary)] hover:shadow-[var(--shadow-md)]'
               >
-                <span className='space-y-3 flex flex-col'>
-                  <h1 className='font-bold  uppercase text-2xl w-[150px] truncate lg:w-[300px] '>
+                <span className='flex flex-1 flex-col gap-3'>
+                  <h1 className='lg:w-[300px] truncate w-[150px] text-2xl font-bold uppercase text-[var(--text-color)]'>
                     {event.name}
                   </h1>
-                  <p className='md:text-lg text-sm font-regular text-gray-500 flex gap-2 items-center'>
-                    <FaCalendar />{' '}
+
+                  <p className='flex items-center gap-2 text-sm text-[var(--text-secondary)]'>
+                    <FaCalendar className='text-[var(--primary)]' />
                     {new Date(event.date).toLocaleDateString('en-US', {
                       weekday: 'short',
                       month: 'short',
@@ -457,34 +421,35 @@ const Event = ({ currentUser, events, setEvents }) => {
                       year: 'numeric'
                     })}
                   </p>
-                  <p className='text-md w-[150px] lg:w-[300px] text-gray-500 flex items-center gap-2'>
-                    <FaClock />
+
+                  <p className='flex items-center gap-2 text-sm text-[var(--text-secondary)]'>
+                    <FaClock className='text-[var(--primary)]' />
                     <span className='truncate'>
                       {formatEventStatus(event.startTime, event.endTime)}
                     </span>
                   </p>
-                  <p className='md:text-lg text-md w-[180px] lg:w-[300px] font-normal text-gray-500 flex gap-2 items-center'>
-                    <FaLocationArrow />
-                    <span className='truncate '>
-                      {event.location || event.venue.name}
+
+                  <p className='flex items-center gap-2 text-sm text-[var(--text-secondary)]'>
+                    <FaLocationArrow className='text-[var(--primary)]' />
+                    <span className='truncate w-[100px] md:w-[300px]'>
+                      {event.location || event.venue?.name || 'Location coming soon'}
                     </span>
                   </p>
+
                   <div>
                     {event.isFree ? (
-                      <span className='text-green-500 md:text-md text-sm font-bold bg-green-500/10 px-2 py-0.5 rounded-md'>
+                      <span className='inline-flex rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-bold text-emerald-500'>
                         🆓 Free Admission
                       </span>
                     ) : Array.isArray(event.tickets) ? (
                       event.tickets.slice(0, 1).map((priceOption, index) => (
-                        <p key={index}>
-                          <span className='text-(--primary) text-lg font-semibold'>
-                            {priceOption.name}:
+                        <p key={index} className='text-sm text-[var(--text-secondary)]'>
+                          <span className='text-base font-semibold text-[var(--primary)]'>
+                            {priceOption.name}:{' '}
                             {Number(priceOption.price) > 0 ? (
-                              priceOption.currency +
-                              ' ' +
-                              priceOption.price.toLocaleString()
+                              priceOption.currency + ' ' + priceOption.price.toLocaleString()
                             ) : (
-                              <span className='text-green-500 text-sm font-bold bg-green-500/10 px-2 py-0.5 rounded-md'>
+                              <span className='inline-flex rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-bold text-emerald-500'>
                                 Free Admission
                               </span>
                             )}
@@ -492,22 +457,20 @@ const Event = ({ currentUser, events, setEvents }) => {
                         </p>
                       ))
                     ) : (
-                      <p>
-                        <span className='text-(--primary) text-lg font-semibold'>
-                          {event.currency}{' '}
-                          {Number(event.price?.price) +
-                            ((1.5 / 100) * Number(event.price?.price) + 100)}
-                        </span>
+                      <p className='text-base font-semibold text-[var(--primary)]'>
+                        {event.currency}{' '}
+                        {Number(event.price?.price) +
+                          ((1.5 / 100) * Number(event.price?.price) + 100)}
                       </p>
                     )}
                   </div>
                 </span>
 
-                <span className='overflow-hidden rounded-xl'>
+                <span className='overflow-hidden rounded-[22px] border border-[var(--border)]'>
                   <OptimizedImage
                     src={event.photoURL || event.photo}
                     alt={event.name}
-                    className='object-contain w-[200px] h-[200px] hover:scale-105 duration-500 rounded-2xl'
+                    className='h-[180px] w-[180px] object-cover transition duration-500 group-hover:scale-105 md:h-[200px] md:w-[200px]'
                   />
                 </span>
               </Link>
@@ -517,11 +480,7 @@ const Event = ({ currentUser, events, setEvents }) => {
       </div>
 
       <footer className='mt-10 flex justify-center'>
-        <img
-          src={walkGif}
-          alt='walking gif'
-          className='w-20 h-20  animation-walk'
-        />
+        <img src={walkGif} alt='walking gif' className='h-20 w-20 animation-walk' />
       </footer>
     </section>
   )

@@ -6,7 +6,7 @@ import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
 import { useNavigate } from 'react-router-dom';
 
-const SearchModal = ({selectedEvent, setSelectedEvent }) => {
+const SearchModal = ({ selectedEvent, setSelectedEvent }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [results, setResults] = useState([]);
@@ -50,50 +50,54 @@ const SearchModal = ({selectedEvent, setSelectedEvent }) => {
     <>
       <button
         onClick={openModal}
-        className="bg-gray-200 w-10 h-10 flex items-center justify-center rounded-lg"
+        className="flex h-10 w-10 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--primary)] shadow-[var(--shadow-sm)] transition hover:border-[var(--primary)] hover:bg-[var(--primary)]/10"
       >
-        <RiSearchLine color="orange" className="w-6 h-6 text-gray-500" />
+        <RiSearchLine className="h-5 w-5" />
       </button>
 
       {isOpen && (
         <div
-          className="fixed inset-0 z-[100] backdrop-blur-md flex justify-center items-center bg-[#ed88361c]"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-[rgba(15,23,42,0.35)] backdrop-blur-sm"
           onClick={closeModal}
         >
           <div
-            className="relative p-4 w-full max-w-md"
+            className="relative w-full max-w-lg p-4"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="relative bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) custom-scrollbar w-full p-3 rounded-md shadow-lg">
-              <div className="flex items-center justify-between p-4 border-b border-gray-200">
-                <h3 className="text-xl font-semibold ">Search Events</h3>
+            <div className="w-full overflow-hidden rounded-[28px] border border-[var(--border)] bg-[var(--surface)] text-[var(--text-color)] shadow-[var(--shadow-lg)]">
+              <div className="flex items-center justify-between border-b border-[var(--border)] px-5 py-4">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-secondary)]">Discover</p>
+                  <h3 className="text-xl font-bold text-[var(--text-color)]">Search Events</h3>
+                </div>
+
                 <button
                   onClick={closeModal}
-                  className="text-gray-400 hover:bg-[#f8882c4d] hover:text-orange-600 rounded-lg w-8 h-8 flex items-center justify-center "
+                  className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-secondary)] transition hover:bg-[var(--surface-hover)] hover:text-[var(--primary)]"
                 >
-                  <FaXmark size={20} />
+                  <FaXmark size={18} />
                 </button>
               </div>
 
-              <div className="p-4 space-y-4">
-                <div className="flex gap-2">
+              <div className="space-y-4 p-5">
+                <div className="flex items-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--bg-color)] px-3 py-2 shadow-[var(--shadow-sm)]">
+                  <FaSearch className="text-[var(--primary)]" />
                   <input
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     type="text"
-                    className="bg-gray-300 text-gray-900 outline-none rounded-lg w-full p-2"
+                    className="w-full border-none bg-transparent text-sm text-[var(--text-color)] outline-none placeholder:text-[var(--text-secondary)]"
                     placeholder="Search events..."
                   />
                   <button
                     onClick={handleSearch}
-                    className="bg-orange-700 text-[#eeeeee] px-3 py-2 rounded-lg hover:bg-orange-600"
+                    className="rounded-xl bg-[var(--primary)] px-3 py-2 text-sm font-semibold text-slate-900 transition hover:bg-[var(--primary-hover)]"
                   >
-                    {loading ? '...' : <FaSearch />}
+                    {loading ? '...' : 'Search'}
                   </button>
                 </div>
 
-                {/* Results */}
-                <div className="mt-4 space-y-3 max-h-60 overflow-y-auto">
+                <div className="max-h-[22rem] space-y-3 overflow-y-auto pr-1">
                   {results.map((event) => (
                     <div
                       key={event.id}
@@ -102,19 +106,19 @@ const SearchModal = ({selectedEvent, setSelectedEvent }) => {
                         closeModal();
                         navigate(`/event/${event.slug}`);
                       }}
-                      className="flex items-center gap-3 bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) rounded-lg p-2 cursor-pointer border border-[#ffffff20] hover:bg-orange-500/10 transition duration-200"
+                      className="flex cursor-pointer items-center gap-3 rounded-2xl border border-[var(--border)] bg-[var(--bg-color)] p-2 transition hover:border-[var(--primary)]/30 hover:bg-[var(--primary)]/5"
                     >
                       <img
-                        src={event.photoURL || event.image}
+                        src={event.photoURL || event.photo}
                         alt={event.name}
-                        className="w-20 h-20 object-contain"
+                        className="h-20 w-20 rounded-xl object-cover"
                       />
-                      <span>
-                        <h2 className="text-lg  font-semibold">{event.name}</h2>
-                        <p className="text-xs ">
-                          📍 {event.location}
+                      <div className="min-w-0 flex-1">
+                        <h2 className="truncate text-base font-semibold text-[var(--text-color)]">{event.name}</h2>
+                        <p className="mt-1 text-xs text-[var(--text-secondary)]">
+                          📍 {event.location || event.venue?.name || 'Location not available'}
                         </p>
-                        <p className="text-xs text-gray-500">
+                        <p className="mt-1 text-xs text-[var(--text-secondary)]">
                           📆{' '}
                           {new Date(event.date).toLocaleDateString('en-US', {
                             weekday: 'short',
@@ -123,14 +127,14 @@ const SearchModal = ({selectedEvent, setSelectedEvent }) => {
                             year: 'numeric',
                           })}
                         </p>
-                      </span>
+                      </div>
                     </div>
                   ))}
 
                   {results.length === 0 && !loading && (
-                    <p className="text-gray-500 text-center text-sm">
-                      No search results
-                    </p>
+                    <div className="rounded-2xl border border-dashed border-[var(--border)] bg-[var(--bg-color)] py-8 text-center text-sm text-[var(--text-secondary)]">
+                      No search results yet
+                    </div>
                   )}
                 </div>
               </div>
