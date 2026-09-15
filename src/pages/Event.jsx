@@ -206,7 +206,7 @@ const Event = ({ currentUser, events, setEvents }) => {
             </button>
 
             {isStateOpen && (
-              <div className='absolute left-0 z-50 mt-2 max-h-44 w-full overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-md)]'>
+              <div className='absolute left-0 z-50 mt-2 max-h-44 w-full overflow-hidden custom-scrollbar rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-md)]'>
                 {states.map((st, index) => (
                   <div
                     key={index}

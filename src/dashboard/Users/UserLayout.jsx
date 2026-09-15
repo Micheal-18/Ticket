@@ -212,7 +212,7 @@ const UserLayout = ({ currentUser }) => {
         </main>
 
         {/* RESPONSIVE FIXED MOBILE TAB BAR FOOTER */}
-        <footer className='fixed bottom-0 left-0 w-full h-16 border-t border-gray-800 backdrop-blur-lg flex justify-around items-center lg:hidden z-40 px-2'>
+        <footer className='fixed bottom-0 left-0 w-full h-16 border-t border-(--border) backdrop-blur-lg flex justify-around items-center lg:hidden z-40 px-2'>
           {navItem('/dashboard/users', <FaHome size={18} />, 'Overview', true)}
           {navItem('/dashboard/users/events', <FaCalendarAlt size={18} />, 'Events', true)}
           {navItem('/dashboard/users/profile', <FaUser size={18} />, 'Profile', true)}
