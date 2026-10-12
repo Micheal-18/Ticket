@@ -288,7 +288,7 @@ const CreateEvent = () => {
         accountName: hasPaidTicket ? accountName : '',
         bankName: hasPaidTicket ? bankName : '',
         bankCode: hasPaidTicket ? bankCode : '',
-        adminFee: hasPaidTicket ? 5 : 0,
+        adminFee: hasPaidTicket ? 8 : 0,
         createdAt: new Date().toISOString()
       })
 
@@ -617,7 +617,7 @@ const CreateEvent = () => {
               <div className='flex flex-col space-y-4 pt-2'>
                 <h2 className='font-semibold'>Bank Info (for payout)</h2>
                 <p className='text-xs font-semibold text-gray-500'>
-                  Airticks charge is 5% of the ticket price
+                  Airticks charge is 8% of the ticket price
                 </p>
                 <input
                   required={hasPaidTicket}

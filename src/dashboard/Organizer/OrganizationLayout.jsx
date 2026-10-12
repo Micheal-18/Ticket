@@ -302,7 +302,7 @@ const OrganizationLayout = ({ currentUser }) => {
             />
             <div className='leading-tight'>
               <h2 className='font-semibold text-sm lg:text-base group-hover:text-(--primary) transition-colors'>
-                {currentUser?.fullName || 'User Account'}
+                {currentUser?.fullName || currentUser?.displayName || 'User Account'}
               </h2>
               <p className='text-xs text-gray-400 max-w-[180px] lg:max-w-none truncate'>
                 {currentUser?.email}
