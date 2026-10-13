@@ -325,7 +325,7 @@ const CreateEvent = () => {
     <div className='grid lg:grid-cols-[minmax(0,1fr)_420px] gap-10 items-start w-full min-w-0 flex-1 mx-auto'>
       <div className='space-y-10'>
         {/* Your existing Create Event form */}
-        <div className='w-full py-4 flex flex-col space-y-10 custom-scrollbar mx-0 lg:px-6 shadow'>
+        <div className='w-full py-4 flex flex-col space-y-10 custom-scrollba px-2 mx-0 lg:px-6 shadow'>
           <div className='flex space-x-4 items-center'>
             <h1 className='uppercase font-semibold lg:text-5xl text-3xl'>
               Create Event

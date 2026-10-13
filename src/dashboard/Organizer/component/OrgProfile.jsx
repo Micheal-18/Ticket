@@ -207,21 +207,21 @@ const OrgProfile = () => {
           <button 
             type="button"
             onClick={() => { setActiveTab('details'); setIsEditing(false); }}
-            className={`flex items-center gap-1.5 pb-3 px-2 border-b-2 transition-all ${activeTab === 'details' ? 'border-orange-500 text-orange-500' : 'border-transparent text-gray-400'}`}
+            className={`flex items-center gap-1.5 pb-3 px-2 border-b-2 transition-all ${activeTab === 'details' ? 'border-amber-500 text-amber-500' : 'border-transparent text-gray-400'}`}
           >
             <FiUser size={12} /> Details
           </button>
           <button 
             type="button"
             onClick={() => setActiveTab('email')}
-            className={`flex items-center gap-1.5 pb-3 px-2 border-b-2 transition-all ${activeTab === 'email' ? 'border-orange-500 text-orange-500' : 'border-transparent text-gray-400'}`}
+            className={`flex items-center gap-1.5 pb-3 px-2 border-b-2 transition-all ${activeTab === 'email' ? 'border-amber-500 text-amber-500' : 'border-transparent text-gray-400'}`}
           >
             <FiMail size={12} /> Email
           </button>
           <button 
             type="button"
             onClick={() => setActiveTab('password')}
-            className={`flex items-center gap-1.5 pb-3 px-2 border-b-2 transition-all ${activeTab === 'password' ? 'border-orange-500 text-orange-500' : 'border-transparent text-gray-400'}`}
+            className={`flex items-center gap-1.5 pb-3 px-2 border-b-2 transition-all ${activeTab === 'password' ? 'border-amber-500 text-amber-500' : 'border-transparent text-gray-400'}`}
           >
             <FiLock size={12} /> Security
           </button>
@@ -281,14 +281,14 @@ const OrgProfile = () => {
                       type="button"
                       onClick={handleSaveProfileDetails}
                       disabled={loading}
-                      className="flex-1 bg-orange-500 text-white py-2.5 rounded-lg hover:bg-orange-600 font-bold uppercase text-xs tracking-wider transition-all disabled:opacity-50"
+                      className="flex-1 bg-amber-500  py-2.5 rounded-lg hover:bg-amber-600 font-bold uppercase text-xs tracking-wider transition-all disabled:opacity-50"
                     >
                       {loading ? "Saving Changes..." : "Save Changes"}
                     </button>
                     <button
                       type="button"
                       onClick={() => setIsEditing(false)}
-                      className="flex-1 bg-gray-100 dark:bg-gray-800 py-2.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 font-bold uppercase text-xs tracking-wider transition-all"
+                      className="flex-1 border-(--border) py-2.5 rounded-lg  font-bold uppercase text-xs tracking-wider transition-all"
                     >
                       Cancel
                     </button>
@@ -316,7 +316,7 @@ const OrgProfile = () => {
                   <button
                     type="button"
                     onClick={() => setIsEditing(true)}
-                    className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2.5 rounded-sm font-bold uppercase text-xs tracking-widest transition-all shadow-md shadow-orange-500/10"
+                    className="w-full bg-amber-500 hover:bg-amber-600 text-white py-2.5 rounded-sm font-bold uppercase text-xs tracking-widest transition-all shadow-md shadow-amber-500/10"
                   >
                     Edit Profile Details
                   </button>
@@ -328,7 +328,7 @@ const OrgProfile = () => {
           {/* TAB 2: EMAIL SYNC */}
           {activeTab === 'email' && (
             <form onSubmit={handleUpdateEmail} className="space-y-4">
-              <div className="bg-orange-500/10 border border-orange-500/20 p-3 rounded-lg text-xs text-orange-600 dark:text-orange-400 leading-relaxed">
+              <div className="bg-amber-500/10 border border-(--border) p-3 rounded-lg text-xs text-(--text-color) leading-relaxed">
                 Notice: Altering your email updates your access credentials. For security verification, you will be prompted to authenticate your session.
               </div>
 
@@ -373,7 +373,7 @@ const OrgProfile = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2.5 rounded-sm font-bold uppercase text-xs tracking-wider disabled:opacity-50 transition-all"
+                className="w-full bg-amber-500 hover:bg-amber-600  py-2.5 rounded-sm font-bold uppercase text-xs tracking-wider disabled:opacity-50 transition-all"
               >
                 {loading ? "Verifying..." : "Update Registered Email"}
               </button>
@@ -394,7 +394,7 @@ const OrgProfile = () => {
                     href="https://myaccount.google.com/signin-options" 
                     target="_blank" 
                     rel="noreferrer"
-                    className="mt-2 text-xs font-semibold text-orange-500 hover:underline"
+                    className="mt-2 text-xs font-semibold text-amber-500 hover:underline"
                   >
                     Go to Google Account Manager &rarr;
                   </a>
@@ -402,7 +402,7 @@ const OrgProfile = () => {
               ) : (
                 <form onSubmit={handleUpdatePassword} className="space-y-4">
                   <div>
-                    <label className="text-xs font-bold uppercase tracking-wider text-gray-400">Current Security Password</label>
+                    <label className="text-xs font-bold uppercase tracking-wider text-(--text-muted)">Current Security Password</label>
                     <div className="relative mt-1">
                       <input
                         required
@@ -415,17 +415,17 @@ const OrgProfile = () => {
                       <button
                         type="button"
                         onClick={() => setShowCurrentPass(!showCurrentPass)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-(--text-muted) dark:hover:text-(--text-secondary) transition-colors"
                       >
                         {showCurrentPass ? <FaEye size={16} /> : <FaEyeSlash size={16} />}
                       </button>
                     </div>
                   </div>
 
-                  <div className="border-t border-gray-100 dark:border-gray-800 my-2" />
+                  <div className="border-t border-(--border) my-2" />
 
                   <div>
-                    <label className="text-xs font-bold uppercase tracking-wider text-gray-400">New Secret Password</label>
+                    <label className="text-xs font-bold uppercase tracking-wider text-(--text-muted">New Secret Password</label>
                     <div className="relative mt-1">
                       <input
                         required
@@ -433,12 +433,12 @@ const OrgProfile = () => {
                         placeholder="6 characters minimum"
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
-                        className="w-full p-3 pr-10 bg-(--bg-color) border dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm"
+                        className="w-full p-3 pr-10 bg-(--bg-color) border-(--border) rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400 text-sm"
                       />
                       <button
                         type="button"
                         onClick={() => setShowNewPass(!showNewPass)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-(--text-muted) dark:hover:text-(--text-secondary) transition-colors"
                       >
                         {showNewPass ? <FaEye size={16} /> : <FaEyeSlash size={16} />}
                       </button>
@@ -446,7 +446,7 @@ const OrgProfile = () => {
                   </div>
 
                   <div>
-                    <label className="text-xs font-bold uppercase tracking-wider text-gray-400">Verify New Password</label>
+                    <label className="text-xs font-bold uppercase tracking-wider text-(--text-muted)">Verify New Password</label>
                     <div className="relative mt-1">
                       <input
                         required
@@ -454,12 +454,12 @@ const OrgProfile = () => {
                         placeholder="••••••••"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
-                        className="w-full p-3 pr-10 bg-(--bg-color) border dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm"
+                        className="w-full p-3 pr-10 bg-(--bg-color) border-(--border) rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400 text-sm"
                       />
                       <button
                         type="button"
                         onClick={() => setShowConfirmPass(!showConfirmPass)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-(--text-muted) dark:hover:text-(--text-secondary)transition-colors"
                       >
                         {showConfirmPass ? <FaEye size={16} /> : <FaEyeSlash size={16} />}
                       </button>
@@ -469,7 +469,7 @@ const OrgProfile = () => {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2.5 rounded-sm font-bold uppercase text-xs tracking-wider disabled:opacity-50 transition-all"
+                    className="w-full bg-amber-500 hover:bg-amber-600 text-white py-2.5 rounded-sm font-bold uppercase text-xs tracking-wider disabled:opacity-50 transition-all"
                   >
                     {loading ? "Saving Changes..." : "Save New Password"}
                   </button>
