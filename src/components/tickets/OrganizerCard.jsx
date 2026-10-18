@@ -54,7 +54,7 @@ useEffect(() => {
   return (
     <section className='space-y-8'>
       <div>
-        <h2 className='text-3xl font-bold'>Meet the Organizer</h2>
+        <h2 className='text-2xl md:text-3xl font-bold'>Meet the Organizer</h2>
 
         <p className='opacity-70'>
           Learn more about the team behind this event.
@@ -77,7 +77,7 @@ useEffect(() => {
 
             <div>
               <div className='flex items-center gap-2'>
-                <h3 className='text-2xl font-bold'>{organizer}</h3>
+                <h3 className='text-lg md:text-2xl font-bold'>{organizer}</h3>
 
                 {owner.isVerified && (
                   <FiCheckCircle className='text-blue-500' />

@@ -424,7 +424,7 @@ const Event = ({ currentUser, events, setEvents }) => {
 
                   <p className='flex items-center gap-2 text-sm text-[var(--text-secondary)]'>
                     <FaClock className='text-[var(--primary)]' />
-                    <span className='truncate'>
+                    <span className='truncate w-[100px] md:w-[300px]'>
                       {formatEventStatus(event.startTime, event.endTime)}
                     </span>
                   </p>

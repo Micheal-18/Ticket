@@ -1,174 +1,154 @@
 import React, { useMemo } from 'react'
-import GoogleAuth from '../../auth/GoogleAuth'
-import PaystackPayment from '../PaystackPayment'
 
 const TicketPurchaseCard = ({
   ticket,
-  currentUser,
   quantity,
   onQuantityChange,
   attendees,
   onAttendeeChange,
-  selected,
-  onSelect,
-  event
+  purchaserName,
+  purchaserEmail
 }) => {
-  const total = useMemo(() => {
-    return Number(ticket.price || 0) * quantity
-  }, [ticket.price, quantity])
+  const total = useMemo(
+    () => Number(ticket.price || 0) * quantity,
+    [ticket.price, quantity]
+  )
 
-  const remaining = ticket.quantity - (ticket.sold || 0)
-  
+  const inventory = Number(ticket.quantity)
+  const remaining = ticket.quantity == null || !Number.isFinite(inventory)
+    ? 10
+    : Math.max(0, inventory - Number(ticket.sold || 0))
   const soldOut = remaining <= 0
-
-  const maxQuantity = Math.min(10, remaining, ticket.maxPerPurchase || 10)
+  const maxQuantity = Math.min(10, remaining)
 
   return (
-    <div className='rounded-3xl border bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) border-(--border) p-6 space-y-6'>
-      {/* Header */}
-
-      <div className='flex justify-between items-start'>
+    <div className='rounded-3xl border border-(--border) bg-(--surface) text-(--text-color) p-6 space-y-6'>
+      <div className='flex justify-between items-start gap-4'>
         <div>
           <h3 className='text-xl font-bold'>{ticket.name}</h3>
-
-          <p className='text-zinc-400 text-sm'>{ticket.description}</p>
+          {ticket.description && (
+            <p className='text-(--text-secondary) text-sm'>{ticket.description}</p>
+          )}
         </div>
 
-        <div className='text-right'>
-          <h2 className='text-2xl font-black text-(--primary-hover)'>
+        <div className='text-right shrink-0'>
+          <h2 className='text-2xl font-black text-(--primary)'>
             {Number(ticket.price) === 0
               ? 'FREE'
-              : `${ticket.currency || '₦'}${Number(
-                  ticket.price
-                ).toLocaleString()}`}
+              : `${ticket.currency || '₦'}${Number(ticket.price).toLocaleString()}`}
           </h2>
-
-          <p className='text-xs text-zinc-500'>{remaining} left</p>
+          <p className='text-xs text-(--text-muted)'>{remaining} left</p>
         </div>
       </div>
 
-      {/* Quantity */}
-
       {!soldOut && (
         <div className='space-y-2'>
-          <label className='text-sm text-zinc-400'>Quantity</label>
-
-          <div className='flex items-center justify-between rounded-2xl border bg-(--bg-color) dark:bg-(--bg-color) text-(--text-color) dark:text-(--text-color) border-(--border) p-2'>
+          <label className='text-sm text-(--text-secondary)'>Quantity</label>
+          <div className='flex items-center justify-between rounded-2xl border border-(--border) bg-(--bg-color) p-2'>
             <button
               type='button'
+              aria-label={`Remove one ${ticket.name} ticket`}
               onClick={() => onQuantityChange(Math.max(0, quantity - 1))}
               disabled={quantity <= 0}
-              className='w-12 h-12 rounded-xl bg-zinc-400 hover:bg-zinc-700 disabled:opacity-40 disabled:cursor-not-allowed text-xl font-bold transition'
+              className='w-12 h-12 rounded-xl bg-(--surface-hover) hover:bg-(--border) disabled:opacity-40 disabled:cursor-not-allowed text-xl font-bold transition'
             >
               −
             </button>
 
-            <span className='text-2xl font-bold w-12 text-center'>
-              {quantity}
-            </span>
+            <span className='text-2xl font-bold w-12 text-center'>{quantity}</span>
 
             <button
               type='button'
-              onClick={() =>
-                onQuantityChange(Math.min(maxQuantity, quantity + 1))
-              }
-              disabled={quantity >= 10 || quantity >= remaining}
-              className='w-12 h-12 rounded-xl bg-(--primary) hover:bg-(--primary-hover) disabled:opacity-40 disabled:cursor-not-allowed text-xl font-bold transition'
+              aria-label={`Add one ${ticket.name} ticket`}
+              onClick={() => onQuantityChange(Math.min(maxQuantity, quantity + 1))}
+              disabled={quantity >= maxQuantity}
+              className='w-12 h-12 rounded-xl bg-(--primary) hover:bg-(--primary-hover) disabled:opacity-40 disabled:cursor-not-allowed text-white text-xl font-bold transition'
             >
               +
             </button>
           </div>
-
-          <p className='text-xs text-zinc-500'>
-            Maximum {Math.min(10, remaining)} tickets
+          <p className='text-xs text-(--text-muted)'>
+            Maximum {maxQuantity} ticket{maxQuantity === 1 ? '' : 's'} per purchase
           </p>
         </div>
       )}
 
-      {/* Total */}
-
       {quantity > 0 && Number(ticket.price) > 0 && (
-        <div className='rounded-xl bg-zinc-900 p-4 flex justify-between'>
-          <span>Total</span>
-
-          <span className='font-bold text-(--primary-hover)'>
+        <div className='rounded-xl border border-(--border) bg-(--bg-color) p-4 flex justify-between'>
+          <span>Subtotal</span>
+          <span className='font-bold text-(--primary)'>
             {ticket.currency || '₦'}
             {total.toLocaleString()}
           </span>
         </div>
       )}
 
-      {/* Attendees */}
-
-      {quantity > 1 &&
-        attendees.map((person, index) => (
-          <div
-            key={index}
-            className='space-y-2 flex flex-col justify-center border-t border-zinc-800 pt-4'
-          >
-            <h4 className='font-semibold'>Attendee {index + 2}</h4>
-
-            <input
-              value={person.name}
-              placeholder='Full Name'
-              onChange={e => onAttendeeChange(index, 'name', e.target.value)}
-              className='w-full rounded-xl p-3  border border-(--border)'
-            />
-
-            <input
-              value={person.email}
-              placeholder='Email'
-              onChange={e => onAttendeeChange(index, 'email', e.target.value)}
-              className='w-full rounded-xl p-3 border border-(--border)'
-            />
-
-            {/* <input
-              value={person.number}
-              type='tel'
-              placeholder='Phone Number'
-              onChange={e => onAttendeeChange(index, 'number', e.target.value)}
-              className='w-full rounded-xl p-3 border border-(--border)'
-            /> */}
+      {quantity > 0 && (
+        <div className='space-y-4'>
+          <div>
+            <h4 className='font-semibold'>Ticket holder details</h4>
+            <p className='text-sm text-(--text-secondary)'>
+              Your account is the purchaser. Enter the details of the person who will use each ticket.
+            </p>
           </div>
-        ))}
+          {Array.from({ length: quantity }, (_, index) => {
+            const person = attendees[index] || { name: '', email: '' }
+            const isPurchaser = person.isBuyer === true
 
-      {/* Buttons */}
+            return (
+              <div
+                key={index}
+                className='space-y-3 border-t border-(--border) pt-4'
+              >
+                <h5 className='font-medium'>Ticket holder {index + 1}</h5>
+                {purchaserEmail && (
+                  <label className='flex items-center gap-2 text-sm text-(--text-secondary)'>
+                    <input
+                      type='checkbox'
+                      checked={isPurchaser}
+                      onChange={event =>
+                        onAttendeeChange(index, 'isBuyer', event.target.checked)
+                      }
+                      className='accent-(--primary)'
+                    />
+                    This ticket is for me
+                  </label>
+                )}
+                <input
+                  value={isPurchaser ? purchaserName : person.name}
+                  placeholder='Ticket holder full name'
+                  autoComplete='off'
+                  readOnly={isPurchaser}
+                  onChange={event =>
+                    onAttendeeChange(index, 'name', event.target.value)
+                  }
+                  className='w-full rounded-xl p-3 border border-(--border) bg-(--bg-color) text-(--text-color) placeholder:text-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) read-only:opacity-70'
+                />
+                <input
+                  type='email'
+                  value={isPurchaser ? purchaserEmail : person.email}
+                  placeholder='Ticket holder email'
+                  autoComplete='off'
+                  readOnly={isPurchaser}
+                  onChange={event =>
+                    onAttendeeChange(index, 'email', event.target.value)
+                  }
+                  className='w-full rounded-xl p-3 border border-(--border) bg-(--bg-color) text-(--text-color) placeholder:text-(--text-muted) focus:outline-none focus:ring-2 focus:ring-(--primary) read-only:opacity-70'
+                />
+              </div>
+            )
+          })}
+        </div>
+      )}
 
-      {soldOut ? (
+      {soldOut && (
         <button
+          type='button'
           disabled
-          className='w-full  rounded-xl bg-red-900 py-4 font-bold'
+          className='w-full rounded-xl bg-(--danger) py-4 font-bold text-white'
         >
           SOLD OUT
         </button>
-      ) : quantity === 0 ? (
-        <button disabled className='w-full rounded-xl  border border-(--border) py-4'>
-          Select Quantity
-        </button>
-      ) : !currentUser ? (
-        <GoogleAuth
-          className='w-full'
-        />
-      ) : selected ? (
-        <PaystackPayment
-          currentUser={currentUser}
-          events={event}
-          ticket={{
-            ...ticket,
-            num: quantity
-          }}
-          attendees={attendees}
-        />
-      ) : (
-        <PaystackPayment
-          currentUser={currentUser}
-          events={event}
-          ticket={{
-            ...ticket,
-            num: quantity
-          }}
-          attendees={attendees}
-        />
       )}
     </div>
   )

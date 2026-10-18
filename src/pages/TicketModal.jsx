@@ -36,13 +36,12 @@ import TicketPurchaseCard from '../components/tickets/TicketPurchaseCard'
 const TicketModal = ({ currentUser }) => {
   const { slug } = useParams()
   const [selectedEvent, setSelectedEvent] = useState(null)
-  const [selectedTicket, setSelectedTicket] = useState(null)
   const [loading, setLoading] = useState(true)
   const [owner, setOwner] = useState(null)
   const [relatedEvents, setRelatedEvents] = useState([])
   const [ticketQty, setTicketQty] = useState({})
   const [coordinates, setCoordinates] = useState({ lat: 6.5244, lng: 3.3792 }) // Default to Lagos, Nigeria
-  const [attendees, setAttendees] = useState([]) // [{name: "", email: ""}]
+  const [attendeesByTicket, setAttendeesByTicket] = useState({})
 
   // Fix Leaflet default marker icon issue
   useEffect(() => {
@@ -140,38 +139,41 @@ const TicketModal = ({ currentUser }) => {
     }
   }
 
-  const handleCheckoutAction = ticket => {
-    const qty = ticketQty[ticket.id || ticket.label] || 0
+  const selectedTicketItems = (selectedEvent?.tickets || []).flatMap(ticket => {
+    const ticketId = ticket.id || ticket.label || ticket.name
+    const quantity = ticketQty[ticketId] || 0
+    if (quantity <= 0) return []
 
-    if (qty <= 0) {
-      return alert('Please select at least 1 ticket quantity.')
-    }
-
-    if (!currentUser) {
-      setSelectedTicket({
-        ...ticket,
-        num: qty,
-        requiresAuth: true
-      })
-      return
-    }
-
-    setSelectedTicket({
+    return [{
       ...ticket,
-      num: qty,
-      requiresAuth: false
-    })
-  }
-
-  // Handle Google authentication wall success bypass
-  useEffect(() => {
-    if (currentUser && selectedTicket?.requiresAuth) {
-      setSelectedTicket(prev => ({
-        ...prev,
-        requiresAuth: false
-      }))
-    }
-  }, [currentUser, selectedTicket])
+      ticketId,
+      ticketName: ticket.name,
+      ticketType: ticket.type || (Number(ticket.price) === 0 ? 'free' : 'paid'),
+      ticketCurrency: ticket.currency || 'NGN',
+      ticketPrice: Number(ticket.price || 0),
+      quantity,
+      availableQuantity: ticket.quantity == null ? null : Number(ticket.quantity),
+      attendees: (attendeesByTicket[ticketId] || []).slice(0, quantity)
+    }]
+  })
+  const selectedQuantity = selectedTicketItems.reduce(
+    (total, item) => total + item.quantity,
+    0
+  )
+  const purchaserName =
+    currentUser?.fullName ||
+    currentUser?.name ||
+    currentUser?.displayName ||
+    ''
+  const purchaserEmail = currentUser?.email || ''
+  const cartTotal = selectedTicketItems.reduce(
+    (total, item) => total + item.ticketPrice * item.quantity,
+    0
+  )
+  const cartCurrencies = [...new Set(selectedTicketItems.map(item => item.ticketCurrency))]
+  const hasFreeAndPaidTickets =
+    selectedTicketItems.some(item => item.ticketPrice === 0) &&
+    selectedTicketItems.some(item => item.ticketPrice > 0)
 
   if (loading) return <LoadingSkeleton />
   if (!selectedEvent) {
@@ -189,8 +191,7 @@ const TicketModal = ({ currentUser }) => {
         <button
           type='button'
           aria-label='Close modal'
-          className='text-2xl absolute top-4 right-4 md:right-8 bg-black/40 hover:bg-black/60 text-(
-          --bg-color) p-2 rounded-full cursor-pointer hover:scale-105 transition-all z-50 flex items-center justify-center'
+          className='text-2xl absolute top-4 right-4 md:right-8 bg-black/40 hover:bg-black/60 text-(--bg-color) p-2 rounded-full cursor-pointer hover:scale-105 transition-all z-50 flex items-center justify-center'
           onClick={() => window.history.back()}
         >
           <CloseIcon />
@@ -200,10 +201,7 @@ const TicketModal = ({ currentUser }) => {
         <div className='relative flex flex-col'>
           <EventHero event={selectedEvent} currentUser={currentUser} />
 
-          <div
-            className='absolute top-0 left-0 w-full flex justify-center max-w-7xl  p-4 md:p-6 text-(
-          --bg-color) space-y-2'
-          >
+          <div className='absolute top-0 left-0 w-full flex justify-center max-w-7xl p-4 md:p-6 text-(--bg-color) space-y-2'>
             <Countdown
               startTime={selectedEvent.startTime}
               endTime={selectedEvent.endTime}
@@ -211,7 +209,7 @@ const TicketModal = ({ currentUser }) => {
           </div>
 
           <div className='max-w-7xl w-full mx-auto px-4 md:px-8 py-6 space-y-8'>
-            {currentUser?.uid === owner.id && (
+            {currentUser?.uid === owner?.id && (
               <EventStats event={selectedEvent} />
             )}
 
@@ -250,11 +248,8 @@ const TicketModal = ({ currentUser }) => {
 
               {/* Right Column - Booking & Ticket Selector Panel */}
               <div className='space-y-6 lg:sticky lg:top-6'>
-                <div
-                  className='bg-(
-              --bg-color) dark:bg-(--bg-color) border border-(--border) rounded-3xl p-6 shadow-xs'
-                >
-                  <h3 className='font-bold text-xl mb-4 text-(--bg-color) dark:text-zinc-50'>
+                <div className='bg-(--bg-color) dark:bg-(--bg-color) border border-(--border) rounded-3xl p-6 shadow-xs'>
+                  <h3 className='font-bold text-xl mb-4 text-(--text-color)'>
                     Select Tickets
                   </h3>
 
@@ -272,55 +267,73 @@ const TicketModal = ({ currentUser }) => {
                         return priceA - priceB
                       })
                       .map(ticket => {
-                        const ticketId = ticket.id || ticket.label
+                        const ticketId = ticket.id || ticket.label || ticket.name
 
                         return (
                           <TicketPurchaseCard
                             key={ticketId}
                             ticket={ticket}
                             event={selectedEvent}
-                            currentUser={currentUser}
                             quantity={ticketQty[ticketId] || 0}
-                            attendees={attendees}
-                            selected={
-                              selectedTicket?.id === ticketId ||
-                              selectedTicket?.label === ticket.name
-                            }
+                            attendees={attendeesByTicket[ticketId] || []}
+                            purchaserName={purchaserName}
+                            purchaserEmail={purchaserEmail}
                             onQuantityChange={qty => {
                               setTicketQty(prev => ({
                                 ...prev,
                                 [ticketId]: qty
                               }))
 
-                              setAttendees(
-                                Array(Math.max(0, qty - 1))
-                                  .fill(null)
-                                  .map(() => ({
-                                    name: '',
-                                    email: ''
-                                  }))
-                              )
-
-                              setSelectedTicket(null)
+                              setAttendeesByTicket(prev => {
+                                const current = prev[ticketId] || []
+                                const updated = qty > current.length
+                                  ? [
+                                      ...current,
+                                      ...Array.from(
+                                        { length: qty - current.length },
+                                        () => ({ name: '', email: '' })
+                                      )
+                                    ]
+                                  : current.slice(0, qty)
+                                return { ...prev, [ticketId]: updated }
+                              })
                             }}
                             onAttendeeChange={(index, field, value) => {
-                              const copy = [...attendees]
-                              copy[index][field] = value
-                              setAttendees(copy)
+                              setAttendeesByTicket(prev => {
+                                const copy = [...(prev[ticketId] || [])]
+                                if (!copy[index]) return prev
+                                if (field === 'isBuyer') {
+                                  copy[index] = value
+                                    ? {
+                                        ...copy[index],
+                                        isBuyer: true,
+                                        name: purchaserName,
+                                        email: purchaserEmail
+                                      }
+                                    : {
+                                        ...copy[index],
+                                        isBuyer: false,
+                                        name: '',
+                                        email: ''
+                                      }
+                                } else {
+                                  copy[index] = { ...copy[index], [field]: value }
+                                }
+                                return { ...prev, [ticketId]: copy }
+                              })
                             }}
-                            onSelect={() => handleCheckoutAction(ticket)}
                           />
                         )
                       })}
                   </div>
 
                   {/* Authentication Wall Prompt */}
-                  {selectedTicket?.requiresAuth && (
-                    <div className='mt-6 border border-dashed border-orange-300 dark:border-orange-800 bg-orange-50/50 dark:bg-orange-950/20 rounded-2xl p-5 text-center space-y-3'>
-                      <div className='mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900/50 text-orange-600'>
+                  {selectedTicketItems.length > 0 && !currentUser && (
+                    <div className='mt-6 border border-dashed border-(--primary)/40 bg-(--primary)/10 rounded-2xl p-5 text-center space-y-3'>
+                      <div className='mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-(--primary)/15 text-(--primary)'>
                         <FiLock size={20} />
                       </div>
-                      <p className='text-sm text-zinc-600 dark:text-zinc-300'>
+                      <p className='text-sm text-(--text-color) hover:text-(--text-secondary)'>
                         You need to secure your profile before securing these
                         tickets.
                       </p>
@@ -329,19 +342,39 @@ const TicketModal = ({ currentUser }) => {
                   )}
 
                   {/* Dynamic Checkout Action Container */}
-                  {selectedTicket && !selectedTicket.requiresAuth && (
+                  {selectedTicketItems.length > 0 && currentUser && (
                     <div className='mt-6 pt-6 border-t border-(--border) '>
-                      <PaystackPayment
-                        currentUser={currentUser}
-                        event={selectedEvent}
-                        ticket={selectedTicket}
-                        quantity={
-                          ticketQty[
-                            selectedTicket.id || selectedTicket.label
-                          ] || 0
-                        }
-                        attendees={attendees}
-                      />
+                      {cartCurrencies.length > 1 || hasFreeAndPaidTickets ? (
+                        <p className='mb-4 rounded-xl border border-(--warning)/40 bg-(--warning)/10 p-3 text-sm text-(--text-color)'>
+                          {cartCurrencies.length > 1
+                            ? 'Tickets with different currencies must be purchased separately.'
+                            : 'Free and paid tickets must be claimed separately.'}
+                        </p>
+                      ) : (
+                        <>
+                          <div className='mb-4 rounded-xl border border-(--border) bg-(--surface) p-4'>
+                            <div className='flex justify-between text-sm text-(--text-secondary)'>
+                              <span>{selectedQuantity} ticket{selectedQuantity === 1 ? '' : 's'} for your attendees</span>
+                              <span className='font-bold text-(--text-color)'>
+                                {selectedTicketItems[0].ticketCurrency === 'USD'
+                                  ? '$'
+                                  : selectedTicketItems[0].ticketCurrency === 'GBP'
+                                    ? '£'
+                                    : selectedTicketItems[0].ticketCurrency === 'NGN'
+                                      ? '₦'
+                                      : selectedTicketItems[0].ticketCurrency}
+                                {cartTotal.toLocaleString()}
+                              </span>
+                            </div>
+                          </div>
+                          <PaystackPayment
+                            currentUser={currentUser}
+                            event={selectedEvent}
+                            ticket={selectedTicketItems[0]}
+                            ticketItems={selectedTicketItems}
+                          />
+                        </>
+                      )}
                     </div>
                   )}
                 </div>
