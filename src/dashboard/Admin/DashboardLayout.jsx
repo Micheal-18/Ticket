@@ -251,6 +251,7 @@ const DashboardLayout = ({ currentUser }) => {
               <RiTicket2Line size={18} />,
               'My Events'
             )}
+            {navItem('/dashboard/promo-tickets', <span aria-hidden="true">🎁</span>, 'Giveaway ticket')}
             {navItem('/dashboard/scanner', <RiQrScanLine size={18} />, 'Scan')}
             {navItem(
               '/dashboard/wallet',

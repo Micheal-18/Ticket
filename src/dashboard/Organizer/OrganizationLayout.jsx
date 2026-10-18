@@ -271,6 +271,11 @@ const OrganizationLayout = ({ currentUser }) => {
               'Earnings'
             )}
             {navItem(
+              '/dashboard/organization/promo-tickets',
+              <RiTicket2Line size={18} />,
+              'Giveaways'
+            )}
+            {navItem(
               '/dashboard/organization/blog',
               <FaBlog size={18} />,
               'Blogs'

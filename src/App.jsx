@@ -55,6 +55,8 @@ import AttendeeDrawer from './dashboard/Organizer/studio/OrgAttendees'
 import OrgBuyers from './dashboard/Organizer/studio/OrgBuyers'
 import OrgStudio from './dashboard/Organizer/studio/OrgStudio'
 import PublicOrganizerProfile from './pages/Profilepage'
+import AdminPromoTickets from "./dashboard/Admin/component/AdminPromoTickets"
+import OrgPromoTickets from "./dashboard/Organizer/component/OrgPromoTickets"
 
 
 const App = () => {
@@ -361,6 +363,11 @@ const App = () => {
               />
             }
           />
+
+          <Route
+            path="promo-tickets"
+            element={<AdminPromoTickets />}
+          />
         </Route>
 
         {/* Organization Dashboard */}
@@ -376,6 +383,7 @@ const App = () => {
   <Route path='events' element={<OrgEvent currentUser={currentUser} />} />
   <Route path='event/:slug' element={<TicketModal currentUser={currentUser} />} />
   <Route path='blog' element={<WriteBlog />} />
+  <Route path='promo-tickets' element={<OrgPromoTickets />} />
 
   {/* ========================================================= */}
   {/* ORG STUDIO SUB-SUITE                                      */}
